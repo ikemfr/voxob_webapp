@@ -2787,7 +2787,25 @@
         s.appendChild(o);
       }
     }
-    async function shareURL() { try { const d = JSON.stringify({ W, H, D, f: frames }); const buf = await new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer(); const b64 = btoa(String.fromCharCode(...new Uint8Array(buf))); await navigator.clipboard.writeText(location.origin + location.pathname + '#' + b64); alert('URL copied (' + Math.round(b64.length / 1024) + 'KB)') } catch (e) { alert('Error') } }
+    async function shareURL() { 
+      try { 
+        const d = JSON.stringify({ W, H, D, f: frames }); 
+        const buf = await new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer(); 
+        
+        const bytes = new Uint8Array(buf);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        const b64 = btoa(binary); 
+        
+        await navigator.clipboard.writeText(location.origin + location.pathname + '#' + b64); 
+        alert((lang === 'ja' ? 'URLをコピーしました (' : 'URL copied (') + Math.round(b64.length / 1024) + 'KB)'); 
+      } catch (e) { 
+        console.error(e);
+        alert(lang === 'ja' ? '共有URLの作成に失敗しました。データが大きすぎる可能性があります。' : 'Error generating share URL.'); 
+      } 
+    }
     async function loadURL() { if (!location.hash || location.hash.length < 2) return; try { const bin = Uint8Array.from(atob(location.hash.slice(1)), c => c.charCodeAt(0)); const text = await new Response(new Blob([bin]).stream().pipeThrough(new DecompressionStream('deflate'))).text(); const d = JSON.parse(text); W = d.W; H = d.H; D = d.D; frames = d.f || [{ v: {}, ws: false }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; rebMesh(); rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt(); uFUI(); history.replaceState(null, '', location.pathname) } catch (e) { } }
     function showExp() { $('exM').classList.add('on') } function hideExp() { $('exM').classList.remove('on') }
     function exFn() { return $('exName').value || 'voxelart' }
