@@ -1602,7 +1602,10 @@
         tipUndo: 'Ctrl+Z: Undo', tipRedo: 'Ctrl+Y: Redo', tipWire: 'Toggle wireframe view', tipShare: 'Share via compressed URL', tipBg: 'Set background', tipExp: 'Export model',
         tipSavePj: 'Save to browser', tipSelR: 'Select range', tipCR: 'Copy range', tipCC: 'Copy connected cluster', tipPst: 'Paste voxels', tipImp: 'Import media/models',
         tipAnimG: 'Generate animation', tipCam: 'Save camera angle', tipPrev: 'Previous frame', tipPlay: 'Play/Stop', tipNext: 'Next frame', tipAddF: 'Add empty frame',
-        tipDupF: 'Duplicate frame', tipDelF: 'Delete frame', tipCopyF: 'Copy frame', tipPasteF: 'Paste frame', tipWorkF: 'Workspace frame'
+        tipDupF: 'Duplicate frame', tipDelF: 'Delete frame', tipCopyF: 'Copy frame', tipPasteF: 'Paste frame', tipWorkF: 'Workspace frame',
+        abtDesc: 'A lightweight, browser-based voxel editor and generator.',
+        abtSupp: 'Buy Me a Coffee',
+        abtCrd: 'CREDITS & LICENSES',
       },
       ja: {
         drawMode: '✏ 描画', delMode: '✕ 削除', recolorMode: '🎨 着色', tools: 'ツール', brush: 'ブラシ', snap: 'スナップ', symmetry: '対称',
@@ -1622,7 +1625,10 @@
         tipUndo: 'Ctrl+Z: 元に戻す', tipRedo: 'Ctrl+Y: やり直し', tipWire: 'ワイヤフレーム切替', tipShare: '圧縮URLで共有', tipBg: '背景色・画像の変更', tipExp: 'エクスポート',
         tipSavePj: 'ブラウザに保存', tipSelR: '範囲を選択', tipCR: '選択範囲をコピー', tipCC: '繋がる塊をコピー', tipPst: 'ボクセルをペースト', tipImp: 'メディア・3Dモデル読込',
         tipAnimG: 'アニメーション生成', tipCam: 'カメラアングル保存', tipPrev: '前のフレーム', tipPlay: '再生/停止', tipNext: '次のフレーム', tipAddF: '空のフレーム追加',
-        tipDupF: 'フレーム複製', tipDelF: 'フレーム削除', tipCopyF: 'フレームコピー', tipPasteF: 'フレームペースト', tipWorkF: '作業用フレーム追加'
+        tipDupF: 'フレーム複製', tipDelF: 'フレーム削除', tipCopyF: 'フレームコピー', tipPasteF: 'フレームペースト', tipWorkF: '作業用フレーム追加',
+        abtDesc: 'ブラウザで動く軽量なボクセルエディタ＆ジェネレーター',
+        abtSupp: 'コーヒーを奢る（支援）',
+        abtCrd: 'クレジット & ライセンス',
       }
     };
 
@@ -1652,7 +1658,7 @@
         'lbBgTp': 'bgType', 'opSol': 'bgSolid', 'opGra': 'bgGrad', 'opChk': 'bgCheck', 'lbBgIm': 'bgImg', 'bBgClr': 'bgClear',
         'lbExFn': 'exFilename', 'exObj': 'exObj', 'exStl': 'exStl', 'exGlb': 'exGlb', 'exPng': 'exPng',
         'bFPrev': 'prev', 'bFNext': 'next', 'bFAdd': 'add', 'bFDup': 'dup', 'bFDel': 'del', 'bFCpy': 'fcopy', 'bFPst': 'fpaste', 'bFWork': 'work',
-        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam'
+        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd'
       };
       Object.entries(ids).forEach(([id, k]) => {
         const el = document.getElementById(id);
@@ -3088,19 +3094,25 @@
       onR(); // Execute resize and draw for 2D and 3D
     });
   </script>
-
   <div class="mbg" id="abtM">
     <div class="mod" style="max-width: 320px;">
       <button class="mc" onclick="document.getElementById('abtM').classList.remove('on')">✕</button>
       <h2 style="color: var(--tx); margin-bottom: 12px;">🧊 VoxoB</h2>
-      <p style="font-size: 11px; color: var(--t2); margin-bottom: 16px;">
+      <p id="abtDesc" style="font-size: 11px; color: var(--t2); margin-bottom: 4px;">
         A lightweight, browser-based voxel editor and generator.
-        <br>© Ike mfr
       </p>
+      <p style="font-size: 11px; color: var(--t2); margin-bottom: 16px;">© Ike mfr</p>
+
+      <div style="margin-bottom: 16px;">
+        <a href="https://buymeacoffee.com/ike_mfr" target="_blank" 
+           style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #FFDD00; color: #000000; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 12px; transition: 0.2s; border: none; cursor: pointer;">
+          <span style="font-size: 16px;">☕</span>
+          <span id="abtSupp" style="color: #000000;">Buy Me a Coffee</span>
+        </a>
+      </div>
 
       <div style="background: var(--b3); border: 1px solid var(--bd); border-radius: 4px; padding: 8px;">
-        <div style="font-family: 'JetBrains Mono'; font-size: 10px; color: var(--t3); margin-bottom: 4px;">CREDITS &
-          LICENSES</div>
+        <div id="abtCrd" style="font-family: 'JetBrains Mono'; font-size: 10px; color: var(--t3); margin-bottom: 4px;">CREDITS & LICENSES</div>
         <p style="font-size: 10px; color: var(--t2); line-height: 1.4;">
           Powered by <b>Three.js</b><br>
           Copyright © 2010-2023 three.js authors<br>
