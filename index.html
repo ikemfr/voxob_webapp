@@ -1450,8 +1450,7 @@
 
         <div class="ps">
           <div class="pt" id="ptMd">MEDIA IMPORT (png/jpg/bmp/gif/mp4/obj+mtl/stl)</div>
-          <input type="file" id="imgIn" accept="image/*,video/*,.gif,.obj,.stl,.mtl" multiple style="display:none"
-            onchange="loadMedia(event)">
+          <input type="file" id="imgIn" accept="image/*,video/*,.gif,.mov,.mp4,.m4v,.heic,.heif,.obj,.stl,.mtl" multiple style="display:none" onchange="loadMedia(event)">
           <button class="btn" onclick="$('imgIn').click()" id="bIm"
             data-tip="Import image, GIF, video,\nor 3D model (OBJ+MTL, STL)">📁 Import</button>
           <div class="sr" style="margin-top:2px"><label id="lbDp">Depth</label><input type="number" id="iDp" value="4"
@@ -2481,16 +2480,16 @@
       mtlData = {};
       let mainFile = null, mtlFile = null, imgFiles = {};
 
-      // Classify files by type
+      // Classify files by type and explicitly check iPhone extensions
       for (const f of files) {
         const n = f.name.toLowerCase();
         if (n.endsWith('.mtl')) mtlFile = f;
-        else if (n.endsWith('.obj') || n.endsWith('.stl')) mainFile = f;
-        else if (f.type.startsWith('image/')) imgFiles[f.name] = f;
-        else if (f.type.startsWith('video') || n.endsWith('.gif')) mainFile = f;
+        else if (n.match(/\.(obj|stl)$/)) mainFile = f;
+        else if (f.type.startsWith('video') || n.match(/\.(gif|mov|mp4|m4v)$/)) mainFile = f;
+        else if (f.type.startsWith('image/') || n.match(/\.(heic|heif|jpg|jpeg|png)$/)) imgFiles[f.name] = f;
       }
 
-      // Fallback for single image import, not for 3D
+      // Fallback for single image import
       if (!mainFile && Object.keys(imgFiles).length === 1 && !mtlFile) {
         mainFile = Object.values(imgFiles)[0];
         imgFiles = {};
@@ -2498,9 +2497,14 @@
 
       const processMain = () => {
         if (!mainFile) return;
-        if (mainFile.name.match(/\.(obj|stl)$/i)) { loadModel(mainFile) }
-        else if (mainFile.type.startsWith('video') || mainFile.name.endsWith('.gif')) { loadVideo(mainFile) }
-        else { const r = new FileReader(); r.onload = ev => { const img = new Image(); img.onload = () => impImg(img, ev.target.result); img.src = ev.target.result }; r.readAsDataURL(mainFile) }
+        const n = mainFile.name.toLowerCase();
+        if (n.match(/\.(obj|stl)$/)) { loadModel(mainFile) }
+        else if (mainFile.type.startsWith('video') || n.match(/\.(gif|mov|mp4|m4v)$/)) { loadVideo(mainFile) }
+        else { 
+          const r = new FileReader(); 
+          r.onload = ev => { const img = new Image(); img.onload = () => impImg(img, ev.target.result); img.src = ev.target.result }; 
+          r.readAsDataURL(mainFile) 
+        }
         e.target.value = '';
       };
 
@@ -2515,9 +2519,7 @@
             mtlData[curMtl] = { ...mtlData[curMtl], c: '#' + [Math.round(+p[1] * 255), Math.round(+p[2] * 255), Math.round(+p[3] * 255)].map(v => v.toString(16).padStart(2, '0')).join('') };
           }
           else if (p[0] === 'map_Kd' && curMtl) {
-            // Extract filename (strip path if included)
             const fn = p.slice(1).join(' ').split(/[/\\]/).pop();
-            // Match with co-uploaded images (case-insensitive)
             const texFile = imgFiles[fn] || Object.values(imgFiles).find(f => f.name.toLowerCase() === fn.toLowerCase());
             if (texFile) {
               const img = new Image();
@@ -2526,7 +2528,6 @@
                 img.onload = () => {
                   const cv = document.createElement('canvas');
                   cv.width = img.width; cv.height = img.height;
-                  // Improve pixel data retrieval performance with willReadFrequently
                   const ctx = cv.getContext('2d', { willReadFrequently: true });
                   ctx.drawImage(img, 0, 0);
                   mtlData[curMtl] = { ...mtlData[curMtl], imgData: ctx.getImageData(0, 0, img.width, img.height), w: img.width, h: img.height };
@@ -2549,20 +2550,31 @@
       pU(acts); d2D(); uCnt(); snd('gen'); if (src) { $('imgOvl').src = src; $('imgOvl').style.display = $('iSh').checked ? 'block' : 'none'; rs2() }
     }
     function loadVideo(f) {
-      const url = URL.createObjectURL(f);
-      const vid = document.createElement('video');
-      vid.src = url;
-      vid.muted = true;
+      const url = URL.createObjectURL(f); 
+      const vid = document.createElement('video'); 
+      vid.src = url; 
+      vid.muted = true; 
+      
+      // [CRITICAL FOR iOS] Required to process video on canvas without forcing fullscreen
+      vid.playsInline = true; 
+      vid.setAttribute('playsinline', '');
+
+      // Handle unsupported formats (e.g., HEVC on non-supported desktop browsers)
+      vid.onerror = () => {
+        alert(lang === 'ja' ? 'この動画形式はお使いのブラウザでサポートされていません。' : 'This video format is not supported by your browser.');
+        URL.revokeObjectURL(url);
+        hideProg();
+      };
+
       vid.onloadedmetadata = () => {
-        const dur = vid.duration, maxFr = Math.min(Math.ceil(dur * 4), 64);
-        // Translated the confirm dialog for consistency
+        const dur = vid.duration, maxFr = Math.min(Math.ceil(dur * 4), 64); 
         if (maxFr > 24 && !confirm(lang === 'ja' ? `約${maxFr}フレームあります。続行しますか？` : `~${maxFr} frames. Continue?`)) return;
-        const interval = dur / maxFr;
-        let idx = 0;
+        const interval = dur / maxFr; 
+        let idx = 0; 
 
         // Pre-calculate target frame indices, skipping workspace frames
         const tgt = [];
-        let fIdx = 0;
+        let fIdx = 0; 
         while (tgt.length < maxFr) {
           if (fIdx >= frames.length) {
             frames.push({ v: {}, ws: false, cam: null });
@@ -2582,44 +2594,43 @@
         showProg(progPrefix + '0%', 0);
 
         vid.onseeked = () => {
-          if (idx >= maxFr) {
-            URL.revokeObjectURL(url);
-            hideProg(); // --- Hide Progress when done ---
-            goFrame(tgt[0]);
-            uFUI();
-            snd('gen');
-            return;
-          }
-          const s = sdm(), cv = document.createElement('canvas');
-          cv.width = s.w; cv.height = s.h;
-          cv.getContext('2d').drawImage(vid, 0, 0, s.w, s.h);
+          if (idx >= maxFr) { 
+            URL.revokeObjectURL(url); 
+            hideProg();
+            goFrame(tgt[0]); 
+            uFUI(); 
+            snd('gen'); 
+            return; 
+          } 
+          const s = sdm(), cv = document.createElement('canvas'); 
+          cv.width = s.w; cv.height = s.h; 
+          cv.getContext('2d').drawImage(vid, 0, 0, s.w, s.h); 
           const id = cv.getContext('2d').getImageData(0, 0, s.w, s.h).data;
-
+          
           curFrame = tgt[idx];
           frames[curFrame].v = {}; // Clear existing voxels in the frame
           const acts = [];
 
           for (let sx = 0; sx < s.w; sx++) {
-            for (let sy = 0; sy < s.h; sy++) {
-              const i = (sy * s.w + sx) * 4;
-              if (id[i + 3] < 128) continue;
-              const c = '#' + [id[i], id[i + 1], id[i + 2]].map(v => v.toString(16).padStart(2, '0')).join('');
-
-              // Apply 3D depth from color if enabled
+            for (let sy = 0; sy < s.h; sy++) { 
+              const i = (sy * s.w + sx) * 4; 
+              if (id[i + 3] < 128) continue; 
+              const c = '#' + [id[i], id[i + 1], id[i + 2]].map(v => v.toString(16).padStart(2, '0')).join(''); 
+              
               if (do3d) {
-                const bright = (id[i] + id[i + 1] + id[i + 2]) / 765;
-                const d = Math.max(1, Math.floor(bright * dep));
-                for (let dd = 0; dd < d; dd++) {
-                  const w = s2w(sx, sy);
-                  let wx = w.x, wy = w.y, wz = w.z;
-                  if (sAx === 'y') wy = Math.min(sIdx + dd, H - 1);
-                  else if (sAx === 'z') wz = Math.min(sIdx + dd, D - 1);
-                  else wx = Math.min(sIdx + dd, W - 1);
-                  const a = setV(wx, wy, wz, c);
+                const bright = (id[i] + id[i + 1] + id[i + 2]) / 765; 
+                const d = Math.max(1, Math.floor(bright * dep)); 
+                for (let dd = 0; dd < d; dd++) { 
+                  const w = s2w(sx, sy); 
+                  let wx = w.x, wy = w.y, wz = w.z; 
+                  if (sAx === 'y') wy = Math.min(sIdx + dd, H - 1); 
+                  else if (sAx === 'z') wz = Math.min(sIdx + dd, D - 1); 
+                  else wx = Math.min(sIdx + dd, W - 1); 
+                  const a = setV(wx, wy, wz, c); 
                   if (a) acts.push(a);
-                }
+                } 
               } else {
-                const w = s2w(sx, sy);
+                const w = s2w(sx, sy); 
                 const a = setV(w.x, w.y, w.z, c);
                 if (a) acts.push(a);
               }
@@ -2628,17 +2639,15 @@
           pU(acts);
           d2D();
           rebMesh();
-
-          idx++;
-
-          // --- Update Progress Bar & Percentage ---
+          
+          idx++; 
           const pcent = Math.round((idx / maxFr) * 100);
           showProg(progPrefix + pcent + '%', pcent);
 
           vid.currentTime = Math.min(idx * interval, dur - .01)
-        };
+        }; 
         vid.currentTime = .01
-      }
+      };
     }
     function loadModel(f) {
       const sz = +$('iSz').value || 16;
