@@ -2829,6 +2829,7 @@
         const d = JSON.stringify({ W, H, D, f: frames }); 
         const buf = await new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer(); 
         
+        // Convert buffer to string safely
         const bytes = new Uint8Array(buf);
         let binary = '';
         for (let i = 0; i < bytes.byteLength; i++) {
@@ -2836,14 +2837,52 @@
         }
         const b64 = btoa(binary); 
         
+        // Warn if the URL is extremely long (e.g., > 60,000 characters)
+        if (b64.length > 60000) {
+          const proceed = confirm(lang === 'ja' 
+            ? `URLが非常に長いです（約${Math.round(b64.length / 1024)}KB）。\n共有先のアプリ（LINEやDiscordなど）によってはURLが途切れて開けなくなる可能性があります。\n安全に共有するには「↓ (JSON保存)」の利用を推奨します。\n\nそれでもURLをクリップボードにコピーしますか？`
+            : `The URL is very long (~${Math.round(b64.length / 1024)}KB) and may break in some messaging apps.\nWe recommend using "Save JSON" for safe sharing.\n\nCopy URL anyway?`);
+          
+          if (!proceed) return; // Cancel copying if the user chooses not to proceed
+        }
+
         await navigator.clipboard.writeText(location.origin + location.pathname + '#' + b64); 
         alert((lang === 'ja' ? 'URLをコピーしました (' : 'URL copied (') + Math.round(b64.length / 1024) + 'KB)'); 
       } catch (e) { 
         console.error(e);
-        alert(lang === 'ja' ? '共有URLの作成に失敗しました。データが大きすぎる可能性があります。' : 'Error generating share URL.'); 
+        alert(lang === 'ja' 
+          ? '共有URLの作成に失敗しました。容量が大きすぎる可能性があります。\n代わりに「JSON保存」を利用してデータを共有してください。' 
+          : 'Error generating share URL. Data might be too large. Please use "Save JSON" instead.'); 
       } 
     }
-    async function loadURL() { if (!location.hash || location.hash.length < 2) return; try { const bin = Uint8Array.from(atob(location.hash.slice(1)), c => c.charCodeAt(0)); const text = await new Response(new Blob([bin]).stream().pipeThrough(new DecompressionStream('deflate'))).text(); const d = JSON.parse(text); W = d.W; H = d.H; D = d.D; frames = d.f || [{ v: {}, ws: false }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; rebMesh(); rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt(); uFUI(); history.replaceState(null, '', location.pathname) } catch (e) { } }
+    async function loadURL() {
+      if (!location.hash || location.hash.length < 2) return;
+      try {
+        const b64 = location.hash.slice(1);
+        const binary = atob(b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+
+        const buf = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer();
+        const text = new TextDecoder().decode(buf);
+        const d = JSON.parse(text);
+
+        if (d && d.f) {
+          W = d.W || 16; H = d.H || 16; D = d.D || 16;
+          frames = d.f;
+          curFrame = 0;
+          if (frames.length === 0) frames.push({ v: {}, ws: false, cam: null });
+          uFUI(); uCnt(); d2D(); rebMesh(); resetCam();
+        }
+      } catch (e) {
+        console.error("URL Load Error:", e);
+        // Prevent clearing the user's current work if the URL was truncated/corrupted
+        alert(lang === 'ja'
+          ? 'URLデータの読み込みに失敗しました。\nURLが長すぎて途切れているか、データが破損しています。'
+          : 'Failed to load URL. The link might be truncated or corrupted.');
+        location.hash = ''; // Clear broken hash to prevent reload loops
+      }
+    }
     function showExp() { $('exM').classList.add('on') } function hideExp() { $('exM').classList.remove('on') }
     function exFn() { return $('exName').value || 'voxelart' }
     function dlF(n, c, m = 'text/plain') { const b = new Blob([c], { type: m }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u) }
@@ -2861,15 +2900,47 @@
         return; 
       }
 
-      // Grab the latest FPS from the input
       const currentFps = Math.max(1, Math.min(60, +$('fpsIn').value || fps));
-
       const w = c3.width, h = c3.height, oldF = curFrame; 
+      
+      // --- PHASE 1: Pre-render all frames to memory ---
+      // This separates heavy 3D rendering from the time-sensitive video recording
+      const preRendered = [];
+      const progPrefix = lang === 'ja' ? 'レンダリング中 ' : 'Rendering ';
+      showProg(progPrefix + '0%', 0);
+
+      for (let i = 0; i < playable.length; i++) {
+        const fIdx = frames.indexOf(playable[i]);
+        goFrame(fIdx);
+
+        if (frames[fIdx].cam) {
+          const c = frames[fIdx].cam;
+          cT = c.cT; cP = c.cP; cD = c.cD;
+          cTgt.set(c.tx, c.ty, c.tz);
+          uCam();
+        }
+
+        ren.render(scn, cam);
+
+        // Save the rendered frame to an offscreen canvas
+        const tempCv = document.createElement('canvas');
+        tempCv.width = w; tempCv.height = h;
+        tempCv.getContext('2d').drawImage(c3, 0, 0);
+        preRendered.push(tempCv);
+
+        // Update progress bar (0% to 50%)
+        const pcent = Math.round(((i + 1) / playable.length) * 50);
+        showProg(progPrefix + pcent + '%', pcent);
+        
+        // Yield to browser UI thread briefly to prevent freezing
+        await new Promise(r => setTimeout(r, 10));
+      }
+
+      // --- PHASE 2: Record the pre-rendered frames at exact FPS ---
       const cv = document.createElement('canvas'); 
       cv.width = w; cv.height = h; 
       const cvx = cv.getContext('2d');
       
-      // Determine the most stable MIME type available
       let mimeType = 'video/webm';
       if (fmt === 'mp4' && MediaRecorder.isTypeSupported('video/mp4')) {
         mimeType = 'video/mp4';
@@ -2880,14 +2951,13 @@
       }
 
       const stream = cv.captureStream(currentFps); 
-      // Removed fixed bitrate to allow the browser to use a safe default
       const rec = new MediaRecorder(stream, { mimeType }); 
       const chunks = [];
 
       rec.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data) };
       rec.onstop = () => { 
         if (chunks.length === 0) {
-          alert(lang === 'ja' ? '動画の出力に失敗しました。' : 'Export failed (empty data).');
+          alert(lang === 'ja' ? '動画の出力に失敗しました。' : 'Export failed.');
           hideProg();
           return;
         }
@@ -2901,54 +2971,39 @@
         goFrame(oldF);
       };
 
-      const total = playable.length;
       let fi = 0;
-      const progPrefix = lang === 'ja' ? '動画出力中 ' : 'Exporting ';
-      showProg(progPrefix + '0%', 0);
+      const total = preRendered.length;
+      const recPrefix = lang === 'ja' ? '動画出力中 ' : 'Exporting ';
+      showProg(recPrefix + '50%', 50);
 
       rec.start();
 
       const tick = () => {
         if (fi >= total) { 
-          // Delay stopping to ensure the last frame is fully captured and written to the chunk
-          setTimeout(() => {
-            if (rec.state === 'recording') rec.stop();
-          }, 250); 
+          setTimeout(() => { if (rec.state === 'recording') rec.stop(); }, 250); 
           return;
         }
 
-        const fIdx = frames.indexOf(playable[fi]);
-        goFrame(fIdx);
-
-        if (frames[fIdx].cam) {
-          const c = frames[fIdx].cam;
-          cT = c.cT; cP = c.cP; cD = c.cD;
-          cTgt.set(c.tx, c.ty, c.tz);
-          uCam();
-        }
-
-        ren.render(scn, cam);
-        cvx.drawImage(c3, 0, 0);
+        // Draw the pre-rendered frame instantly
+        cvx.drawImage(preRendered[fi], 0, 0);
 
         // Force a tiny pixel update to prevent the browser from dropping identical consecutive frames
         cvx.fillStyle = fi % 2 === 0 ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)';
         cvx.fillRect(0, 0, 1, 1);
 
-        // Explicitly request frame if the browser supports it (Chrome/Firefox)
         const track = stream.getVideoTracks()[0];
         if (track && typeof track.requestFrame === 'function') {
           track.requestFrame();
         }
 
-        const pcent = Math.round(((fi + 1) / total) * 100);
-        showProg(progPrefix + pcent + '%', pcent);
+        // Update progress bar (50% to 100%)
+        const pcent = 50 + Math.round(((fi + 1) / total) * 50);
+        showProg(recPrefix + pcent + '%', pcent);
         
         fi++;
-        // Use exact setTimeout interval instead of real-time checking to guarantee all frames render
         setTimeout(tick, 1000 / currentFps);
       };
 
-      // Initial delay to let the recorder warm up
       setTimeout(tick, 100);
     }
     function mJSON(e) { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) }); if (d.W) { W = d.W; H = d.H; D = d.D } frames = d.frames || [{ v: d.voxels || {}, ws: false, cam: null }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; rebMesh(); rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt(); uFUI(); snd('gen') } catch (e) { alert('Error') } }; r.readAsText(f); hideExp(); e.target.value = '' }
