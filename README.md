@@ -4,6 +4,8 @@
 VoxoB is a lightweight, browser-based 3D voxel editor and procedural generator. 
 No installation required. Run instantly in your browser.
 
+![VoxoB Screenshot](og-image.png)
+
 **[🌐 Play VoxoB Live](https://VoxoB.vercel.app/)**
 
 ## ✨ Key Features
