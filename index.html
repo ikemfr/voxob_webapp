@@ -2854,60 +2854,90 @@
     function xJSON() { dlF(exFn() + '.json', JSON.stringify({ W, H, D, frames }), 'application/json'); hideExp() }
     function xPNG() { ren.render(scn, cam); const a = document.createElement('a'); a.download = exFn() + '.png'; a.href = c3.toDataURL('image/png'); a.click(); hideExp() }
     async function xVid(fmt) {
-      hideExp();
-      const playable = frames.filter(f => !f.ws);
-      if (playable.length < 2) { alert('Need 2+ frames'); return }
+      hideExp(); 
+      const playable = frames.filter(f => !f.ws); 
+      if (playable.length < 2) { 
+        alert(lang === 'ja' ? '2フレーム以上必要です' : 'Need 2+ frames'); 
+        return; 
+      }
 
-      const w = c3.width, h = c3.height, oldF = curFrame;
-      const cv = document.createElement('canvas');
-      cv.width = w; cv.height = h;
+      // Force grab the latest FPS from the input, overriding any un-triggered onchange events
+      const currentFps = Math.max(1, Math.min(60, +$('fpsIn').value || fps));
+
+      const w = c3.width, h = c3.height, oldF = curFrame; 
+      const cv = document.createElement('canvas'); 
+      cv.width = w; cv.height = h; 
       const cvx = cv.getContext('2d');
       const mimeType = fmt === 'mp4' && MediaRecorder.isTypeSupported('video/mp4') ? 'video/mp4' : 'video/webm';
-      const stream = cv.captureStream(fps);
-      const rec = new MediaRecorder(stream, { mimeType });
+
+      // Pass currentFps to captureStream to enforce the requested frame rate natively
+      const stream = cv.captureStream(currentFps); 
+      const rec = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 8000000 }); 
       const chunks = [];
 
       rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data) };
-      rec.onstop = () => {
-        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
-        const blob = new Blob(chunks, { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = exFn() + '.' + ext; a.click();
-        URL.revokeObjectURL(url);
-        hideProg();
+      rec.onstop = () => { 
+        const ext = mimeType.includes('mp4') ? 'mp4' : 'webm'; 
+        const blob = new Blob(chunks, { type: mimeType }); 
+        const url = URL.createObjectURL(blob); 
+        const a = document.createElement('a'); 
+        a.href = url; a.download = exFn() + '.' + ext; a.click(); 
+        URL.revokeObjectURL(url); 
+        hideProg(); 
         goFrame(oldF);
       };
 
-      rec.start();
-      let fi = 0;
-
-      // Removed "* 2" to export exactly one loop
+      let startTime = 0;
+      let lastRenderedIndex = -1;
       const total = playable.length;
-      showProg('Exporting 0%', 0);
 
-      const tick = () => {
-        if (fi >= total) { rec.stop(); return }
-        // Changed to [fi] since we don't need modulo for a single loop
-        const fIdx = frames.indexOf(playable[fi]);
-        goFrame(fIdx);
+      const progPrefix = lang === 'ja' ? '動画出力中 ' : 'Exporting ';
+      showProg(progPrefix + '0%', 0);
+      rec.start();
 
-        if (frames[fIdx].cam) {
-          const c = frames[fIdx].cam;
-          cT = c.cT; cP = c.cP; cD = c.cD;
-          cTgt.set(c.tx, c.ty, c.tz);
-          uCam()
+      const loop = () => {
+        // Calculate exact frame index based on real elapsed time to prevent drift
+        const elapsed = Date.now() - startTime;
+        const targetIndex = Math.floor(elapsed / (1000 / currentFps));
+
+        if (targetIndex >= total) {
+           // Time has fully elapsed for the last frame, safe to stop
+           rec.stop(); 
+           return;
         }
 
-        ren.render(scn, cam);
-        cvx.drawImage(c3, 0, 0);
-        stream.getVideoTracks()[0].requestFrame?.();
+        if (targetIndex !== lastRenderedIndex) {
+          const fIdx = frames.indexOf(playable[targetIndex]);
+          goFrame(fIdx);
 
-        showProg('Exporting ' + Math.round(fi / total * 100) + '%', fi / total * 100);
-        fi++;
-        setTimeout(tick, 1000 / fps)
+          if (frames[fIdx].cam) {
+            const c = frames[fIdx].cam;
+            cT = c.cT; cP = c.cP; cD = c.cD;
+            cTgt.set(c.tx, c.ty, c.tz);
+            uCam();
+          }
+
+          ren.render(scn, cam);
+          cvx.drawImage(c3, 0, 0);
+
+          // Force a tiny pixel update: Prevents MediaRecorder from dropping consecutive identical frames
+          cvx.fillStyle = targetIndex % 2 === 0 ? 'rgba(0,0,0,0.01)' : 'rgba(255,255,255,0.01)';
+          cvx.fillRect(0, 0, 1, 1);
+
+          lastRenderedIndex = targetIndex;
+          const pcent = Math.round((targetIndex + 1) / total * 100);
+          showProg(progPrefix + pcent + '%', pcent);
+        }
+
+        // Loop using requestAnimationFrame for smooth, non-blocking rendering
+        requestAnimationFrame(loop);
       };
-      tick()
+
+      // Slight delay to ensure MediaRecorder is fully initialized before we start counting time
+      setTimeout(() => {
+        startTime = Date.now();
+        loop();
+      }, 100);
     }
     function mJSON(e) { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { try { const d = JSON.parse(ev.target.result); Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) }); if (d.W) { W = d.W; H = d.H; D = d.D } frames = d.frames || [{ v: d.voxels || {}, ws: false, cam: null }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; rebMesh(); rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt(); uFUI(); snd('gen') } catch (e) { alert('Error') } }; r.readAsText(f); hideExp(); e.target.value = '' }
 
