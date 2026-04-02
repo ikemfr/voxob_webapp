@@ -2552,23 +2552,44 @@
     function loadVideo(f) {
       const url = URL.createObjectURL(f); 
       const vid = document.createElement('video'); 
+      
+      // [iOS workaround 1] Temporarily add to DOM (hidden) to prevent decoding suspension
+      vid.style.display = 'none';
+      document.body.appendChild(vid);
+
       vid.src = url; 
       vid.muted = true; 
-      
-      // [CRITICAL FOR iOS] Required to process video on canvas without forcing fullscreen
+      vid.autoplay = true; // [iOS workaround 2]
       vid.playsInline = true; 
       vid.setAttribute('playsinline', '');
 
-      // Handle unsupported formats (e.g., HEVC on non-supported desktop browsers)
-      vid.onerror = () => {
-        alert(lang === 'ja' ? 'この動画形式はお使いのブラウザでサポートされていません。' : 'This video format is not supported by your browser.');
+      // Cleanup function on completion or error
+      const cleanup = () => {
         URL.revokeObjectURL(url);
+        if (vid.parentNode) vid.parentNode.removeChild(vid);
         hideProg();
       };
 
-      vid.onloadedmetadata = () => {
-        const dur = vid.duration, maxFr = Math.min(Math.ceil(dur * 4), 64); 
-        if (maxFr > 24 && !confirm(lang === 'ja' ? `約${maxFr}フレームあります。続行しますか？` : `~${maxFr} frames. Continue?`)) return;
+      vid.onerror = () => {
+        alert(lang === 'ja' ? 'この動画形式はお使いのブラウザでサポートされていません。' : 'This video format is not supported by your browser.');
+        cleanup();
+      };
+
+      // [iOS workaround 3] Wait for actual frame data to load, not just metadata
+      vid.addEventListener('loadeddata', () => {
+        const dur = vid.duration;
+        if (!dur || isNaN(dur)) {
+          alert(lang === 'ja' ? '動画の長さを取得できませんでした。' : 'Could not determine video duration.');
+          cleanup();
+          return;
+        }
+
+        const maxFr = Math.min(Math.ceil(dur * 4), 64); 
+        if (maxFr > 24 && !confirm(lang === 'ja' ? `約${maxFr}フレームあります。続行しますか？` : `~${maxFr} frames. Continue?`)) {
+          cleanup();
+          return;
+        }
+        
         const interval = dur / maxFr; 
         let idx = 0; 
 
@@ -2595,8 +2616,7 @@
 
         vid.onseeked = () => {
           if (idx >= maxFr) { 
-            URL.revokeObjectURL(url); 
-            hideProg();
+            cleanup();
             goFrame(tgt[0]); 
             uFUI(); 
             snd('gen'); 
@@ -2608,7 +2628,7 @@
           const id = cv.getContext('2d').getImageData(0, 0, s.w, s.h).data;
           
           curFrame = tgt[idx];
-          frames[curFrame].v = {}; // Clear existing voxels in the frame
+          frames[curFrame].v = {}; // Clear existing voxels
           const acts = [];
 
           for (let sx = 0; sx < s.w; sx++) {
@@ -2644,10 +2664,18 @@
           const pcent = Math.round((idx / maxFr) * 100);
           showProg(progPrefix + pcent + '%', pcent);
 
-          vid.currentTime = Math.min(idx * interval, dur - .01)
+          // [iOS workaround 4] Add a tiny delay to prevent freezing during continuous seeking
+          setTimeout(() => {
+            vid.currentTime = Math.min(idx * interval, dur - 0.05);
+          }, 10);
         }; 
-        vid.currentTime = .01
-      };
+        
+        // Start the first seek
+        vid.currentTime = 0.01;
+      });
+
+      // Force start the loading process
+      vid.load();
     }
     function loadModel(f) {
       const sz = +$('iSz').value || 16;
