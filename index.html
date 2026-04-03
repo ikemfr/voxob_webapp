@@ -44,16 +44,16 @@
     }
 
     [data-theme=light] {
-      --b0: #f0f2f5;
-      --b1: #fff;
-      --b2: #f5f6f8;
-      --b3: #e8eaf0;
-      --b4: #d8dce5;
-      --tx: #1a1e2a;
-      --t2: #555c74;
-      --t3: #8890a8;
-      --bd: #c8ccd5;
-      --bh: #d0d4dd
+      --b0: #e6e9ee; /* Softer base background */
+      --b1: #f2f4f7; /* Off-white instead of pure white for panels */
+      --b2: #ebeeef;
+      --b3: #e0e3e8;
+      --b4: #d4d8df;
+      --tx: #2c3240; /* Slightly softer text color */
+      --t2: #656c80;
+      --t3: #9097aa;
+      --bd: #c4c8d4;
+      --bh: #bcc0cc
     }
 
     [data-theme=grey] {
@@ -140,12 +140,17 @@
       font-family: 'Noto Sans JP', sans-serif;
       overflow: hidden;
       height: 100dvh;
-      font-size: 12px
+      font-size: 16px;
+      touch-action: none;
+    }
+
+    input, select {
+      touch-action: manipulation;
     }
 
     #app {
       display: grid;
-      grid-template-rows: 34px 1fr 36px 20px;
+      grid-template-rows: 40px 1fr 40px 24px;
       height: 100dvh
     }
 
@@ -155,7 +160,7 @@
       display: flex;
       align-items: center;
       padding: 0 8px;
-      gap: 4px;
+      gap: 6px;
       border-bottom: 1px solid var(--bd);
       overflow-x: auto;
       scrollbar-width: none
@@ -167,7 +172,7 @@
 
     #hd h1 {
       font-family: 'JetBrains Mono';
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       letter-spacing: 2px;
       background: linear-gradient(90deg, var(--ac), var(--a3));
@@ -181,9 +186,9 @@
       background: var(--b3);
       border: 1px solid var(--bd);
       color: var(--tx);
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: var(--r);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
@@ -233,9 +238,10 @@
       background: var(--b3);
       border: 1px solid var(--bd);
       color: var(--tx);
-      padding: 2px 4px;
+      padding: 3px 10px;
       border-radius: var(--r);
-      font-size: 11px;
+      font-size: 16px;
+      font-weight: 600;
       cursor: pointer
     }
 
@@ -249,7 +255,7 @@
 
     /* Left panel */
     #lp {
-      width: 150px;
+      width: 180px;
       min-width: 80px;
       background: var(--b1);
       display: flex;
@@ -267,10 +273,10 @@
 
     .lpt {
       font-family: 'JetBrains Mono';
-      font-size: 9px;
+      font-size: 12px;
       letter-spacing: 1px;
       color: var(--t3);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
       text-transform: uppercase
     }
 
@@ -284,8 +290,8 @@
 
     .mbtn {
       flex: 1;
-      padding: 4px;
-      font-size: 10px;
+      padding: 5px 12px;
+      font-size: 12px;
       font-weight: 700;
       cursor: pointer;
       border: none;
@@ -327,14 +333,14 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 6px;
+      padding: 5px 12px;
       background: none;
       border: 1px solid transparent;
       border-radius: var(--r);
       color: var(--t2);
       cursor: pointer;
       text-align: left;
-      font-size: 11px
+      font-size: 16px
     }
 
     .tb:hover {
@@ -399,7 +405,7 @@
 
     .bv {
       font-family: 'JetBrains Mono';
-      font-size: 10px;
+      font-size: 12px;
       color: var(--ac);
       min-width: 14px;
       text-align: right
@@ -441,7 +447,7 @@
       padding: 2px 12px;
       border-radius: 12px;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 16px;
       cursor: pointer;
       margin-left: 4px;
       white-space: nowrap;
@@ -488,12 +494,12 @@
     }
 
     .sa {
-      padding: 2px 8px;
+      padding: 5px 10px;
       border-radius: 3px;
       border: 1px solid var(--bd);
       background: var(--b3);
       color: var(--t2);
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer
     }
@@ -504,12 +510,12 @@
     }
 
     .wb {
-      padding: 2px 6px;
+      padding: 6px 6px;
       border-radius: 3px;
       border: 1px solid var(--bd);
       background: var(--b3);
       color: var(--t2);
-      font-size: 10px;
+      font-size: 12px;
       cursor: pointer;
       font-family: 'JetBrains Mono'
     }
@@ -639,10 +645,10 @@
     #v3Cam {
       position: absolute;
       bottom: 24px;
-      right: 6px;
+      right: 8px;
       background: rgba(21, 24, 32, 0.75);
       border: 1px solid var(--bd);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 6px;
       z-index: 10;
       backdrop-filter: blur(4px);
@@ -660,19 +666,19 @@
     }
 
     #v3Cam .sr label {
-      font-size: 9px;
+      font-size: 12px;
       width: 10px;
       text-align: center;
     }
 
     #v3Cam input[type=number] {
-      width: 32px;
+      width: 36px;
       background: rgba(0, 0, 0, 0.4);
       border: 1px solid var(--bd);
       padding: 2px;
       color: var(--ac);
       font-family: 'JetBrains Mono';
-      font-size: 9px;
+      font-size: 12px;
       text-align: center;
       border-radius: 2px;
     }
@@ -713,11 +719,12 @@
 
     .pt {
       font-family: 'JetBrains Mono';
-      font-size: 9px;
+      font-size: 12px;
       letter-spacing: 1px;
       color: var(--t3);
-      margin-bottom: 4px;
-      text-transform: uppercase
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      white-space: pre-line;
     }
 
     .sr {
@@ -743,7 +750,7 @@
       padding: 2px;
       color: var(--ac);
       font-family: 'JetBrains Mono';
-      font-size: 10px;
+      font-size: 12px;
       text-align: center
     }
 
@@ -779,11 +786,10 @@
       background: var(--b3);
       border: 1px solid var(--bd);
       color: var(--tx);
-      padding: 4px 2px;
       border-radius: var(--r);
       cursor: pointer;
       text-align: center;
-      font-size: 9px
+      font-size: 11px
     }
 
     .gb:hover {
@@ -805,9 +811,9 @@
       background: var(--b3);
       border: 1px solid var(--bd);
       color: var(--tx);
-      padding: 3px;
+      padding: 5px 12px;
       border-radius: var(--r);
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       text-align: center
@@ -903,13 +909,13 @@
 
     .fb {
       height: 24px;
-      padding: 0 8px;
+      padding: 5px 12px;
       border-radius: 3px;
       background: var(--b3);
       border: 1px solid var(--bd);
       color: var(--tx);
       cursor: pointer;
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 600;
       white-space: nowrap;
       flex-shrink: 0
@@ -1027,13 +1033,13 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px;
+      padding: 5px 12px;
       background: var(--b3);
       border: 1px solid var(--bd);
       border-radius: 4px;
       margin-bottom: 3px;
       cursor: pointer;
-      font-size: 11px
+      font-size: 12px
     }
 
     .eo:hover {
@@ -1269,10 +1275,10 @@
         onclick="document.getElementById('rp').classList.toggle('on');document.getElementById('lp').classList.remove('on')">⚙
         Settings</button>
       <div class="hs m-only"></div>
-
       <button class="hb" data-tip="Ctrl+Z: Undo" onclick="undo()" id="hU">↩ Undo</button>
       <button class="hb" data-tip="Ctrl+Y: Redo" onclick="redo()" id="hR">↪ Redo</button>
       <div class="hs"></div>
+      <button class="hb m-only-hide" id="hTog2D" data-tip="Toggle 2D View" onclick="tog2D()">◧ 2D Panel</button>
       <button class="hb" data-tip="Toggle wireframe view" onclick="togWire()" id="hW">◫ Wire</button>
       <button class="hb" data-tip="Share via compressed URL" onclick="shareURL()" id="hSh">🔗 Share</button>
       <div class="hs"></div>
@@ -1449,8 +1455,13 @@
         </div>
 
         <div class="ps">
-          <div class="pt" id="ptMd">MEDIA IMPORT (png/jpg/bmp/gif/mp4/obj+mtl/stl)</div>
-          <input type="file" id="imgIn" accept="image/*,video/*,.gif,.mov,.mp4,.m4v,.heic,.heif,.obj,.stl,.mtl" multiple style="display:none" onchange="loadMedia(event)">
+          <div class="pt" id="ptMd">
+            MEDIA IMPORT<br>
+            - IMAGE (png/jpg/bmp/gif)<br>
+            - VIDEO (mp4/mov)<br>
+            - 3D MODEL (obj+mtl/stl)
+          </div>
+          <input type="file" id="imgIn" accept=".obj,.stl,.mtl,image/*,video/*,application/octet-stream" multiple style="display:none" onchange="loadMedia(event)">
           <button class="btn" onclick="$('imgIn').click()" id="bIm"
             data-tip="Import image, GIF, video,\nor 3D model (OBJ+MTL, STL)">📁 Import</button>
           <div class="sr" style="margin-top:2px"><label id="lbDp">Depth</label><input type="number" id="iDp" value="4"
@@ -1570,6 +1581,14 @@
     // Disable CSS ::after tooltips since we use JS now
     document.head.insertAdjacentHTML('beforeend', '<style>[data-tip]:hover::after{display:none!important}</style>');
 
+    let show2D = true;
+    function tog2D() {
+      show2D = !show2D;
+      $('e2').style.display = show2D ? 'flex' : 'none';
+      $('rh2').style.display = show2D ? 'block' : 'none';
+      $('hTog2D').style.color = show2D ? 'var(--ac)' : 'var(--tx)';
+      onR();
+    }
     // ===== STATE =====
     let lang = 'en', W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
     let g2d = true, g3d = true;
@@ -1584,9 +1603,9 @@
     // ===== I18N =====
     const TX = {
       en: {
-        drawMode: '✏ Draw', delMode: '✕ Del', recolorMode: '🎨 Color', tools: 'TOOLS', brush: 'BRUSH', snap: 'SNAP', symmetry: 'SYMMETRY',
+        tog2D: '◧ 2D Panel', drawMode: '🧱 Draw', delMode: '🔨 Del', recolorMode: '🎨 Color', tools: 'TOOLS', brush: 'BRUSH', snap: 'SNAP', symmetry: 'SYMMETRY',
         size: 'Size', alpha: 'Alpha', project: 'PROJECT', canvasSize: 'CANVAS SIZE', color: 'COLOR', copyPaste: 'VOXEL COPY / PASTE',
-        camera: 'CAMERA', media: 'MEDIA IMPORT (png/jpg/bmp/gif/mp4/obj+mtl/stl)', generate: 'GENERATE', animGen: 'ANIM GENERATE', actions: 'ACTIONS',
+        camera: 'CAMERA', media: 'MEDIA IMPORT\n- IMAGE\n(png/jpg/bmp/gif)\n- VIDEO\n(mp4/webm/mov)\n- 3D MODEL\n(obj+mtl/stl)', generate: 'GENERATE', animGen: 'ANIM GENERATE', actions: 'ACTIONS',
         apply: 'Apply', save: '💾 Save', load: '📂 Load', import_: '📁 Import', select: '⬚ Select Range', copyRange: '📋 Range', copyCluster: '🔗 Cluster', paste: '📌 Paste',
         undo: '↩ Undo', redo: '↪ Redo', wireframe: '◫ Wire', share: '🔗 Share', background: '🎨 BG', export_: '⬇ Export',
         depth: 'Depth', impSize: 'Size', depthFromColor: '3D depth from color', overlay: 'Show overlay', startF: 'Start', frameLen: 'Len',
@@ -1602,14 +1621,23 @@
         tipSavePj: 'Save to browser', tipSelR: 'Select range', tipCR: 'Copy range', tipCC: 'Copy connected cluster', tipPst: 'Paste voxels', tipImp: 'Import media/models',
         tipAnimG: 'Generate animation', tipCam: 'Save camera angle', tipPrev: 'Previous frame', tipPlay: 'Play/Stop', tipNext: 'Next frame', tipAddF: 'Add empty frame',
         tipDupF: 'Duplicate frame', tipDelF: 'Delete frame', tipCopyF: 'Copy frame', tipPasteF: 'Paste frame', tipWorkF: 'Workspace frame',
+        clrAllConf: 'Clear all voxels?',
+        exObj: 'Export OBJ + MTL',
+        exStl: 'Export STL',
+        exGlb: 'Export GLB',
+        exPng: 'Export PNG Image',
+        exSave: 'Save JSON Project',
+        exGIF: 'Export WebM Video',
+        exMP4: 'Export MP4 Video',
+        exLoad: 'Load JSON Project',
         abtDesc: 'A lightweight, browser-based voxel editor and generator.',
         abtSupp: 'Buy Me a Coffee',
         abtCrd: 'CREDITS & LICENSES',
       },
       ja: {
-        drawMode: '✏ 描画', delMode: '✕ 削除', recolorMode: '🎨 着色', tools: 'ツール', brush: 'ブラシ', snap: 'スナップ', symmetry: '対称',
+        tog2D: '◧ 2Dパネル', drawMode: '🧱 描画', delMode: '🔨 削除', recolorMode: '🎨 着色', tools: 'ツール', brush: 'ブラシ', snap: 'スナップ', symmetry: '対称',
         size: 'サイズ', alpha: '透明度', project: 'プロジェクト', canvasSize: 'キャンバスサイズ', color: 'カラー', copyPaste: 'ボクセルのコピー/ペースト',
-        camera: 'カメラ', media: 'メディア取込 (png/jpg/bmp/gif/mp4/obj+mtl/stl)', generate: 'ジェネレート', animGen: 'アニメジェネレート', actions: 'アクション',
+        camera: 'カメラ', media: 'メディア取込\n- 画像\n(png/jpg/bmp/gif)\n- 動画\n(mp4/webm/mov)\n- 3Dモデル\n(obj+mtl/stl)', generate: 'ジェネレート', animGen: 'アニメジェネレート', actions: 'アクション',
         apply: '適用', save: '💾 保存', load: '📂 読込', import_: '📁 インポート', select: '⬚ 範囲選択', copyRange: '📋 範囲コピー', copyCluster: '🔗 塊コピー', paste: '📌 ペースト',
         undo: '↩ 戻す', redo: '↪ やり直し', wireframe: '◫ ワイヤ', share: '🔗 共有', background: '🎨 背景', export_: '⬇ エクスポート',
         depth: '深さ', impSize: 'サイズ', depthFromColor: '色から3D深さ生成', overlay: 'オーバーレイ表示', startF: '開始F', frameLen: '長さ',
@@ -1625,6 +1653,15 @@
         tipSavePj: 'ブラウザに保存', tipSelR: '範囲を選択', tipCR: '選択範囲をコピー', tipCC: '繋がる塊をコピー', tipPst: 'ボクセルをペースト', tipImp: 'メディア・3Dモデル読込',
         tipAnimG: 'アニメーション生成', tipCam: 'カメラアングル保存', tipPrev: '前のフレーム', tipPlay: '再生/停止', tipNext: '次のフレーム', tipAddF: '空のフレーム追加',
         tipDupF: 'フレーム複製', tipDelF: 'フレーム削除', tipCopyF: 'フレームコピー', tipPasteF: 'フレームペースト', tipWorkF: '作業用フレーム追加',
+        clrAllConf: 'すべてのボクセルを消去しますか？',
+        exObj: 'OBJ + MTL エクスポート',
+        exStl: 'STL エクスポート',
+        exGlb: 'GLB エクスポート',
+        exPng: 'PNG 画像エクスポート',
+        exSave: 'JSON プロジェクト保存',
+        exGIF: 'WebM 動画エクスポート',
+        exMP4: 'MP4 動画エクスポート',
+        exLoad: 'JSON プロジェクト読込',
         abtDesc: 'ブラウザで動く軽量なボクセルエディタ＆ジェネレーター',
         abtSupp: 'コーヒーを奢る（支援）',
         abtCrd: 'クレジット & ライセンス',
@@ -1648,7 +1685,7 @@
       }
 
       const ids = {
-        'mDr': 'drawMode', 'mDl': 'delMode', 'mRc': 'recolorMode', 'ltT': 'tools', 'ltB': 'brush', 'ltSn': 'snap', 'ltSym': 'symmetry',
+        'hTog2D': 'tog2D', 'mDr': 'drawMode', 'mDl': 'delMode', 'mRc': 'recolorMode', 'ltT': 'tools', 'ltB': 'brush', 'ltSn': 'snap', 'ltSym': 'symmetry',
         'lbSz': 'size', 'lbA': 'alpha', 'lbDp': 'depth', 'lbIS': 'impSize', 'lbD3': 'depthFromColor', 'lbOv': 'overlay', 'lbSF': 'startF', 'lbFL': 'frameLen',
         'snC': 'snapCell', 'snE': 'snapEdge', 'ptPj': 'project', 'ptSz': 'canvasSize', 'ptCl': 'color', 'ptCP': 'copyPaste', 'ptCam': 'camera', 'ptMd': 'media',
         'ptGn': 'generate', 'ptAG': 'animGen', 'ptAc': 'actions', 'bAp': 'apply', 'bSv': 'save', 'bLd': 'load', 'bIm': 'import_', 'bSl': 'select', 'bCR': 'copyRange',
@@ -1685,7 +1722,19 @@
     }
 
     // ===== CORE FUNCTIONS =====
-    function setTheme(t) { document.body.dataset.theme = t === 'dark' ? '' : t; updBG() }
+    function setTheme(t) { 
+      document.body.dataset.theme = t === 'dark' ? '' : t; 
+      
+      setTimeout(() => {
+        const cs = getComputedStyle(document.body);
+        const b0 = cs.getPropertyValue('--b0').trim();
+        const b1 = cs.getPropertyValue('--b1').trim();
+        
+        $('bgC1').value = b0 || '#08090d';
+        $('bgC2').value = b1 || '#1a1e2a';
+        updBG();
+      }, 10);
+    }
     function showBG() { $('bgM').classList.add('on') }
     function updBG() { bg.type = $('bgTp').value; bg.c1 = $('bgC1').value; bg.c2 = $('bgC2').value; if (!bg3dTexture) ren.setClearColor(new THREE.Color(bg.c1), 1); d2D() }
     function set3DBG(e) { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = ev => { const loader = new THREE.TextureLoader(); loader.load(ev.target.result, tex => { bg3dTexture = tex; scn.background = tex }) }; r.readAsDataURL(f) }
@@ -1742,10 +1791,44 @@
     function delV(x, y, z) { const k = vk(x, y, z), v = V(); if (!v[k]) return null; const p = { ...v[k] }; delete v[k]; remM(x, y, z); return { t: 's', x, y, z, p, n: null } }
     function recolV(x, y, z, c, a = alpha) { const k = vk(x, y, z), v = V(); if (!v[k]) return null; if (v[k].c === c && (v[k].a || 255) === a) return null; const p = { ...v[k] }; v[k] = { c, a }; if (mm[k]) { mm[k].material.color.set(c); mm[k].material.opacity = a / 255; mm[k].material.transparent = a < 255 } return { t: 's', x, y, z, p, n: { c, a } } }
     function doV(x, y, z, c) { if (mode === 'del') return delV(x, y, z); if (mode === 'recolor') return recolV(x, y, z, c); return setV(x, y, z, c) }
-    function aAct(a, r) { if (!a) return; if (a.t === 'b') { (r ? [...a.a].reverse() : a.a).forEach(s => aAct(s, r)); return } const t = r ? a.p : a.n; if (t) setV(a.x, a.y, a.z, t.c, t.a || 255); else delV(a.x, a.y, a.z) }
+    function aAct(a, r) {
+      if (!a) return;
+      if (a.t === 'b') { (r ? [...a.a].reverse() : a.a).forEach(s => aAct(s, r)); return }
+      if (a.t === 'f_add') { if (r) frames.splice(a.idx, 1); else frames.splice(a.idx, 0, JSON.parse(JSON.stringify(a.data))); return }
+      if (a.t === 'f_del') { if (r) frames.splice(a.idx, 0, JSON.parse(JSON.stringify(a.data))); else frames.splice(a.idx, 1); return }
+      const t = r ? a.p : a.n; if (t) setV(a.x, a.y, a.z, t.c, t.a || 255); else delV(a.x, a.y, a.z)
+    }
     function pU(a) { if (!a || !a.length) return; undoSt.push({ t: 'b', a, f: curFrame }); if (undoSt.length > 150) undoSt.shift(); redoSt = []; checkMem() }
-    function undo() { const a = undoSt.pop(); if (!a) return; redoSt.push(a); if (a.f !== curFrame) goFrame(a.f); aAct(a, true); d2D(); uCnt(); snd('click') }
-    function redo() { const a = redoSt.pop(); if (!a) return; undoSt.push(a); if (a.f !== curFrame) goFrame(a.f); aAct(a, false); d2D(); uCnt(); snd('click') }
+    function undo() {
+      const a = undoSt.pop(); if (!a) return; redoSt.push(a);
+      if (a.t === 'f_add' || a.t === 'f_del') {
+        aAct(a, true);
+        let tg = a.f; if (a.t === 'f_add') tg = Math.max(0, a.idx - 1);
+        if (a.t === 'f_del') tg = a.idx;
+        goFrame(Math.min(tg, frames.length - 1));
+      } else {
+        if (a.f !== curFrame) goFrame(a.f);
+        aAct(a, true);
+      }
+      d2D(); uCnt(); snd('click');
+    }
+    function redo() {
+      const a = redoSt.pop(); if (!a) return; undoSt.push(a);
+      if (a.t === 'f_add' || a.t === 'f_del') {
+        aAct(a, false);
+        let tg = a.f; if (a.t === 'f_add') tg = a.idx;
+        if (a.t === 'f_del') tg = Math.max(0, a.idx - 1);
+        goFrame(Math.min(tg, frames.length - 1));
+      } else {
+        if (a.f !== curFrame) goFrame(a.f);
+        aAct(a, false);
+      }
+      d2D(); uCnt(); snd('click');
+    }
+    function pUF(t, idx, data) {
+      undoSt.push({ t, idx, data: JSON.parse(JSON.stringify(data)), f: curFrame });
+      if (undoSt.length > 150) undoSt.shift(); redoSt = []; checkMem();
+    }
     function uCnt() { $('stL').textContent = 'Voxels: ' + Object.keys(V()).length + (frames[curFrame].ws ? ' [WS]' : '') }
     function getMir(x, y, z) {
       const pts = [[x, y, z]];
@@ -1769,19 +1852,24 @@
     function clearGhost() { ghostMs.forEach(m => { ghostG.remove(m); m.material.dispose() }); ghostMs = [] }
     function rebGrid() {
       if (gG) { scn.remove(gG); gG.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose() }); gG = null }
-      if (!g3d) return; gG = new THREE.Group(); const gm = new THREE.LineBasicMaterial({ color: 0x304060, transparent: true, opacity: .35 });
+      if (!g3d) return; gG = new THREE.Group(); const gm = new THREE.LineBasicMaterial({ color: 0x507090, transparent: true, opacity: 0.6 });
       for (let i = 0; i <= W; i++)gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i, 0, 0), new THREE.Vector3(i, 0, D)]), gm));
       for (let i = 0; i <= D; i++)gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, i), new THREE.Vector3(W, 0, i)]), gm));
-      gG.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)), new THREE.LineBasicMaterial({ color: 0x333a50, transparent: true, opacity: .15 })).translateX(W / 2).translateY(H / 2).translateZ(D / 2));
+      gG.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)), new THREE.LineBasicMaterial({ color: 0x333a50, transparent: true, opacity: .6 })).translateX(W / 2).translateY(H / 2).translateZ(D / 2));
       // Slice plane
-      const sw = sAx === 'x' ? D : W, sh = sAx === 'y' ? D : H; const pl = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), new THREE.MeshBasicMaterial({ color: 0x00d4f0, transparent: true, opacity: .04, side: THREE.DoubleSide }));
+      const sw = sAx === 'x' ? D : W, sh = sAx === 'y' ? D : H; 
+      const plMat = new THREE.MeshBasicMaterial({ color: 0x00d4f0, transparent: true, opacity: 0.6, side: THREE.DoubleSide, depthWrite: false });
+      const pl = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), plMat);
+      const edges = new THREE.EdgesGeometry(new THREE.PlaneGeometry(sw, sh));
+      const line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x00d4f0, linewidth: 2 }));
+      pl.add(line);
       if (sAx === 'y') { pl.rotation.x = -Math.PI / 2; pl.position.set(W / 2, sIdx + .5, D / 2) } else if (sAx === 'z') { pl.position.set(W / 2, H / 2, sIdx + .5) } else { pl.rotation.y = Math.PI / 2; pl.position.set(sIdx + .5, H / 2, D / 2) } gG.add(pl);
       // Symmetry axes
-      const sm = new THREE.LineBasicMaterial({ color: 0xff3070, transparent: true, opacity: .2 });
+      const sm = new THREE.LineBasicMaterial({ color: 0xff3070, transparent: true, opacity: .6 });
       if ($('mirX').checked) { const cx = +$('scXx').value; gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(cx, 0, 0), new THREE.Vector3(cx, H, 0), new THREE.Vector3(cx, H, D), new THREE.Vector3(cx, 0, D), new THREE.Vector3(cx, 0, 0)]), sm)) }
       if ($('mirY').checked) { const cy = +$('scYy').value; gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, cy, 0), new THREE.Vector3(W, cy, 0), new THREE.Vector3(W, cy, D), new THREE.Vector3(0, cy, D), new THREE.Vector3(0, cy, 0)]), sm)) }
       if ($('mirZ').checked) { const cz = +$('scZz').value; gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, cz), new THREE.Vector3(W, 0, cz), new THREE.Vector3(W, H, cz), new THREE.Vector3(0, H, cz), new THREE.Vector3(0, 0, cz)]), sm)) }
-      if ($('mirP').checked) { const sp = new THREE.Mesh(new THREE.SphereGeometry(.3, 6, 6), new THREE.MeshBasicMaterial({ color: 0xf0a020, transparent: true, opacity: .5 })); sp.position.set(+$('scPx').value, +$('scPy').value, +$('scPz').value); gG.add(sp) }
+      if ($('mirP').checked) { const sp = new THREE.Mesh(new THREE.SphereGeometry(.3, 6, 6), new THREE.MeshBasicMaterial({ color: 0xf0a020, transparent: true, opacity: .6 })); sp.position.set(+$('scPx').value, +$('scPy').value, +$('scPz').value); gG.add(sp) }
       scn.add(gG)
     }
 
@@ -2120,16 +2208,119 @@
       }
     }
     function d2D() {
-      const s = sdm(); cx_.clearRect(0, 0, c2.width, c2.height); if (bg.type === 'gradient') { const g = cx_.createLinearGradient(0, 0, c2.width, c2.height); g.addColorStop(0, bg.c1); g.addColorStop(1, bg.c2); cx_.fillStyle = g; cx_.fillRect(0, 0, c2.width, c2.height) } else if (bg.type === 'checker') { cx_.fillStyle = bg.c1; cx_.fillRect(0, 0, c2.width, c2.height); cx_.fillStyle = bg.c2; for (let x = 0; x < s.w; x++)for (let y = 0; y < s.h; y++)if ((x + y) % 2) cx_.fillRect(x * cs_, y * cs_, cs_, cs_) } else { cx_.fillStyle = bg.c1; cx_.fillRect(0, 0, c2.width, c2.height) }
-      const v = V(); for (let sx = 0; sx < s.w; sx++)for (let sy = 0; sy < s.h; sy++) { const w = s2w(sx, sy), k = vk(w.x, w.y, w.z); if (v[k]) { cx_.globalAlpha = (v[k].a || 255) / 255; cx_.fillStyle = v[k].c; cx_.fillRect(sx * cs_ + .5, sy * cs_ + .5, cs_ - 1, cs_ - 1); cx_.globalAlpha = 1 } }
-      if (g2d) {
-        cx_.strokeStyle = 'rgba(100,120,160,.15)'; cx_.lineWidth = 1; for (let x = 0; x <= s.w; x++) { cx_.beginPath(); cx_.moveTo(x * cs_, 0); cx_.lineTo(x * cs_, s.h * cs_); cx_.stroke() } for (let y = 0; y <= s.h; y++) { cx_.beginPath(); cx_.moveTo(0, y * cs_); cx_.lineTo(s.w * cs_, y * cs_); cx_.stroke() }
-        cx_.strokeStyle = 'rgba(255,48,112,.2)'; cx_.lineWidth = 1; cx_.setLineDash([2, 2]);
-        if ($('mirX').checked && sAx !== 'x') { cx_.beginPath(); cx_.moveTo(+$('scXx').value * cs_, 0); cx_.lineTo(+$('scXx').value * cs_, c2.height); cx_.stroke() }
-        if ($('mirP').checked) { let px, py; const pcx = +$('scPx').value, pcy = +$('scPy').value, pcz = +$('scPz').value; if (sAx === 'y') { px = pcx * cs_; py = pcz * cs_ } else if (sAx === 'z') { px = pcx * cs_; py = (H - pcy) * cs_ } else { px = pcz * cs_; py = (H - pcy) * cs_ } cx_.setLineDash([]); cx_.strokeStyle = 'rgba(240,160,32,.4)'; cx_.beginPath(); cx_.arc(px, py, 4, 0, Math.PI * 2); cx_.stroke() }
-        cx_.setLineDash([])
+      const s = sdm();
+      cx_.clearRect(0, 0, c2.width, c2.height);
+
+      // ==========================================
+      // 1. Draw background (gradient, checker, or solid)
+      // ==========================================
+      if (bg.type === 'gradient') {
+        const g = cx_.createLinearGradient(0, 0, c2.width, c2.height);
+        g.addColorStop(0, bg.c1);
+        g.addColorStop(1, bg.c2);
+        cx_.fillStyle = g;
+        cx_.fillRect(0, 0, c2.width, c2.height);
+      } else if (bg.type === 'checker') {
+        cx_.fillStyle = bg.c1;
+        cx_.fillRect(0, 0, c2.width, c2.height);
+        cx_.fillStyle = bg.c2;
+        for (let x = 0; x < s.w; x++) {
+          for (let y = 0; y < s.h; y++) {
+            if ((x + y) % 2) {
+              cx_.fillRect(x * cs_, y * cs_, cs_, cs_);
+            }
+          }
+        }
+      } else {
+        cx_.fillStyle = bg.c1;
+        cx_.fillRect(0, 0, c2.width, c2.height);
       }
-      dPv()
+
+      // ==========================================
+      // 2. Draw voxels
+      // ==========================================
+      const v = V();
+      for (let sx = 0; sx < s.w; sx++) {
+        for (let sy = 0; sy < s.h; sy++) {
+          const w = s2w(sx, sy);
+          const k = vk(w.x, w.y, w.z);
+          
+          if (v[k]) {
+            cx_.globalAlpha = (v[k].a || 255) / 255;
+            cx_.fillStyle = v[k].c;
+            cx_.fillRect(sx * cs_ + .5, sy * cs_ + .5, cs_ - 1, cs_ - 1);
+            cx_.globalAlpha = 1;
+          }
+        }
+      }
+
+      // ==========================================
+      // 3. Draw 2D grid and guidelines
+      // ==========================================
+      if (g2d) {
+        // Basic grid lines
+        cx_.strokeStyle = 'rgba(100,120,160,.15)';
+        cx_.lineWidth = 1;
+        
+        // Vertical lines
+        for (let x = 0; x <= s.w; x++) {
+          cx_.beginPath();
+          cx_.moveTo(x * cs_, 0);
+          cx_.lineTo(x * cs_, s.h * cs_);
+          cx_.stroke();
+        }
+        // Horizontal lines
+        for (let y = 0; y <= s.h; y++) {
+          cx_.beginPath();
+          cx_.moveTo(0, y * cs_);
+          cx_.lineTo(s.w * cs_, y * cs_);
+          cx_.stroke();
+        }
+
+        // Symmetry guidelines setup
+        cx_.strokeStyle = 'rgba(255,48,112,.2)';
+        cx_.lineWidth = 1;
+        cx_.setLineDash([2, 2]);
+
+        // Mirror X guideline
+        if ($('mirX').checked && sAx !== 'x') {
+          cx_.beginPath();
+          cx_.moveTo(+$('scXx').value * cs_, 0);
+          cx_.lineTo(+$('scXx').value * cs_, c2.height);
+          cx_.stroke();
+        }
+
+        // Point symmetry guideline
+        if ($('mirP').checked) {
+          let px, py;
+          const pcx = +$('scPx').value;
+          const pcy = +$('scPy').value;
+          const pcz = +$('scPz').value;
+
+          if (sAx === 'y') {
+            px = pcx * cs_;
+            py = pcz * cs_;
+          } else if (sAx === 'z') {
+            px = pcx * cs_;
+            py = (H - pcy) * cs_;
+          } else {
+            px = pcz * cs_;
+            py = (H - pcy) * cs_;
+          }
+
+          cx_.setLineDash([]);
+          cx_.strokeStyle = 'rgba(240,160,32,.4)';
+          cx_.beginPath();
+          cx_.arc(px, py, 4, 0, Math.PI * 2);
+          cx_.stroke();
+        }
+
+        // Reset line dash
+        cx_.setLineDash([]);
+      }
+
+      // Render ghost/preview
+      dPv();
     }
     function dPv() { pX_.clearRect(0, 0, pC_.width, pC_.height); if (!pvx.length) return; pX_.fillStyle = mode === 'del' ? '#f0307044' : mode === 'recolor' ? '#40d08044' : color + '44'; pvx.forEach(([sx, sy]) => pX_.fillRect(sx * cs_, sy * cs_, cs_, cs_)) }
     let dr2 = false, lC = null, pB = []; let selSt = null, selEn = null;
@@ -2260,17 +2451,41 @@
     }
 
     // ===== FRAMES =====
-    function addFrame() { if (frames.length >= 64) { showMem(); } frames.push({ v: {}, ws: false, cam: null }); goFrame(frames.length - 1); uFUI(); snd('click') }
+    function addFrame() {
+      if (frames.length >= 64) { showMem(); }
+      const newF = { v: {}, ws: false, cam: null };
+      const idx = frames.length;
+      pUF('f_add', idx, newF);
+      frames.push(newF);
+      goFrame(idx); uFUI(); snd('click');
+    }
+
     function addWS() {
       if (frames.length >= 64) { showMem(); }
-      // Insert the new workspace frame immediately after the current frame
-      frames.splice(curFrame + 1, 0, { v: {}, ws: true, cam: null });
-      goFrame(curFrame + 1);
-      uFUI();
-      snd('click')
+      const newF = { v: {}, ws: true, cam: null };
+      const idx = curFrame + 1;
+      pUF('f_add', idx, newF);
+      frames.splice(idx, 0, newF);
+      goFrame(idx); uFUI(); snd('click');
     }
-    function dupFrame() { if (frames.length >= 64) return; frames.splice(curFrame + 1, 0, { v: JSON.parse(JSON.stringify(V())), ws: frames[curFrame].ws, cam: frames[curFrame].cam ? { ...frames[curFrame].cam } : null }); goFrame(curFrame + 1); uFUI(); snd('click') }
-    function delFrame() { if (frames.length <= 1) return; frames.splice(curFrame, 1); if (curFrame >= frames.length) curFrame--; rebMesh(); d2D(); uCnt(); uFUI(); snd('erase') }
+
+    function dupFrame() {
+      if (frames.length >= 64) return;
+      const clonedF = { v: JSON.parse(JSON.stringify(V())), ws: frames[curFrame].ws, cam: frames[curFrame].cam ? { ...frames[curFrame].cam } : null };
+      const idx = curFrame + 1;
+      pUF('f_add', idx, clonedF);
+      frames.splice(idx, 0, clonedF);
+      goFrame(idx); uFUI(); snd('click');
+    }
+
+    function delFrame() {
+      if (frames.length <= 1) return;
+      const deletedF = frames[curFrame];
+      pUF('f_del', curFrame, deletedF);
+      frames.splice(curFrame, 1);
+      if (curFrame >= frames.length) curFrame--;
+      rebMesh(); d2D(); uCnt(); uFUI(); snd('erase');
+    }
     function goFrame(i) { curFrame = Math.max(0, Math.min(frames.length - 1, i)); $('fsl').value = curFrame; rebMesh(); d2D(); uCnt(); uFUI(); loadCam() }
     function prevFrame() { goFrame(curFrame - 1) }
     function nextFrame() { goFrame(curFrame + 1) }
@@ -2286,9 +2501,9 @@
       // Geometrics
       { id: 'sphere', i: '🔵' }, { id: 'torus', i: '🍩' }, { id: 'cylinder', i: '🛢' }, { id: 'cone', i: '🍦' },
       { id: 'pyramid', i: '🔺' }, { id: 'octahedron', i: '◇' }, { id: 'diamond', i: '◆' }, { id: 'cross', i: '➕' },
-      { id: 'star', i: '⭐' }, { id: 'spiral', i: '🌀' }, { id: 'helix', i: '🧬' }, { id: 'mobius', i: '♾' },
+      { id: 'star', i: '⭐' }, { id: 'spiral', i: '🌀' }, { id: 'helix', i: '🍥' }, { id: 'mobius', i: '♾' },
       { id: 'knot', i: '🥨' }, { id: 'rings', i: '🔗' }, { id: 'ripple', i: '◎' }, { id: 'grid', i: '▦' },
-      { id: 'checkerP', i: '♟' }, { id: 'honeycomb', i: '⬡' }, { id: 'voronoi', i: '◆' }, { id: 'fractal', i: '🧊' },
+      { id: 'checkerP', i: '♟' }, { id: 'honeycomb', i: '⬡' }, { id: 'voronoi', i: '💠' }, { id: 'fractal', i: '🧊' },
       { id: 'maze', i: '🔲' }, { id: 'steps', i: '🪜' }, { id: 'gears', i: '⚙' }, { id: 'dna', i: '🧬' }, { id: 'heart', i: '💖' },
       // Organics & Landscapes
       { id: 'random', i: '🎲' }, { id: 'terrain', i: '🏔' }, { id: 'mountain', i: '⛰' }, { id: 'island', i: '🏝' },
@@ -2354,23 +2569,35 @@
     // ===== ANIM GENERATORS=====
     const AGENS = [
       // Rotations & Transforms
-      { id: 'spinY', i: '↻', n: { en: 'SpinY', ja: 'Y回転' } }, { id: 'spinX', i: '↻', n: { en: 'SpinX', ja: 'X回転' } },
-      { id: 'spinZ', i: '↻', n: { en: 'SpinZ', ja: 'Z回転' } }, { id: 'twistY', i: '🌪', n: { en: 'TwistY', ja: 'Y捻り' } },
-      { id: 'swing', i: '🕰', n: { en: 'Swing', ja: '揺れる' } }, { id: 'orbit', i: '🪐', n: { en: 'Orbit', ja: '軌道' } },
+      { id: 'spinY', i: '↻', n: { en: 'SpinY', ja: 'Y回転' } }, 
+      { id: 'spinX', i: '🔃', n: { en: 'SpinX', ja: 'X回転' } },
+      { id: 'spinZ', i: '🔄', n: { en: 'SpinZ', ja: 'Z回転' } },
+      { id: 'twistY', i: '🌪', n: { en: 'TwistY', ja: 'Y捻り' } },
+      { id: 'swing', i: '🕰', n: { en: 'Swing', ja: '揺れる' } }, 
+      { id: 'orbit', i: '🪐', n: { en: 'Orbit', ja: '軌道' } },
       // Movements
-      { id: 'bounce', i: '🏀', n: { en: 'Bounce', ja: 'ﾊﾞｳﾝﾄﾞ' } }, { id: 'shake', i: '📳', n: { en: 'Shake', ja: '振動' } },
-      { id: 'slideX', i: '↔', n: { en: 'SlideX', ja: 'Xｽﾗｲﾄﾞ' } }, { id: 'slideY', i: '↕', n: { en: 'SlideY', ja: 'Yｽﾗｲﾄﾞ' } },
-      { id: 'slideZ', i: '⤡', n: { en: 'SlideZ', ja: 'Zｽﾗｲﾄﾞ' } },
+      { id: 'bounce', i: '🏀', n: { en: 'Bounce', ja: 'ﾊﾞｳﾝﾄﾞ' } }, 
+      { id: 'shake', i: '📳', n: { en: 'Shake', ja: '振動' } },
+      { id: 'slideX', i: '↔', n: { en: 'SlideX', ja: 'Xｽﾗｲﾄﾞ' } }, 
+      { id: 'slideY', i: '↕', n: { en: 'SlideY', ja: 'Yｽﾗｲﾄﾞ' } }, 
+      { id: 'slideZ', i: '⤡', n: { en: 'SlideZ', ja: 'Zｽﾗｲﾄﾞ' } }, 
       // Scaling & Shapes
-      { id: 'grow', i: '🌱', n: { en: 'Grow', ja: '成長' } }, { id: 'breathe', i: '😮', n: { en: 'Breathe', ja: '呼吸' } },
-      { id: 'pulse', i: '💓', n: { en: 'Pulse', ja: '脈動' } }, { id: 'heartbeat', i: '💗', n: { en: 'HBeat', ja: '鼓動' } },
-      { id: 'rippleA', i: '◎', n: { en: 'Ripple', ja: '波紋' } }, { id: 'waveA', i: '🌊', n: { en: 'Wave', ja: '波動' } },
+      { id: 'grow', i: '🌱', n: { en: 'Grow', ja: '成長' } }, 
+      { id: 'breathe', i: '😮', n: { en: 'Breathe', ja: '呼吸' } }, 
+      { id: 'pulse', i: '📡', n: { en: 'Pulse', ja: '脈動' } }, 
+      { id: 'heartbeat', i: '💗', n: { en: 'HBeat', ja: '鼓動' } }, 
+      { id: 'rippleA', i: '💧', n: { en: 'Spread', ja: '波及' } }, 
+      { id: 'waveA', i: '〰', n: { en: 'Wavy', ja: '波動' } }, 
       // Elements & Particles
-      { id: 'rain', i: '🌧', n: { en: 'Rain', ja: '雨' } }, { id: 'fire', i: '🔥', n: { en: 'Fire', ja: '炎' } },
+      { id: 'rain', i: '🌧', n: { en: 'Rain', ja: '雨' } }, 
+      { id: 'fire', i: '🔥', n: { en: 'Fire', ja: '炎' } },
       // Transitions & Effects
-      { id: 'buildUp', i: '🧱', n: { en: 'Build', ja: '構築' } }, { id: 'dissolve', i: '💨', n: { en: 'Dissolve', ja: '溶解' } },
-      { id: 'explodeA', i: '💥', n: { en: 'Explode', ja: '爆発' } }, { id: 'implode', i: '🕳', n: { en: 'Implode', ja: '収縮' } },
-      { id: 'fadeIn', i: '🌅', n: { en: 'FadeIn', ja: 'ﾌｪｰﾄﾞ' } }, { id: 'colorCycle', i: '🌈', n: { en: 'Color', ja: '色循環' } },
+      { id: 'buildUp', i: '🧱', n: { en: 'Build', ja: '構築' } }, 
+      { id: 'dissolve', i: '💨', n: { en: 'Dissolve', ja: '溶解' } },
+      { id: 'explodeA', i: '💥', n: { en: 'Explode', ja: '爆発' } }, 
+      { id: 'implode', i: '🗜', n: { en: 'Shrink', ja: '収縮' } }, 
+      { id: 'fadeIn', i: '🌅', n: { en: 'FadeIn', ja: 'ﾌｪｰﾄﾞ' } }, 
+      { id: 'colorCycle', i: '🌈', n: { en: 'Color', ja: '色循環' } },
       { id: 'glitch', i: '👾', n: { en: 'Glitch', ja: 'ｸﾞﾘｯﾁ' } }
     ];
     function buildAnimGen() { $('agG').innerHTML = ''; AGENS.forEach(g => { const b = document.createElement('button'); b.className = 'gb'; b.innerHTML = `<span class="gi">${g.i}</span>${g.n[lang] || g.n.en}`; b.onclick = () => { animGen(g.id); snd('gen') }; $('agG').appendChild(b) }) }
@@ -2446,7 +2673,7 @@
     function doAct(id) {
       const o = { ...V() }, acts = []; const clr = () => Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); const a = delV(x, y, z); if (a) acts.push(a) }); const put = (k, v) => { const [x, y, z] = pv_(k); if (x >= 0 && y >= 0 && z >= 0 && x < W && y < H && z < D) { const a = setV(x, y, z, v.c, v.a || 255); if (a) acts.push(a) } };
       if (id === 'clrSlice') { const s = sdm(); for (let sx = 0; sx < s.w; sx++)for (let sy = 0; sy < s.h; sy++) { const w = s2w(sx, sy); const a = delV(w.x, w.y, w.z); if (a) acts.push(a) } }
-      else if (id === 'clrAll') { if (!confirm('Clear all?')) return; clr() }
+      else if (id === 'clrAll') { if (!confirm(T('clrAllConf'))) return; clr() }
       else if (id === 'rotY') { clr(); Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); put(vk(D - 1 - z, y, x), v) }) }
       else if (id === 'rotX') { clr(); Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); put(vk(x, D - 1 - z, y), v) }) }
       else if (id === 'rotZ') { clr(); Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); put(vk(H - 1 - y, x, z), v) }) }
@@ -2824,36 +3051,51 @@
         s.appendChild(o);
       }
     }
-    async function shareURL() { 
-      try { 
-        const d = JSON.stringify({ W, H, D, f: frames }); 
-        const buf = await new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer(); 
+    async function shareURL() {
+      try {
+        // 1. Prepare and compress project data
+        const d = JSON.stringify({ W, H, D, f: frames });
         
-        // Convert buffer to string safely
+        // Check if the browser supports CompressionStream API
+        if (typeof CompressionStream === 'undefined') {
+          alert(lang === 'ja' ? 'お使いのブラウザは圧縮共有に対応していません。' : 'Your browser does not support URL compression.');
+          return;
+        }
+
+        // Compress data using Deflate algorithm
+        const buf = await new Response(new Blob([d]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer();
         const bytes = new Uint8Array(buf);
         let binary = '';
+
+        // Convert binary buffer to a binary string for Base64 encoding
         for (let i = 0; i < bytes.byteLength; i++) {
           binary += String.fromCharCode(bytes[i]);
         }
-        const b64 = btoa(binary); 
-        
-        // Warn if the URL is extremely long (e.g., > 60,000 characters)
-        if (b64.length > 60000) {
-          const proceed = confirm(lang === 'ja' 
-            ? `URLが非常に長いです（約${Math.round(b64.length / 1024)}KB）。\n共有先のアプリ（LINEやDiscordなど）によってはURLが途切れて開けなくなる可能性があります。\n安全に共有するには「↓ (JSON保存)」の利用を推奨します。\n\nそれでもURLをクリップボードにコピーしますか？`
-            : `The URL is very long (~${Math.round(b64.length / 1024)}KB) and may break in some messaging apps.\nWe recommend using "Save JSON" for safe sharing.\n\nCopy URL anyway?`);
-          
-          if (!proceed) return; // Cancel copying if the user chooses not to proceed
-        }
 
-        await navigator.clipboard.writeText(location.origin + location.pathname + '#' + b64); 
-        alert((lang === 'ja' ? 'URLをコピーしました (' : 'URL copied (') + Math.round(b64.length / 1024) + 'KB)'); 
-      } catch (e) { 
+        const b64 = btoa(binary);
+        const fullURL = location.origin + location.pathname + '#' + b64;
+
+        // 2. Write to clipboard (handling Safari/iOS specific restrictions)
+        try {
+          // Attempt to write to clipboard if the API is available
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(fullURL);
+            alert((lang === 'ja' ? 'URLをコピーしました (' : 'URL copied (') + Math.round(b64.length / 1024) + 'KB)');
+          } else {
+            throw new Error('Clipboard API unavailable');
+          }
+        } catch (err) {
+          // 3. Fallback: If Clipboard API fails, display a prompt for manual copying
+          // This remains the most reliable method for certain iOS Safari versions
+          console.warn("Clipboard API failed, falling back to prompt.", err);
+          window.prompt(lang === 'ja' ? "URLをコピーして共有してください:" : "Copy this URL to share:", fullURL);
+        }
+      } catch (e) {
         console.error(e);
-        alert(lang === 'ja' 
-          ? '共有URLの作成に失敗しました。容量が大きすぎる可能性があります。\n代わりに「JSON保存」を利用してデータを共有してください。' 
-          : 'Error generating share URL. Data might be too large. Please use "Save JSON" instead.'); 
-      } 
+        alert(lang === 'ja'
+          ? '共有URLの作成に失敗しました。'
+          : 'Error generating share URL.');
+      }
     }
     async function loadURL() {
       if (!location.hash || location.hash.length < 2) return;
@@ -3174,20 +3416,24 @@
       // Moved to top: 70px to completely avoid mobile bottom navigation bars.
       btn.style.cssText = `
         display: none;
-        position: fixed; 
-        top: 70px; 
+        position: absolute; 
+        top: 20px; 
         left: 50%;
         transform: translateX(-50%);
         background: rgba(180, 50, 50, 0.95);
         color: #fff;
         border: 2px solid #ffaaaa;
-        padding: 12px 36px;
-        border-radius: 24px;
+        padding: 2px 12px;
+        border-radius: 12px;
         font-weight: bold;
         font-size: 16px;
-        z-index: 2147483647;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.6);
         cursor: pointer;
+        white-space: nowrap;
+        min-height: 28px;
+        line-height: 1;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        animation: cncPulse 1.5s ease-in-out infinite;
+        z-index: 100;
         pointer-events: auto;
       `;
 
@@ -3195,7 +3441,7 @@
       btn.onclick = () => {
         cancelTool();
       };
-      document.body.appendChild(btn);
+      document.getElementById('v3').appendChild(btn);
     })();
 
     function anim() {
