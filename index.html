@@ -1598,7 +1598,8 @@
       onR();
     }
     // ===== STATE =====
-    let lang = 'en', W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
+    let lang = (navigator.language || navigator.userLanguage || "en").toLowerCase().startsWith("ja") ? "ja" : "en", W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
+    document.documentElement.setAttribute("lang", lang);
     let g2d = true, g3d = true;
     let undoSt = [], redoSt = [], frames = [{ v: {}, ws: false, cam: null }], curFrame = 0, frameClip = null;
     let clipboard = null, clipIs3D = false, pasteMode = false, clusterCopyMode = false;
@@ -3539,7 +3540,7 @@
 
     updCol(); buildTP(); buildGen(); buildAnimGen(); buildAct(); updPj();
     if (!autoLoad()) { resetCam(); rebGrid() } else { rebGrid(); resetCam() }
-    uFUI(); setLang('en'); initRH();
+    uFUI(); setLang(lang); initRH();
     setTimeout(() => { onR(); d2D(); loadURL() }, 80); anim();
 
     window.addEventListener('load', () => {
