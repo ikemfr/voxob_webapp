@@ -1,4 +1,4 @@
-[※日本語版READMEはこちら](https://github.com/ike-mfr/VoxoB/blob/main/README.ja.md)
+[※日本語版READMEはこちら](https://github.com/ikemfr/voxob_webapp/blob/main/README.ja.md)
 # 🧊 VoxoB (Voxel Generator & Editor)
 
 VoxoB is a lightweight, browser-based 3D voxel editor and procedural generator. 
@@ -10,7 +10,9 @@ No installation required. Run instantly in your browser.
 
 ## ✨ Key Features
 * **Zero Friction:** 100% Client-side application. No server, no login, no installation.
-* **Procedural Generation:** Instantly generate cities, terrains, fractals, and DNA structures with a single click.
+* **Procedural Generation:** 50 one-click generators in five groups (buildings, things, nature, shapes, patterns): houses, pagodas, torii, cities, terrain, fractals, DNA and more.
+* **Next move:** one button (or N) adds the next sensible step to your model: ground, a roof, windows, trees, shading, darker edges. Every step can be undone.
+* **Styles & palettes:** recolour a whole model as Japanese, retro, pastel, night, autumn or mono; palette presets including traditional Japanese colours.
 * **Animation Support:** Create frame-by-frame voxel animations and export them directly to WebM/MP4.
 * **Broad Export Options:** Export your creations as OBJ, STL, GLB, or PNG.
 
