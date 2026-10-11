@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VoxoB の使い方 — ブラウザで動く無料ボクセルエディタ</title>
-<meta name="description" content="インストール不要の無料ボクセルエディタ VoxoB の使い方。39種類のワンクリック自動生成、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。">
+<meta name="description" content="インストール不要の無料ボクセルエディタ VoxoB の使い方。50種類のワンクリック自動生成、「次の一手」、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。">
 <link rel="canonical" href="https://voxob.vercel.app/ja/">
 <link rel="alternate" hreflang="ja" href="https://voxob.vercel.app/ja/">
 <link rel="alternate" hreflang="en" href="https://voxob.vercel.app/en/">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://voxob.vercel.app/ja/">
 <meta property="og:title" content="VoxoB の使い方 — ブラウザで動く無料ボクセルエディタ">
-<meta property="og:description" content="インストール不要の無料ボクセルエディタ VoxoB の使い方。39種類のワンクリック自動生成、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。">
+<meta property="og:description" content="インストール不要の無料ボクセルエディタ VoxoB の使い方。50種類のワンクリック自動生成、「次の一手」、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。">
 <meta property="og:image" content="https://voxob.vercel.app/og-image.png">
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"無料ですか？","acceptedAnswer":{"@type":"Answer","text":"はい、無料です。登録も不要です。"}},{"@type":"Question","name":"データはどこに保存されますか？","acceptedAnswer":{"@type":"Answer","text":"お使いのブラウザの中（localStorage）だけです。ブラウザのデータを消すと消えるので、大事な作品は JSON で書き出してください。"}},{"@type":"Question","name":"スマホでも使えますか？","acceptedAnswer":{"@type":"Answer","text":"はい。1本指タップで置く、2本指で回転・ピンチでズームです。"}}]}</script>
@@ -37,7 +37,8 @@ nav,footer{font-size:14px;color:var(--sub)}footer{margin-top:40px}
 <a class="cta" href="/">VoxoB を開く</a>
 <img src="/og-image.png" alt="VoxoB" width="1200" height="630" loading="lazy">
 <h2>はじめかた</h2><p>ページを開くと、最初に「自動生成してみる」「まっさらから描く」「画像から作る」の3つが出ます。</p><p>PC は左のツール（ペン・直線・矩形・円・塗りつぶしなど）を選び、3D 画面か 2D 断面をクリックして置きます。右ドラッグで回転、Shift＋ドラッグで移動、ホイールでズーム。</p><p>スマホは上の「ツール」「設定」でパネルを開き、1本指タップで置く、2本指で回転、ピンチでズームです。</p>
-<h2>ワンクリック自動生成（39種）</h2><ul class="gens"><li>球体</li><li>トーラス</li><li>円柱</li><li>円錐</li><li>ピラミッド</li><li>正八面体</li><li>ダイヤ</li><li>十字</li><li>星</li><li>螺旋</li><li>二重螺旋</li><li>メビウス</li><li>結び目</li><li>双輪</li><li>波紋</li><li>グリッド</li><li>市松</li><li>蜂の巣</li><li>ボロノイ</li><li>フラクタル</li><li>迷路</li><li>階段</li><li>歯車</li><li>DNA</li><li>ハート</li><li>ランダム</li><li>地形</li><li>山</li><li>島</li><li>洞窟</li><li>波</li><li>結晶</li><li>森</li><li>キノコ</li><li>城</li><li>都市</li><li>神殿</li><li>橋</li><li>銀河</li></ul>
+<h2>ワンクリック自動生成（50種）</h2><ul class="gens"><li>球体</li><li>トーラス</li><li>円柱</li><li>円錐</li><li>ピラミッド</li><li>正八面体</li><li>ダイヤ</li><li>十字</li><li>星</li><li>螺旋</li><li>二重螺旋</li><li>メビウス</li><li>結び目</li><li>双輪</li><li>波紋</li><li>グリッド</li><li>市松</li><li>蜂の巣</li><li>ボロノイ</li><li>フラクタル</li><li>迷路</li><li>階段</li><li>歯車</li><li>DNA</li><li>ハート</li><li>ランダム</li><li>地形</li><li>山</li><li>島</li><li>洞窟</li><li>波</li><li>結晶</li><li>森</li><li>キノコ</li><li>城</li><li>都市</li><li>神殿</li><li>橋</li><li>銀河</li><li>家</li><li>木</li><li>鳥居</li><li>五重塔</li><li>ロケット</li><li>雪だるま</li><li>惑星</li><li>ロボット</li><li>帆船</li><li>灯台</li><li>サボテン</li></ul>
+<h2>次の一手とスタイル変換</h2><p>上の「✨ 次の一手」（キーボードは N）を押すと、今の作品に合う次の工程をひとつ足します。地面を敷く・屋根を載せる・窓を付ける・木を植える・陰影をつける・角を締める、の中から形に合うものだけを選びます。どれも Ctrl+Z で取り消せます。</p><p>右パネルの「スタイル変換」は、作品全体の色を和風・レトロ・パステル・夜・秋・モノクロに一度で変えます。「配色」では和色やレトロ16色などのパレットを選べます。</p>
 <h2>アニメーション</h2><p>フレームを追加してコマ送りで作れます。右パネルの「アニメ生成」は、今の形から回転・揺れ・成長・分解など26種類の動きを自動で作ります。</p><p>再生速度は FPS で調整し、WebM / MP4 の動画として書き出せます。</p>
 <h2>画像・動画・3Dモデルから作る</h2><p>PNG / JPG / GIF / BMP の画像、MP4 / WebM / MOV の動画、OBJ / STL の3Dモデルを読み込むと、ボクセルに変換します。画像は色から奥行きを付けることもできます。</p>
 <h2>書き出しと保存</h2><p>OBJ（＋MTL）、STL（3Dプリンタ向け）、GLB（ゲームエンジン・Web 3D向け）、PNG、WebM / MP4 動画、JSON に書き出せます。</p><p>作品はブラウザに自動保存され、名前を付けて複数保存もできます。共有ボタンは作品を URL に詰めて渡せます（サーバーには保存しません）。</p>

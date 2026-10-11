@@ -7,18 +7,23 @@ const TODAY = new Date().toISOString().slice(0, 10);
 const html = fs.readFileSync('index.html', 'utf8');
 // generator names straight from the app, so the list never drifts
 const GN = Function(`return ${/const GN = (\{[\s\S]*?\n {4}\});/.exec(html)[1]}`)();
+// plus the extra generators added in site/plus.js
+const plus = fs.readFileSync('site/plus.js', 'utf8');
+['en', 'ja'].forEach((lang, i) => Object.assign(GN[lang], Function(`return ${[...plus.matchAll(/ gn: (\{[^}]*\})/g)][i][1]}`)()));
+const NG = Object.keys(GN.en).length;
 const half = (s) => s.normalize('NFKC'); // the app uses half-width katakana to fit buttons
 
 const C = {
   ja: {
     title: 'VoxoB の使い方 — ブラウザで動く無料ボクセルエディタ',
-    desc: 'インストール不要の無料ボクセルエディタ VoxoB の使い方。39種類のワンクリック自動生成、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。',
+    desc: 'インストール不要の無料ボクセルエディタ VoxoB の使い方。50種類のワンクリック自動生成、「次の一手」、コマ送りアニメ、画像・動画・3Dモデルからの変換、OBJ・STL・GLB・MP4 書き出しまで。',
     h1: 'VoxoB の使い方',
     lead: 'VoxoB（ボクソブ）は、ブラウザだけで動くボクセル（立方体のドット）エディタです。インストールもログインも不要で、作ったデータは外部に送られず、使っているブラウザの中に保存されます。',
     open: 'VoxoB を開く',
     s: [
       ['はじめかた', ['ページを開くと、最初に「自動生成してみる」「まっさらから描く」「画像から作る」の3つが出ます。', 'PC は左のツール（ペン・直線・矩形・円・塗りつぶしなど）を選び、3D 画面か 2D 断面をクリックして置きます。右ドラッグで回転、Shift＋ドラッグで移動、ホイールでズーム。', 'スマホは上の「ツール」「設定」でパネルを開き、1本指タップで置く、2本指で回転、ピンチでズームです。']],
-      ['ワンクリック自動生成（39種）', null],
+      [`ワンクリック自動生成（${NG}種）`, null],
+      ['次の一手とスタイル変換', ['上の「✨ 次の一手」（キーボードは N）を押すと、今の作品に合う次の工程をひとつ足します。地面を敷く・屋根を載せる・窓を付ける・木を植える・陰影をつける・角を締める、の中から形に合うものだけを選びます。どれも Ctrl+Z で取り消せます。', '右パネルの「スタイル変換」は、作品全体の色を和風・レトロ・パステル・夜・秋・モノクロに一度で変えます。「配色」では和色やレトロ16色などのパレットを選べます。']],
       ['アニメーション', ['フレームを追加してコマ送りで作れます。右パネルの「アニメ生成」は、今の形から回転・揺れ・成長・分解など26種類の動きを自動で作ります。', '再生速度は FPS で調整し、WebM / MP4 の動画として書き出せます。']],
       ['画像・動画・3Dモデルから作る', ['PNG / JPG / GIF / BMP の画像、MP4 / WebM / MOV の動画、OBJ / STL の3Dモデルを読み込むと、ボクセルに変換します。画像は色から奥行きを付けることもできます。']],
       ['書き出しと保存', ['OBJ（＋MTL）、STL（3Dプリンタ向け）、GLB（ゲームエンジン・Web 3D向け）、PNG、WebM / MP4 動画、JSON に書き出せます。', '作品はブラウザに自動保存され、名前を付けて複数保存もできます。共有ボタンは作品を URL に詰めて渡せます（サーバーには保存しません）。']],
@@ -28,18 +33,19 @@ const C = {
       ['データはどこに保存されますか？', 'お使いのブラウザの中（localStorage）だけです。ブラウザのデータを消すと消えるので、大事な作品は JSON で書き出してください。'],
       ['スマホでも使えますか？', 'はい。1本指タップで置く、2本指で回転・ピンチでズームです。'],
     ],
-    gens: 'ワンクリック自動生成（39種）',
+    gens: `ワンクリック自動生成（${NG}種）`,
     by: '作者：Ike mfr（個人開発）',
   },
   en: {
     title: 'How to use VoxoB — a free voxel editor in your browser',
-    desc: 'How to use VoxoB, a free voxel editor that runs in the browser: 39 one-click generators, frame animation, image/video/3D-model to voxel conversion, and OBJ, STL, GLB and MP4 export.',
+    desc: 'How to use VoxoB, a free voxel editor that runs in the browser: 50 one-click generators, a Next move button, frame animation, image/video/3D-model to voxel conversion, and OBJ, STL, GLB and MP4 export.',
     h1: 'How to use VoxoB',
     lead: 'VoxoB is a voxel editor that runs entirely in your browser. No install, no sign-up. Your work is never uploaded; it is saved in the browser you are using.',
     open: 'Open VoxoB',
     s: [
       ['Getting started', ['On your first visit you can pick: generate something, start from an empty canvas, or make it from a picture.', 'On a computer, pick a tool on the left (pen, line, rectangle, circle, fill…) and click the 3D view or the 2D slice. Right-drag to orbit, Shift-drag to pan, scroll to zoom.', 'On a phone, open the panels with Tools and Settings at the top. Tap to place, two fingers to turn, pinch to zoom.']],
-      ['One-click generators (39)', null],
+      [`One-click generators (${NG})`, null],
+      ['Next move and styles', ['Press ✨ Next move at the top (or N) and VoxoB adds the next sensible step to what you have: ground, a roof, windows, trees, shading or darker edges, only the ones that fit the shape. Each can be undone with Ctrl+Z.', 'Style in the right panel recolours the whole model at once: Japanese, retro, pastel, night, autumn or mono. Palette offers sets such as traditional Japanese colours and a retro 16-colour set.']],
       ['Animation', ['Add frames and build a flip-book animation. Animation generators in the right panel turn the current shape into 26 kinds of motion: spin, swing, grow, dissolve and more.', 'Set the speed with FPS and export WebM or MP4 video.']],
       ['From images, video and 3D models', ['Load PNG / JPG / GIF / BMP images, MP4 / WebM / MOV video, or OBJ / STL models and VoxoB turns them into voxels. Images can get depth from their colours.']],
       ['Export and save', ['Export OBJ (+MTL), STL for 3D printing, GLB for game engines and web 3D, PNG, WebM / MP4 video, or JSON.', 'Work is saved in the browser automatically, and you can keep several named projects. Share packs your work into a URL (nothing is stored on a server).']],
@@ -49,7 +55,7 @@ const C = {
       ['Where is my data stored?', 'Only in your browser (localStorage). Clearing browser data removes it, so export important work as JSON.'],
       ['Does it work on phones?', 'Yes. Tap to place, two fingers to turn, pinch to zoom.'],
     ],
-    gens: 'One-click generators (39)',
+    gens: `One-click generators (${NG})`,
     by: 'Made by Ike mfr (independent project)',
   },
 };
