@@ -1,25 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>VoxoB</title>
+  <title>VoxoB — ブラウザで動く無料ボクセルエディタ・自動生成ツール</title>
+  <link rel="canonical" href="https://voxob.vercel.app/">
+  <link rel="alternate" hreflang="ja" href="https://voxob.vercel.app/ja/">
+  <link rel="alternate" hreflang="en" href="https://voxob.vercel.app/en/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoxoB","url":"https://voxob.vercel.app/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":["ja","en"],"author":{"@type":"Person","name":"Ike mfr"},"description":"Free browser voxel editor with 39 one-click generators, frame animation, image/video/3D-model to voxel conversion, and OBJ/STL/GLB/MP4 export."}</script>
   <meta name="description" content="インストール不要、ブラウザを開いて1秒で起動。プロシージャル生成（自動生成）からアニメーション出力まで完結する、次世代の無料ボクセルエディタ「VoxoB」。">
   <meta name="keywords" content="VoxoB, Voxel, ボクセルアート, 3Dモデリング, ブラウザ, 自動生成, WebGL, Three.js">
   <meta name="author" content="Ike mfr">
 
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://VoxoB.vercel.app/">
+  <meta property="og:url" content="https://voxob.vercel.app/">
   <meta property="og:site_name" content="VoxoB">
   <meta property="og:title" content="VoxoB | ブラウザ完結の次世代ボクセルエディタ">
   <meta property="og:description" content="インストール不要！街や地形、フラクタルなどをワンクリックで自動生成。サクサク動く無料のボクセルアート制作ツールです。">
-  <meta property="og:image" content="https://VoxoB.vercel.app/og-image.png">
+  <meta property="og:image" content="https://voxob.vercel.app/og-image.png">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ブラウザで動くボクセルジェネレーター「VoxoB」">
   <meta name="twitter:description" content="ブラウザを開いて1秒で起動。ワンクリックで街や地形が作れるプロシージャル生成と、アニメーション出力機能を搭載した軽量エディタを作りました。">
-  <meta name="twitter:image" content="https://VoxoB.vercel.app/og-image.png">
+  <meta name="twitter:image" content="https://voxob.vercel.app/og-image.png">
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23151820'/><path d='M50 20L80 38V72L50 90L20 72V38Z' fill='%2300d4f0'/><path d='M50 20V55L80 38' fill='%239050f0'/><path d='M20 38L50 55V90' fill='%23f03070'/></svg>">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1231,6 +1235,37 @@
       }
     }
 
+    /* mobile: header keeps only the main actions (the rest moves into the settings drawer, see placeMobile),
+       the camera number box is folded away, the bottom bar scrolls with a fade at its edge */
+    #mExtra { display: none }
+    @media (max-width: 900px) { .m-hide, .m-only-hide { display: none !important } }
+    @media (max-width: 900px) {
+      #mExtra { display: block }
+      #mExtra .mxr { display: flex; flex-wrap: wrap; gap: 6px; align-items: center }
+      #mExtra .hsel { flex: 1 1 45% }
+      #hd { gap: 4px; padding: 0 4px }
+      #hd h1 { font-size: 14px; letter-spacing: 1px; margin-right: 2px }
+      #hd .hb { padding: 4px 7px; min-height: 32px }
+      #v3Cam { display: none }
+      body.camOpen #v3Cam { display: block }
+      #abar { -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent) }
+      #abar .fb { height: 30px; padding: 4px 10px }
+      #v3hint { white-space: normal; text-align: center; max-width: 92%; bottom: 8px }
+    }
+    #bCamTog { display: none }
+    @media (max-width: 900px) { #bCamTog { display: inline-block } }
+    /* first-visit card */
+    #welc { position: fixed; inset: 0; z-index: 3000; display: none; align-items: center; justify-content: center; background: rgba(4, 5, 8, .55); padding: 16px }
+    #welc.on { display: flex }
+    #welc .wc { background: var(--b2); border: 1px solid var(--bh); border-radius: 10px; padding: 18px 18px 14px; max-width: 380px; width: 100%; box-shadow: 0 10px 40px rgba(0, 0, 0, .5) }
+    #welc h2 { margin: 0 0 4px; font-size: 17px }
+    #welc p { margin: 0 0 12px; font-size: 12px; color: var(--t2); line-height: 1.6 }
+    #welc .wb2 { display: grid; gap: 8px }
+    #welc .wb2 button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; text-align: left; padding: 10px 12px; border-radius: 8px; background: var(--b3); border: 1px solid var(--bd); color: var(--tx); cursor: pointer; font-size: 14px; font-weight: 700 }
+    #welc .wb2 button small { font-weight: 400; font-size: 11px; color: var(--t2) }
+    #welc .wb2 button.pri { border-color: var(--ac) }
+    #welc .wx { margin-top: 10px; font-size: 11px; color: var(--t3); text-align: center }
+
     /* 2D/3D Common: Cancel button overlay (Fully fixed version) */
     #bCnc.cancel-overlay {
       display: none;
@@ -1273,7 +1308,7 @@
     <!-- HEADER -->
     <div id="hd">
       <h1>VoxoB</h1>
-      <span style="font-size:10px;color:var(--t3);margin-right:8px;white-space:nowrap;">© Ike mfr</span>
+      <span class="m-hide" style="font-size:10px;color:var(--t3);margin-right:8px;white-space:nowrap;">© Ike mfr</span>
 
       <button class="hb m-only" id="hMT"
         onclick="document.getElementById('lp').classList.toggle('on');document.getElementById('rp').classList.remove('on')">🛠
@@ -1295,7 +1330,7 @@
         <option value="en">English</option>
         <option value="ja">日本語</option>
       </select>
-      <span style="font-size:10px;color:var(--t3);flex-shrink:0">🔊</span>
+      <span id="volIc" style="font-size:10px;color:var(--t3);flex-shrink:0">🔊</span>
       <input type="range" id="volR" min="0" max="100" value="40"
         style="width:50px;flex-shrink:0;-webkit-appearance:none;height:3px;background:var(--bd);border-radius:2px"
         oninput="vol=this.value/100">
@@ -1393,6 +1428,7 @@
         <div id="v3top">
           <button class="wb on" id="g3B" onclick="g3d=!g3d;this.classList.toggle('on');rebGrid()">▦</button>
           <button class="wb" id="bCamSv" data-tip="Save camera angle\nfor this frame" onclick="saveCam()">📷</button>
+          <button class="wb" id="bCamTog" onclick="document.body.classList.toggle('camOpen')">🎥</button>
         </div>
         <div id="v3hint">Drag:orbit | Shift:pan | Scroll:zoom</div>
 
@@ -1413,6 +1449,11 @@
 
       <!-- RIGHT PANEL -->
       <div id="rp">
+
+        <div class="ps" id="mExtra">
+          <div class="pt" id="ptMx">VIEW &amp; MORE</div>
+          <div class="mxr" id="mxR"></div>
+        </div>
 
         <div class="ps">
           <div class="pt" id="ptPj">PROJECT</div>
@@ -1526,6 +1567,20 @@
     <div id="st"><span id="stL">0</span><span id="stR">-</span></div>
   </div>
 
+  <!-- First visit -->
+  <div id="welc" role="dialog" aria-modal="true" aria-labelledby="welcT">
+    <div class="wc">
+      <h2 id="welcT"></h2>
+      <p id="welcP"></p>
+      <div class="wb2">
+        <button class="pri" id="welcGen"><span id="welcGenT"></span><small id="welcGenS"></small></button>
+        <button id="welcDraw"><span id="welcDrawT"></span><small id="welcDrawS"></small></button>
+        <button id="welcImg"><span id="welcImgT"></span><small id="welcImgS"></small></button>
+      </div>
+      <div class="wx" id="welcX"></div>
+    </div>
+  </div>
+
   <!-- Export modal -->
   <div class="mbg" id="exM">
     <div class="mod"><button class="mc" onclick="hideExp()">✕</button>
@@ -1598,7 +1653,7 @@
       onR();
     }
     // ===== STATE =====
-    let lang = (navigator.language || navigator.userLanguage || "en").toLowerCase().startsWith("ja") ? "ja" : "en", W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
+    let lang = (() => { try { const l = localStorage.getItem('vs_lang'); if (l === 'ja' || l === 'en') return l } catch (e) { } return (navigator.language || navigator.userLanguage || "en").toLowerCase().startsWith("ja") ? "ja" : "en" })(), W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
     document.documentElement.setAttribute("lang", lang);
     let g2d = true, g3d = true;
     let undoSt = [], redoSt = [], frames = [{ v: {}, ws: false, cam: null }], curFrame = 0, frameClip = null;
@@ -1623,6 +1678,10 @@
         snapCell: 'Cell center', snapEdge: 'Edge',
         prev: '◀ Prev', play: '▶ Play', stop: '⏸ Stop', next: 'Next ▶▶', add: '＋Add', dup: '📋Dup', del: '🗑Del', fcopy: '📑FCopy', fpaste: '📌FPaste', work: '🔧Work',
         v3hint: 'Drag:orbit | Shift:pan | Scroll:zoom', v3confirm: 'Left:confirm | Right:cancel',
+        v3hintT: 'Tap: place | 2 fingers: turn & pinch to zoom', v3confirmT: 'Tap: confirm | ✕ Cancel to stop', mExtra: 'VIEW & MORE',
+        welcT: 'Welcome to VoxoB', welcP: 'A voxel editor that runs in your browser. Nothing is uploaded; your work is saved in this browser.',
+        welcGenT: '🎲 Generate something', welcGenS: 'One tap builds a city, a castle, terrain…', welcDrawT: '✏️ Start from an empty canvas', welcDrawS: 'Place voxels with the pen and shapes',
+        welcImgT: '🖼 Make it from a picture', welcImgS: 'Turn an image, video or 3D model into voxels', welcX: 'Tap anywhere outside to close',
         bgTitle: '🎨 Background', exTitle: '⬇ Export', exSave: 'JSON Save', exGIF: 'WebM Video', exMP4: 'MP4 Video', exLoad: 'JSON Load',
         thDark: '🌑 Dark', thLight: '☀ Light', thGrey: '⬜ Grey', thWarm: '🔥 Warm', thSepia: '📜 Sepia', thForest: '🌿 Forest', thOcean: '🌊 Ocean',
         mTools: '🛠 Tools', mSet: '⚙ Settings', mView3D: '🧊 3D', mView2D: '🖼 2D', cancelBtn: '✕ Cancel', resetCam: '🔄 Reset',
@@ -1655,6 +1714,10 @@
         snapCell: 'ピクセル中心', snapEdge: '辺',
         prev: '◀ 前', play: '▶ 再生', stop: '⏸ 停止', next: '次 ▶▶', add: '＋追加', dup: '📋複製', del: '🗑削除', fcopy: '📑Fコピー', fpaste: '📌Fペースト', work: '🔧作業用',
         v3hint: 'ドラッグ:回転 | Shift:パン | スクロール:ズーム', v3confirm: '左:確定 | 右:キャンセル',
+        v3hintT: 'タップ:置く | 2本指:回転・ピンチでズーム', v3confirmT: 'タップ:確定 | ✕キャンセルで中止', mExtra: '表示・その他',
+        welcT: 'VoxoB へようこそ', welcP: 'ブラウザで動くボクセルエディタです。データは外に送られず、このブラウザの中に保存されます。',
+        welcGenT: '🎲 自動生成してみる', welcGenS: 'ワンタップで街・城・地形などを作ります', welcDrawT: '✏️ まっさらから描く', welcDrawS: 'ペンや図形でボクセルを置きます',
+        welcImgT: '🖼 画像から作る', welcImgS: '画像・動画・3Dモデルをボクセルに変換します', welcX: '枠の外をタップで閉じます',
         bgTitle: '🎨 背景設定', exTitle: '⬇ エクスポート', exSave: 'JSON保存', exGIF: 'WebM動画', exMP4: 'MP4動画', exLoad: 'JSON読込',
         thDark: '🌑 ダーク', thLight: '☀ ライト', thGrey: '⬜ グレー', thWarm: '🔥 ウォーム', thSepia: '📜 セピア', thForest: '🌿 フォレスト', thOcean: '🌊 オーシャン',
         mTools: '🛠 ツール', mSet: '⚙ 設定', mView3D: '🧊 3D', mView2D: '🖼 2D', cancelBtn: '✕ キャンセル', resetCam: '🔄 リセット',
@@ -1677,10 +1740,12 @@
       }
     };
 
-    function T(k) { return TX[lang]?.[k] || TX.en[k] || k; }
+    const TOUCH = matchMedia('(pointer: coarse)').matches;
+    function T(k) { if (TOUCH && (k === 'v3hint' || k === 'v3confirm')) k += 'T'; return TX[lang]?.[k] || TX.en[k] || k; }
 
     function setLang(l) {
-      lang = l;
+      lang = l; document.documentElement.lang = l;
+      document.querySelectorAll('#hU,#hR,#hEx').forEach(b => delete b.dataset.full);
       if (document.getElementById('lnSel')) document.getElementById('lnSel').value = l;
       try { localStorage.setItem('vs_lang', l); } catch (e) { }
 
@@ -1692,6 +1757,7 @@
         });
         th.value = document.body.dataset.theme || 'dark';
       }
+      if (typeof compactHd === 'function') setTimeout(compactHd, 0);
 
       const ids = {
         'hTog2D': 'tog2D', 'mDr': 'drawMode', 'mDl': 'delMode', 'mRc': 'recolorMode', 'ltT': 'tools', 'ltB': 'brush', 'ltSn': 'snap', 'ltSym': 'symmetry',
@@ -1699,7 +1765,7 @@
         'snC': 'snapCell', 'snE': 'snapEdge', 'ptPj': 'project', 'ptSz': 'canvasSize', 'ptCl': 'color', 'ptCP': 'copyPaste', 'ptCam': 'camera', 'ptMd': 'media',
         'ptGn': 'generate', 'ptAG': 'animGen', 'ptAc': 'actions', 'bAp': 'apply', 'bSv': 'save', 'bLd': 'load', 'bIm': 'import_', 'bSl': 'select', 'bCR': 'copyRange',
         'bCC': 'copyCluster', 'bPst': 'paste', 'hU': 'undo', 'hR': 'redo', 'hW': 'wireframe', 'hSh': 'share', 'hBG': 'background', 'hEx': 'export_',
-        'bgT': 'bgTitle', 'exT': 'exTitle', 'exSv': 'exSave', 'exGF': 'exGIF', 'exMP': 'exMP4', 'exLd': 'exLoad', 'v3hint': 'v3hint',
+        'ptMx': 'mExtra', 'bgT': 'bgTitle', 'exT': 'exTitle', 'exSv': 'exSave', 'exGF': 'exGIF', 'exMP': 'exMP4', 'exLd': 'exLoad', 'v3hint': 'v3hint',
         'lbBgTp': 'bgType', 'opSol': 'bgSolid', 'opGra': 'bgGrad', 'opChk': 'bgCheck', 'lbBgIm': 'bgImg', 'bBgClr': 'bgClear',
         'lbExFn': 'exFilename', 'exObj': 'exObj', 'exStl': 'exStl', 'exGlb': 'exGlb', 'exPng': 'exPng',
         'bFPrev': 'prev', 'bFNext': 'next', 'bFAdd': 'add', 'bFDup': 'dup', 'bFDel': 'del', 'bFCpy': 'fcopy', 'bFPst': 'fpaste', 'bFWork': 'work',
@@ -1940,8 +2006,8 @@
       if ($('camDi')) $('camDi').value = Math.round(cD);
     }
 
-    // 3. Touch operations (Pan addition and sync)
-    c3.addEventListener('touchmove', e => {
+    // 3. Touch operations: handled once, in the "3D Canvas Touch Support" section below
+    if (false) c3.addEventListener('touchmove', e => {
       e.preventDefault();
       if (d3 && e.touches.length === 2) {
         const nx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
@@ -2680,7 +2746,8 @@
         idx++;
       }
 
-      const src = JSON.parse(JSON.stringify(V())); const srcKeys = Object.keys(src);
+      const startV = frames[sf] ? frames[sf].v : V(), same = animLast && animLast.sf === sf && JSON.stringify(startV) === animLast.out;
+      const src = JSON.parse(same ? animLast.src : JSON.stringify(startV)); const srcKeys = Object.keys(src);
       if (srcKeys.length === 0) { alert(lang === 'ja' ? '現在のフレームにボクセルがありません' : 'No voxels in current frame'); return }
       const cx_ = W / 2, cy_ = H / 2, cz_ = D / 2;
 
@@ -2717,8 +2784,10 @@
         else if (t === 'colorCycle') { Object.entries(src).forEach(([k, v]) => { const [h, s, l] = hex2hsl(v.c); frames[fIdx].v[k] = { c: hsl2hex(h + t_ * 360, s, l), a: v.a } }) }
         else if (t === 'glitch') { Object.entries(src).forEach(([k, v]) => { const [x, y, z] = pv_(k); const off = Math.random() < 0.1 ? Math.round((Math.random() - 0.5) * 4) : 0; const nx = x + off; if (nx >= 0 && nx < W) frames[fIdx].v[vk(nx, y, z)] = v }) }
       }
+      animLast = { sf, src: JSON.stringify(src), out: JSON.stringify(frames[sf].v) };
       goFrame(sf); uFUI(); snd('gen')
     }
+    let animLast = null; // the shape an animation was made from, so trying another animation starts from it again
 
     // ===== ACTIONS =====
     const ACTS = ['rotY', 'rotX', 'rotZ', 'flipX', 'flipY', 'flipZ', 'shiftUp', 'shiftDn', 'shiftL', 'shiftR', 'hollow', 'outline', 'dilate', 'erode', 'clrSlice', 'clrAll'];
@@ -3365,21 +3434,20 @@
 
     // --- 3D Canvas Touch Support ---
     let tpD = 0;
-    let is1FDrag = false;
+    let is1FDrag = false, multi3 = false;
     let lastT3 = null;
 
     c3.addEventListener('touchstart', e => {
       e.preventDefault();
       if (e.touches.length === 2) {
         // 2 fingers: Camera rotation and zoom
-        d3 = true; p3 = false; is1FDrag = false;
+        d3 = true; p3 = false; is1FDrag = false; multi3 = true;
         lm = { x: (e.touches[0].clientX + e.touches[1].clientX) / 2, y: (e.touches[0].clientY + e.touches[1].clientY) / 2 };
         tpD = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
       } else if (e.touches.length === 1) {
-        // 1 finger: Record tap as start anchor
-        d3 = false; is1FDrag = true;
+        // 1 finger: act on release (see touchend), so a pinch or two-finger turn never places a voxel first
+        d3 = false; is1FDrag = true; multi3 = false;
         lastT3 = e.touches[0];
-        h3C({ clientX: lastT3.clientX, clientY: lastT3.clientY, button: 0 });
       }
     }, { passive: false });
 
@@ -3407,8 +3475,8 @@
 
     c3.addEventListener('touchend', e => {
       e.preventDefault();
-      d3 = false;
-      is1FDrag = false;
+      if (is1FDrag && !multi3 && e.touches.length === 0 && lastT3) h3C({ clientX: lastT3.clientX, clientY: lastT3.clientY, button: 0 });
+      if (e.touches.length === 0) { d3 = false; is1FDrag = false; multi3 = false }
     }, { passive: false });
 
     // ===== MOBILE UI LOGIC =====
@@ -3538,10 +3606,34 @@
       }
     }
 
+    // phones: theme, language, sound, wireframe, share, background and about move into the settings drawer
+    const MX = ['thSel', 'lnSel', 'volIc', 'volR', 'hW', 'hSh', 'hBG', 'hAbt'], mxHome = {};
+    function placeMobile() {
+      const m = matchMedia('(max-width: 900px)').matches;
+      MX.forEach(id => { const el = $(id); if (!el) return; if (!mxHome[id]) mxHome[id] = { p: el.parentNode, n: el.nextSibling }; if (m) $('mxR').appendChild(el); else if (el.parentNode !== mxHome[id].p) mxHome[id].p.insertBefore(el, mxHome[id].n) });
+    }
+    function compactHd() {
+      const m = matchMedia('(max-width: 900px)').matches;
+      ['hU', 'hR', 'hEx'].forEach(id => { const b = $(id); if (!b) return; const full = b.dataset.full || b.textContent; if (!m) { b.textContent = full; b.removeAttribute('aria-label'); return } b.dataset.full = full; b.textContent = full.trim().split(/\s+/)[0]; b.setAttribute('aria-label', full.replace(/^\S+\s*/, '')) });
+    }
+    matchMedia('(max-width: 900px)').addEventListener('change', () => { placeMobile(); compactHd() }); placeMobile();
+
     updCol(); buildTP(); buildGen(); buildAnimGen(); buildAct(); updPj();
+    const firstVisit = !localStorage.getItem('vs9') && !localStorage.getItem('vs_seen') && !(location.hash && location.hash.length > 1);
     if (!autoLoad()) { resetCam(); rebGrid() } else { rebGrid(); resetCam() }
-    uFUI(); setLang(lang); initRH();
+    uFUI(); setLang(lang); compactHd(); initRH();
     setTimeout(() => { onR(); d2D(); loadURL() }, 80); anim();
+    // first visit: a sample in the view and three ways to start
+    function welcome() {
+      ['welcT', 'welcP', 'welcGenT', 'welcGenS', 'welcDrawT', 'welcDrawS', 'welcImgT', 'welcImgS', 'welcX'].forEach(k => $(k).textContent = T(k));
+      const close = () => { $('welc').classList.remove('on'); try { localStorage.setItem('vs_seen', '1') } catch (e) { } };
+      $('welcGen').onclick = () => { close(); const pick = ['castle', 'city', 'temple', 'island', 'mushroom', 'forest']; gen(pick[Math.floor(Math.random() * pick.length)]); snd('gen'); resetCam(); };
+      $('welcDraw').onclick = () => { close(); Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) }); rebMesh(); d2D(); autoSave(); if (matchMedia('(max-width: 900px)').matches) $('lp').classList.add('on'); };
+      $('welcImg').onclick = () => { close(); $('imgIn').click(); };
+      $('welc').onclick = (e) => { if (e.target === $('welc')) close(); };
+      $('welc').classList.add('on');
+    }
+    if (firstVisit) setTimeout(() => { try { gen('castle') } catch (e) { } welcome() }, 120);
 
     window.addEventListener('load', () => {
       if (typeof rebGrid === 'function') rebGrid(); // Generate 3D grid
