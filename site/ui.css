@@ -6,7 +6,7 @@
     body.ui2 #hd { gap: 6px; padding: 0 10px }
     body.ui2 #hd h1 { font-size: 16px; margin-right: 6px }
     body.ui2 #hd .hb { min-height: 34px; padding: 0 12px; font-size: 13px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
-    body.ui2 #hd .hb.pri { background: var(--ac); border-color: var(--ac); color: #05141a; font-weight: 800 }
+    body.ui2 #hd .hb.pri { background: color-mix(in srgb, var(--ac) 22%, var(--b2)); border-color: color-mix(in srgb, var(--ac) 45%, var(--b2)); color: var(--tx); font-weight: 800 } /* calm: tinted, not a full cyan block */
     body.ui2 #hd .hb.acc { border-color: var(--a3); color: var(--tx); font-weight: 800 }
     body.ui2 .hsp { flex: 1 }
     @media (min-width: 901px) { body.ui2 #hd .m-only { display: none } }
@@ -23,7 +23,7 @@
     body.ui2 #lp { width: 208px }
     body.ui2 .ui2lp .lps { padding: var(--pad) }
     body.ui2 .mtg { border-radius: 8px; margin-bottom: 10px }
-    body.ui2 .mbtn { min-height: 36px; font-size: 13px; padding: 0 6px }
+    body.ui2 .mbtn { min-height: 36px; font-size: 12px; padding: 0 4px; white-space: nowrap; word-break: keep-all; display: inline-flex; align-items: center; justify-content: center; gap: 3px }
     body.ui2 .lpt, body.ui2 .pt { font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--t2); margin-bottom: 8px }
     body.ui2 #tL { display: grid; grid-template-columns: 1fr 1fr; gap: 4px }
     body.ui2 #tL .tb { min-height: 36px; padding: 4px 8px; font-size: 12px; border-radius: 6px; border-color: var(--bd); background: var(--b2); gap: 6px; line-height: 1.2 }

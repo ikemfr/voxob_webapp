@@ -64,7 +64,7 @@
       else _gen(id);
       // the clear at the start of Generate was not undoable: put it in front of the new step
       if (before.length) { if (undoSt.length > n0) undoSt[undoSt.length - 1].a = [...before, ...undoSt[undoSt.length - 1].a]; else pU(before) }
-      nm.done.clear(); schedSave();
+      nm.done.clear(); if (nm.once) nm.once.clear(); nm.anim = null; schedSave();
     };
     let sT = 0; function schedSave() { clearTimeout(sT); sT = setTimeout(autoSave, 700) }
     const _pU = pU; pU = function (a) { _pU(a); schedSave() };
@@ -245,16 +245,115 @@
         return () => { const a = []; for (const [k, v] of Object.entries({ ...V() })) { const [x, y, z] = pv_(k); let open = 0; for (const [dx, dy, dz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) if (!has(x + dx, y + dy, z + dz)) open++; if (open >= 3) a.push(setV(x, y, z, shade(v.c, -12, 5), v.a || 255)) } return commit(a) };
       },
     };
+    // Next move, v2: never runs dry. Three kinds of step — blocks (composition), colour (colour theory) and motion
+    // (animation) — taken in turn, picked at random among the ones that fit the shape, never the same as the last few.
+    // One-off steps (shading, edges, gradients…) wait until the next Generate so they do not stack.
+    const ML = (ja, en) => ({ ja, en });
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+    function stats() {
+      const b = bbox(); if (!b) return null; const vs = Object.entries(V()); const hues = {}; let n = 0;
+      for (const [, v] of vs) { const [h, s, l] = hex2hsl(v.c); if (s > 12 && l > 12 && l < 92) { const k = Math.round(h / 30) % 12; hues[k] = (hues[k] || 0) + 1; n++ } }
+      const dom = n ? +Object.keys(hues).sort((p, q) => hues[q] - hues[p])[0] * 30 : 200;
+      let g0 = 0; for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) if (has(x, 0, z)) g0++;
+      const fx = b.x1 - b.x0 + 1, fz = b.z1 - b.z0 + 1;
+      return { b, count: vs.length, dom, ground: g0 >= Math.max(12, fx * fz * 0.6), tall: b.y1 - b.y0 >= 4, head: H - 1 - b.y1 };
+    }
+    const freeGround = () => { const out = []; for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) if (has(x, 0, z) && !has(x, 1, z)) out.push([x, z]); return out };
+    const groundCol = (x, z) => (V()[vk(x, 0, z)] || {}).c;
+    const openFaces = (x, y, z) => [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].filter(([dx, dy, dz]) => !has(x + dx, y + dy, z + dz)).length;
+    const recolor = (fn) => { const a = []; for (const [k, v] of Object.entries({ ...V() })) { const [x, y, z] = pv_(k); const c = fn(v.c, x, y, z); if (c && c !== v.c) a.push(setV(x, y, z, c, v.a || 255)) } return commit(a) };
+    const XS = {
+      // ---- blocks ----
+      door: { cat: 'b', once: 1, msg: ML(['扉を付ける', '入口があると「中がある建物」に見え、スケールの基準にもなります。'], ['Add a door', 'An entrance makes it read as a building with an inside, and sets the scale.']),
+        ok: (S) => { if (!S.tall) return null; const { b } = S, cx = Math.round((b.x0 + b.x1) / 2), y = S.ground ? 1 : b.y0; return has(cx, y, b.z0) && has(cx, y + 1, b.z0) ? [cx, y, b.z0] : null },
+        run: ([x, y, z]) => commit([setV(x, y, z, '#5a3a22', 255), setV(x, y + 1, z, '#5a3a22', 255)]) },
+      path: { cat: 'b', once: 1, msg: ML(['小道を通す', '入口へ向かう道は視線を導く「誘導線（リーディングライン）」です。'], ['Lay a path', 'A path to the entrance is a leading line: it walks the eye in.']),
+        ok: (S) => { if (!S.ground) return null; const { b } = S, cx = Math.round((b.x0 + b.x1) / 2); const cells = []; for (let z = b.z0 - 1; z >= 0; z--) if (has(cx, 0, z) && !has(cx, 1, z)) cells.push(z); else break; return cells.length >= 2 ? [cx, cells] : null },
+        run: ([x, zs]) => commit(zs.flatMap(z => [setV(x, 0, z, z % 2 ? '#b8b0a0' : '#a69e8e', 255), x + 1 < W && has(x + 1, 0, z) && !has(x + 1, 1, z) ? setV(x + 1, 0, z, '#b8b0a0', 255) : null])) },
+      fence: { cat: 'b', once: 1, msg: ML(['柵で囲う', '縁取りは画面を締め、等間隔の杭がリズムを作ります。'], ['Fence it in', 'A border frames the scene, and evenly spaced posts add rhythm.']),
+        ok: (S) => { if (!S.ground || H < 4) return null; let x0 = W, x1 = -1, z0 = D, z1 = -1; for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) if (has(x, 0, z)) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z) } const p = []; for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) if ((x === x0 || x === x1 || z === z0 || z === z1) && has(x, 0, z) && !has(x, 1, z) && !/^#(b8b0a0|a69e8e)$/.test(groundCol(x, z))) p.push([x, z]); return p.length >= 8 ? p : null },
+        run: (p) => commit(p.map(([x, z]) => setV(x, 1, z, (x + z) % 2 ? '#8a6a42' : '#6f532f', 255))) },
+      flowers: { cat: 'b', msg: ML(['花を散らす', '奇数（3・5・7）でまとめて置くと自然に見えます（奇数の法則）。'], ['Scatter flowers', 'Odd-numbered clusters (3, 5, 7) look natural: the rule of odds.']),
+        ok: (S) => { const f = freeGround(); return S.ground && f.length >= 8 ? f : null },
+        run: (f) => { const S = stats(), cols = [hsl2hex(S.dom + 180, 75, 62), hsl2hex(S.dom + 150, 70, 66), '#fff3b0', '#ffffff'], n = pick([3, 5, 7]), a = []; for (let i = 0; i < n; i++) { const [x, z] = pick(f); const c = pick(cols); a.push(setV(x, 1, z, c, 255)); const [dx, dz] = pick([[1, 0], [0, 1], [-1, 0], [0, -1]]); if (inB(x + dx, 1, z + dz) && has(x + dx, 0, z + dz) && !has(x + dx, 1, z + dz)) a.push(setV(x + dx, 1, z + dz, '#4e9442', 255)) } return commit(a) } },
+      rocks: { cat: 'b', msg: ML(['石を置く', '大中小の不揃いな塊は、整った形との対比で自然さを足します。'], ['Add rocks', 'Uneven little lumps contrast with clean shapes and add nature.']),
+        ok: (S) => { const f = freeGround(); return S.ground && f.length >= 6 ? f : null },
+        run: (f) => { const a = []; for (let i = 0; i < pick([1, 2, 3]); i++) { const [x, z] = pick(f), sz = pick([1, 2]); for (let dx = 0; dx < sz; dx++) for (let dz = 0; dz < sz; dz++) if (inB(x + dx, 1, z + dz) && has(x + dx, 0, z + dz) && !has(x + dx, 1, z + dz)) a.push(setV(x + dx, 1, z + dz, pick(['#8d8d8d', '#7a7a7a', '#a3a3a3']), 255)); if (sz === 2 && !has(x, 2, z)) a.push(setV(x, 2, z, '#9a9a9a', 255)) } return commit(a) } },
+      lanterns: { cat: 'b', once: 1, msg: ML(['灯りを立てる', '暗い中の小さな明るい点は、真っ先に目が行く焦点になります。'], ['Put up lanterns', 'Small bright points are where the eye lands first: a focal point.']),
+        ok: (S) => { if (!S.ground || H < 5) return null; const { b } = S, sp = [[b.x0 - 1, b.z0 - 1], [b.x1 + 1, b.z0 - 1]].filter(([x, z]) => inB(x, 3, z) && has(x, 0, z) && !has(x, 1, z) && !has(x, 2, z)); return sp.length ? sp : null },
+        run: (sp) => commit(sp.flatMap(([x, z]) => [setV(x, 1, z, '#3a3a3a', 255), setV(x, 2, z, '#ffd36b', 255)])) },
+      flag: { cat: 'b', once: 1, msg: ML(['てっぺんに旗', '一番高い所の目印は、シルエットの「頂点」を強めます。'], ['Flag on top', 'A marker at the highest point strengthens the silhouette.']),
+        ok: (S) => { if (S.head < 5) return null; const { b } = S; for (const k of keys()) { const [x, y, z] = pv_(k); if (y === b.y1 && x + 2 < W) return [x, y, z] } return null },
+        run: ([x, y, z]) => { const S = stats(), c = hsl2hex(S.dom + 180, 70, 50), a = []; for (let i = 1; i <= 4; i++) a.push(setV(x, y + i, z, '#d0d0d0', 255)); for (let i = 1; i <= 2; i++) for (let j = 3; j <= 4; j++) a.push(setV(x + i, y + j, z, c, 255)); return commit(a) } },
+      clouds: { cat: 'b', msg: ML(['雲を浮かべる', '奥の空に要素を足すと、手前・奥の重なりで奥行きが生まれます。'], ['Float some clouds', 'Something in the sky behind adds layers of depth.']),
+        ok: (S) => S.head >= 4 && W >= 8 ? S : null,
+        run: (S) => { const a = []; for (let i = 0; i < pick([1, 2]); i++) { const cx = Math.floor(Math.random() * (W - 4)) + 2, cz = Math.floor(Math.random() * Math.max(1, D / 2)), cy = H - 2 - Math.floor(Math.random() * 2); for (let x = -2; x <= 2; x++) for (let z = -1; z <= 1; z++) for (let y = 0; y <= 1; y++) if (Math.abs(x) + Math.abs(z) + y * 2 <= 3 && inB(cx + x, cy + y, cz + z) && !has(cx + x, cy + y, cz + z)) a.push(setV(cx + x, cy + y, cz + z, y ? '#ffffff' : '#eef2f8', 255)) } return commit(a) } },
+      mirror: { cat: 'b', once: 1, msg: ML(['左右対称に整える', '9割そろった形は、残りをそろえると安定して見えます（対称性）。'], ['Make it symmetric', 'A shape that is mostly symmetric looks steadier when it is completed.']),
+        ok: (S) => { const { b } = S, m = b.x0 + b.x1; let same = 0, miss = []; for (const k of keys()) { const [x, y, z] = pv_(k), mx = m - x; if (has(mx, y, z)) same++; else if (inB(mx, y, z)) miss.push([mx, y, z, V()[k]]) } const r = same / S.count; return r >= 0.7 && r < 0.995 && miss.length ? miss : null },
+        run: (miss) => commit(miss.map(([x, y, z, v]) => setV(x, y, z, v.c, v.a || 255))) },
+      // ---- colour ----
+      accent: { cat: 'c', msg: ML(['差し色を入れる', '主色の反対側（補色）を1割だけ。配色の「60・30・10」の10です。'], ['Add an accent colour', 'A touch of the opposite hue (complementary): the 10 in 60-30-10.']),
+        ok: (S) => S.count >= 12 ? S : null,
+        run: (S) => { const c = hsl2hex(S.dom + 180 + (Math.random() * 30 - 15), 70, 55); const ks = keys().filter(k => { const [x, y, z] = pv_(k); return openFaces(x, y, z) >= 3 && y > 0 }); const n = Math.max(1, Math.round(S.count * 0.08)); const sel = ks.sort(() => Math.random() - .5).slice(0, n); return commit(sel.map(k => { const [x, y, z] = pv_(k); return setV(x, y, z, c, V()[k].a || 255) })) } },
+      shade: { cat: 'c', once: 1, msg: null, ok: (S) => S, run: () => { const r = STEPS.shade(); return r ? r() : 0 } },
+      outline: { cat: 'c', once: 1, msg: null, ok: (S) => S.count >= 20 ? S : null, run: () => { const r = STEPS.outline(); return r ? r() : 0 } },
+      gradient: { cat: 'c', once: 1, msg: ML(['上へ明るく', '高い所ほど明るいと、光が上から来ているように感じます。'], ['Lighter toward the top', 'Brighter higher up reads as light coming from above.']),
+        ok: (S) => S.b.y1 - S.b.y0 >= 3 ? S : null,
+        run: (S) => recolor((c, x, y) => shade(c, Math.round(((y - S.b.y0) / Math.max(1, S.b.y1 - S.b.y0) - 0.5) * 16))) },
+      harmony: { cat: 'c', once: 1, msg: ML(['色相をそろえる', '色味を主色の近く（類似色）へ寄せると、全体がまとまります。'], ['Pull the hues together', 'Moving hues toward the main one (analogous colours) unifies the piece.']),
+        ok: (S) => S,
+        run: (S) => recolor((c) => { const [h, s, l] = hex2hsl(c); if (s < 12) return c; const d = ((h - S.dom + 540) % 360) - 180; return hsl2hex(S.dom + d * 0.55, s, l) }) },
+      warm: { cat: 'c', once: 1, msg: ML(['夕方の光', '上面を暖色に、影を寒色に寄せると光の時間帯が生まれます。'], ['Evening light', 'Warm tops and cool shadows suggest a time of day.']),
+        ok: (S) => S,
+        run: () => recolor((c, x, y, z) => { const [h, s, l] = hex2hsl(c); return has(x, y + 1, z) ? hsl2hex(h + ((230 - h + 540) % 360 - 180) * 0.15, s, l - 3) : hsl2hex(h + ((35 - h + 540) % 360 - 180) * 0.2, s + 8, l + 4) }) },
+      season: { cat: 'c', msg: null, ok: (S) => S, run: () => { nm.season = pick(['night', 'autumn', 'pastel', 'wa', 'retro'].filter(x => x !== nm.season)); return recolor((c) => STY[nm.season](c)) } },
+      // ---- motion ----
+      motion: { cat: 'm', msg: null, ok: (S) => S.count >= 4 ? S : null,
+        run: () => { const id = pick(['spinY', 'bounce', 'breathe', 'swing', 'colorCycle', 'waveA', 'rippleA', 'orbit'].filter(x => x !== nm.anim)); nm.anim = id; if (playing) togPlay(); $('agSF').value = 1; $('agFL').value = 8; animGen(id); if (!playing) togPlay(); return 1 } },
+    };
+    const SEASON = { night: ML('夜', 'Night'), autumn: ML('秋', 'Autumn'), pastel: ML('パステル', 'Pastel'), wa: ML('和の色', 'Japanese colours'), retro: ML('レトロ', 'Retro') };
+    const MOTION = {
+      spinY: ML('回転：ターンテーブルは一周で形を全部見せます。', 'Spin: a turntable shows every side in one loop.'),
+      bounce: ML('弾む：落ちて弾むと重さが伝わります。', 'Bounce: falling and bouncing shows weight.'),
+      breathe: ML('呼吸：ゆっくり膨らむと生きているように見えます。', 'Breathe: a slow swell makes it feel alive.'),
+      swing: ML('揺れ：振り子の動きは目で追いやすい動きです。', 'Swing: a pendulum motion is easy to follow.'),
+      colorCycle: ML('色の循環：形はそのまま、色相が一周します。', 'Colour cycle: the shape stays, the hue goes round.'),
+      buildUp: ML('積み上げ：下から組み上がる様子で、作り方が伝わります。', 'Build-up: rising from the bottom shows how it is made.'),
+      waveA: ML('波：場所ごとに少しずらすと、うねりになります。', 'Wave: small offsets in time become a ripple.'),
+      rippleA: ML('波紋：中心から外へ広がる動きです。', 'Ripple: motion spreading out from the centre.'),
+      orbit: ML('公転：中心のまわりを回る動きです。', 'Orbit: going round a centre.'),
+    };
+    const CYCLE = ['b', 'c', 'b', 'm', 'b', 'c'];
+    Object.assign(nm, { recent: [], i: 0, once: new Set(), anim: null, season: null });
+    let depth = 0;
     function nextMove() {
-      const n0 = keys().length; if (nm.n >= 0 && n0 !== nm.n) ['ground', 'roof', 'windows', 'trees'].forEach(id => nm.done.delete(id));
-      for (const id of Object.keys(STEPS)) {
-        if (nm.done.has(id)) continue; const run = STEPS[id](); if (!run) continue;
-        nm.done.add(id); if (id === 'empty') nm.done.clear();
-        const n = run(); if (!n && id !== 'empty') continue;
-        if (id === 'empty') nm.done.add('empty');
-        nm.n = keys().length; const [h, s] = t('steps')[id]; toast('✨ ' + h, s); snd('gen'); return;
-      }
-      nm.n = keys().length; const [h, s] = t('steps').done; toast(h, s); snd('click');
+      if (depth > 12) { depth = 0; return } depth++;
+      const S = stats();
+      if (!S) { STEPS.empty()(); const [h, s] = t('steps').empty; toast('✨ ' + h, s); snd('gen'); return }
+      if (playing && nm.anim) togPlay();
+      // the original structural steps first, once each, while they still fit
+      const base = ['ground', 'roof', 'windows', 'trees'];
+      const cand = (cat) => {
+        const out = [];
+        if (cat === 'b') for (const id of base) { if (nm.once.has(id) || nm.recent.includes(id)) continue; const r = STEPS[id](); if (r) out.push([id, () => r(), 3]) }
+        for (const [id, st] of Object.entries(XS)) { if (st.cat !== cat || nm.recent.includes(id) || (st.once && nm.once.has(id))) continue; const arg = st.ok(S); if (arg) out.push([id, () => st.run(arg), st.once ? 2 : 1]) }
+        return out;
+      };
+      let list = []; for (let k = 0; k < CYCLE.length && !list.length; k++) { list = cand(CYCLE[(nm.i + k) % CYCLE.length]); if (list.length) nm.i = (nm.i + k + 1) % CYCLE.length }
+      if (!list.length) { nm.recent = []; list = cand('c') }
+      // weighted pick: structural steps first
+      const tot = list.reduce((s, x) => s + x[2], 0); let r = Math.random() * tot, chosen = list[0]; for (const x of list) { r -= x[2]; if (r <= 0) { chosen = x; break } }
+      const [id, run] = chosen, n = run();
+      nm.recent = [id, ...nm.recent].slice(0, 4); if ((XS[id] && XS[id].once) || base.includes(id)) nm.once.add(id);
+      if (!n && id !== 'motion') { const r2 = nextMove(); depth = 0; return r2 }
+      // keep an animation in step with the new blocks / colours
+      if (id !== 'motion' && nm.anim && frames.length > 1) { animGen(nm.anim); if (!playing) togPlay() }
+      let h, s;
+      if (base.includes(id) || id === 'shade' || id === 'outline') [h, s] = t('steps')[id];
+      else if (id === 'season') { h = (lang === 'ja' ? '季節・時間を変える：' : 'Change the mood: ') + SEASON[nm.season][lang]; s = lang === 'ja' ? '同じ形でも配色だけで印象が大きく変わります。Ctrl+Z で戻せます。' : 'The same shape feels different with another palette. Ctrl+Z to go back.' }
+      else if (id === 'motion') { h = lang === 'ja' ? '動きを付ける' : 'Add motion'; s = MOTION[nm.anim][lang] + (lang === 'ja' ? '（下の ▶ / ■ で再生・停止）' : ' (▶ / ■ below plays and stops)') }
+      else [h, s] = XS[id].msg[lang] || XS[id].msg.en;
+      toast('✨ ' + h, s); snd('gen'); schedSave(); depth = 0;
     }
     window.nextMove = nextMove;
     const nb = document.createElement('button'); nb.className = 'hb'; nb.id = 'hNx'; nb.style.color = 'var(--a3)'; nb.onclick = nextMove; $('hR').after(nb);
