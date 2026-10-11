@@ -1298,8 +1298,93 @@
     #vxToast span { font-size: 11px; color: var(--t2) }
     .gch { font-size: 10px; color: var(--t3); margin: 6px 0 2px; letter-spacing: .06em }
     .gluck { width: 100%; padding: 6px 0; font-size: 12px; font-weight: 700; border-color: var(--a3) }
-    @media (max-width: 900px) { #hd .hs { display: none } }
     #hNx { font-weight: 700 }
+    /* ===== VoxoB UI layout (body.ui2) =====
+       targets ≥ 32px on desktop and ≥ 44px on touch; 12–13px labels; one accent per role:
+       Export = primary (filled), Next move = accent (outlined), everything else neutral */
+    body.ui2 { --pad: 10px; font-size: 13px }
+    body.ui2 #app { grid-template-rows: 48px 1fr 44px 22px }
+    body.ui2 #hd { gap: 6px; padding: 0 10px }
+    body.ui2 #hd h1 { font-size: 16px; margin-right: 6px }
+    body.ui2 #hd .hb { min-height: 34px; padding: 0 12px; font-size: 13px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap }
+    body.ui2 #hd .hb.pri { background: var(--ac); border-color: var(--ac); color: #05141a; font-weight: 800 }
+    body.ui2 #hd .hb.acc { border-color: var(--a3); color: var(--tx); font-weight: 800 }
+    body.ui2 .hsp { flex: 1 }
+    @media (min-width: 901px) { body.ui2 #hd .m-only { display: none } }
+    body.ui2 #gearM { position: fixed; z-index: 3200; display: none; width: 260px; background: var(--b2); border: 1px solid var(--bh); border-radius: 10px; padding: 12px; box-shadow: 0 12px 36px rgba(0, 0, 0, .5) }
+    body.ui2 #gearM.on { display: block }
+    body.ui2 #gearM #mxR { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: center }
+    body.ui2 #gearM .hsel { width: 100%; min-height: 34px; font-size: 13px }
+    body.ui2 #gearM .hb { min-height: 36px; width: 100%; justify-content: center; display: flex; align-items: center; gap: 4px; font-size: 13px }
+    body.ui2 #gearM #volIc { justify-self: end; font-size: 14px }
+    body.ui2 #gearM #volR { width: 100% !important; height: 4px !important }
+    body.ui2 #gearM .gcopy { display: block; margin-top: 10px; font-size: 11px; color: var(--t3); text-align: center }
+
+    /* left: mode switch + 2-column tool grid */
+    body.ui2 #lp { width: 208px }
+    body.ui2 .ui2lp .lps { padding: var(--pad) }
+    body.ui2 .mtg { border-radius: 8px; margin-bottom: 10px }
+    body.ui2 .mbtn { min-height: 36px; font-size: 13px; padding: 0 6px }
+    body.ui2 .lpt, body.ui2 .pt { font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--t2); margin-bottom: 8px }
+    body.ui2 #tL { display: grid; grid-template-columns: 1fr 1fr; gap: 4px }
+    body.ui2 #tL .tb { min-height: 36px; padding: 4px 8px; font-size: 12px; border-radius: 6px; border-color: var(--bd); background: var(--b2); gap: 6px; line-height: 1.2 }
+    body.ui2 #tL .tb .ti { font-size: 14px; flex: none; width: 16px; text-align: center }
+    body.ui2 #tL .tb .tl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+    body.ui2 #tL .tb.on { border-color: var(--ac); color: var(--tx); background: var(--b3) }
+
+    /* right: tabs + sections */
+    body.ui2 #rp { width: 292px }
+    body.ui2 .rtabs { position: sticky; top: 0; z-index: 4; display: grid; grid-template-columns: repeat(5, 1fr); background: var(--b1); border-bottom: 1px solid var(--bd) }
+    body.ui2 .rtabs button { min-height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--t2); font-size: 11px; font-weight: 700; cursor: pointer }
+    body.ui2 .rtabs button span { font-size: 16px; line-height: 1 }
+    body.ui2 .rtabs button.on { color: var(--tx); border-bottom-color: var(--ac); background: var(--b2) }
+    body.ui2 #rp > .ps { padding: var(--pad) 12px; border-bottom: 1px solid var(--bd) }
+    body.ui2 #rp > .ps[hidden] { display: none }
+    body.ui2 #rp .btn, body.ui2 #rp .at { min-height: 34px; font-size: 12px; border-radius: 6px }
+    body.ui2 #rp .ag { gap: 6px }
+    body.ui2 #rp input[type=number], body.ui2 #rp .hsel { min-height: 30px; font-size: 13px }
+
+    /* generator buttons: one grid per group, fixed 3 columns, icon over a 2-line label */
+    body.ui2 #gnG.gcat { display: block }
+    body.ui2 #gnG .gg, body.ui2 #agG { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px }
+    body.ui2 #gnG .gb, body.ui2 #agG .gb { min-height: 58px; padding: 6px 2px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; line-height: 1.2; border-radius: 8px; word-break: keep-all; overflow-wrap: anywhere; writing-mode: horizontal-tb }
+    body.ui2 #gnG .gb .gi, body.ui2 #agG .gb .gi { font-size: 20px; line-height: 1 }
+    body.ui2 #gnG .gch { margin: 14px 0 6px; font-size: 11px; font-weight: 700; color: var(--t2) }
+    body.ui2 #gnG .gluck { min-height: 42px; font-size: 13px; border-radius: 8px; flex-direction: row }
+
+    /* bottom bar */
+    body.ui2 #abar { height: 44px; gap: 6px; padding: 0 10px }
+    body.ui2 #abar .fb { height: 32px; padding: 0 12px; font-size: 12px; border-radius: 6px }
+    body.ui2 #abar .hs { width: 1px; height: 22px; background: var(--bd); margin: 0 4px }
+    body.ui2 #st { font-size: 11px }
+
+    /* phones: bottom nav + bottom sheets */
+    #bnav { display: none }
+    .sgrab { display: none }
+    @media (max-width: 900px) {
+      body.ui2 #app { grid-template-rows: 48px 1fr 44px 58px }
+      body.ui2 #st { display: none }
+      body.ui2 #hd { padding: 0 6px; gap: 4px }
+      body.ui2 #hd .hb { min-height: 38px; padding: 0 10px; font-size: 15px }
+      body.ui2 #hTog2D { display: none !important }
+      body.ui2 #bnav { display: grid; grid-template-columns: repeat(6, 1fr); background: var(--b1); border-top: 1px solid var(--bd); padding-bottom: env(safe-area-inset-bottom) }
+      body.ui2 #bnav button { min-height: 52px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: 0; color: var(--t2); font-size: 11px; font-weight: 700 }
+      body.ui2 #bnav button span { font-size: 18px; line-height: 1 }
+      body.ui2 #bnav button.on { color: var(--tx); box-shadow: inset 0 2px 0 var(--ac) }
+      body.ui2 #lp, body.ui2 #rp { position: fixed !important; left: 0 !important; right: 0 !important; top: auto !important; width: auto !important; bottom: calc(102px + env(safe-area-inset-bottom)); height: min(46vh, 430px); z-index: 120; border: 1px solid var(--bh); border-radius: 14px 14px 0 0; transform: translateY(calc(100% + 110px)); transition: transform .25s ease; box-shadow: 0 -10px 30px rgba(0, 0, 0, .45) }
+      body.ui2 #lp.on, body.ui2 #rp.on { transform: translateY(0) }
+      body.ui2 .rtabs { display: none }
+      body.ui2 .sgrab { display: flex; justify-content: flex-end; position: sticky; top: 0; z-index: 5; background: var(--b1); padding: 6px 8px 0; border-radius: 14px 14px 0 0 }
+      body.ui2 .sgrab::before { content: ''; position: absolute; left: 50%; top: 7px; width: 40px; height: 4px; border-radius: 2px; background: var(--bh); transform: translateX(-50%) }
+      body.ui2 .sclose { min-width: 40px; min-height: 36px; background: var(--b3); border: 1px solid var(--bd); border-radius: 8px; color: var(--tx); font-size: 14px }
+      body.ui2 #tL { grid-template-columns: repeat(3, 1fr) }
+      body.ui2 #tL .tb { min-height: 44px }
+      body.ui2 #gnG .gg, body.ui2 #agG { grid-template-columns: repeat(4, minmax(0, 1fr)) }
+      body.ui2 #rp .btn, body.ui2 #rp .at { min-height: 44px; font-size: 13px }
+      body.ui2 #abar .fb { height: 36px }
+      body.ui2 #vxToast { bottom: 118px }
+    }
+    /* /VoxoB+ */
   </style>
 </head>
 
@@ -3617,7 +3702,7 @@
     // phones: theme, language, sound, wireframe, share, background and about move into the settings drawer
     const MX = ['thSel', 'lnSel', 'volIc', 'volR', 'hW', 'hSh', 'hBG', 'hAbt'], mxHome = {};
     function placeMobile() {
-      const m = matchMedia('(max-width: 900px)').matches;
+      const m = true; /* always in the settings menu */
       MX.forEach(id => { const el = $(id); if (!el) return; if (!mxHome[id]) mxHome[id] = { p: el.parentNode, n: el.nextSibling }; if (m) $('mxR').appendChild(el); else if (el.parentNode !== mxHome[id].p) mxHome[id].p.insertBefore(el, mxHome[id].n) });
     }
     function compactHd() {
@@ -3951,6 +4036,81 @@
     const _sl = setLang; setLang = function (l) { _sl(l); relabel() };
     matchMedia('(max-width: 900px)').addEventListener('change', relabel);
     relabel();
+  })();
+  // ===== VoxoB UI layout =====
+  // Re-arranges the existing controls (ids and handlers unchanged) into:
+  //  header  : undo / redo / ✨ Next move … view toggles · Export (primary) · ⚙ menu (theme, language, sound, wire, share, BG, About)
+  //  left    : draw / delete / colour switch, tools in a 2-column grid, brush · snap · symmetry
+  //  right   : five tabs instead of one long scroll — Make · Colour · Motion · Edit · File (last tab remembered)
+  //  phones  : a bottom bar in thumb reach opens the tools or a tab as a bottom sheet; the header keeps undo / redo / next / export
+  (() => {
+    const U = {
+      en: { make: 'Make', color: 'Colour', anim: 'Motion', edit: 'Edit', file: 'File', tools: 'Tools', menu: 'Settings', close: 'Close', view: 'View' },
+      ja: { make: '作る', color: '色', anim: '動き', edit: '編集', file: 'ファイル', tools: 'ツール', menu: '設定', close: '閉じる', view: '表示' },
+    };
+    const u = (k) => (U[lang] || U.en)[k];
+    const TABS = [['make', '🎲', ['ptGn']], ['color', '🎨', ['ptCl', 'ptSty']], ['anim', '🎞', ['ptAG']], ['edit', '✂', ['ptAc', 'ptCP']], ['file', '📁', ['ptPj', 'ptSz', 'ptMd']]];
+    const mobile = () => matchMedia('(max-width: 900px)').matches;
+    document.body.classList.add('ui2');
+
+    // ---------- header ----------
+    const hd = $('hd'), copy = hd.querySelector('.m-hide');
+    const sp = document.createElement('div'); sp.className = 'hsp';
+    const gear = document.createElement('button'); gear.className = 'hb'; gear.id = 'hGear'; gear.setAttribute('aria-haspopup', 'true'); gear.setAttribute('aria-expanded', 'false');
+    const menu = document.createElement('div'); menu.id = 'gearM'; menu.setAttribute('role', 'menu');
+    menu.appendChild($('mxR')); if (copy) { copy.classList.remove('m-hide'); copy.className = 'gcopy'; menu.appendChild(copy) }
+    $('mExtra').remove();
+    document.body.appendChild(menu);
+    [$('hU'), $('hR'), $('hNx')].forEach(b => hd.appendChild(b));
+    hd.appendChild(sp); hd.appendChild($('hTog2D')); hd.appendChild($('hEx')); hd.appendChild(gear);
+    hd.querySelectorAll('.hs').forEach(e => e.remove());
+    $('hEx').classList.add('pri'); $('hNx').classList.add('acc');
+    const placeMenu = () => { const r = gear.getBoundingClientRect(); menu.style.top = (r.bottom + 6) + 'px'; menu.style.right = Math.max(8, innerWidth - r.right) + 'px' };
+    const setMenu = (on) => { menu.classList.toggle('on', on); gear.setAttribute('aria-expanded', String(on)); if (on) placeMenu() };
+    gear.onclick = (e) => { e.stopPropagation(); setMenu(!menu.classList.contains('on')) };
+    document.addEventListener('pointerdown', (e) => { if (menu.classList.contains('on') && !menu.contains(e.target) && e.target !== gear) setMenu(false) });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setMenu(false); closeSheets() } });
+    menu.addEventListener('click', (e) => { if (e.target.closest('button')) setTimeout(() => setMenu(false), 0) });
+
+    // ---------- left: tools in two columns, the switch on top ----------
+    $('lp').classList.add('ui2lp');
+
+    // ---------- right: tabs ----------
+    const rp = $('rp'), bar = document.createElement('div'); bar.className = 'rtabs'; bar.setAttribute('role', 'tablist'); rp.prepend(bar);
+    const secOf = {}; rp.querySelectorAll(':scope > .ps').forEach(ps => { const t = ps.querySelector('.pt'); const tab = t && TABS.find(([, , ids]) => ids.includes(t.id)); ps.dataset.tab = tab ? tab[0] : 'make'; secOf[ps.dataset.tab] = (secOf[ps.dataset.tab] || 0) + 1 });
+    // keep each tab's sections in the listed order
+    TABS.forEach(([id, , ids]) => ids.forEach(pid => { const p = $(pid) && $(pid).closest('.ps'); if (p) rp.appendChild(p) }));
+    let cur = 'make'; try { const s = localStorage.getItem('vs_tab'); if (TABS.some(t => t[0] === s)) cur = s } catch (e) { }
+    function showTab(id) {
+      cur = id; try { localStorage.setItem('vs_tab', id) } catch (e) { }
+      rp.querySelectorAll(':scope > .ps').forEach(ps => ps.hidden = ps.dataset.tab !== id);
+      bar.querySelectorAll('button').forEach(b => { const on = b.dataset.tab === id; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)) });
+      bnav.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === id && rp.classList.contains('on')));
+      rp.scrollTop = 0;
+    }
+
+    // ---------- phones: bottom bar + bottom sheets ----------
+    const bnav = document.createElement('nav'); bnav.id = 'bnav'; $('app').appendChild(bnav);
+    const grab = (el) => { const g = document.createElement('div'); g.className = 'sgrab'; const x = document.createElement('button'); x.className = 'sclose'; x.textContent = '✕'; x.onclick = closeSheets; g.appendChild(x); el.prepend(g); return x };
+    const xL = grab($('lp')), xR = grab(rp);
+    function closeSheets() { $('lp').classList.remove('on'); rp.classList.remove('on'); syncNav() }
+    function syncNav() { bnav.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.tab ? (rp.classList.contains('on') && b.dataset.tab === cur) : $('lp').classList.contains('on'))) }
+    function openTab(id) { const same = rp.classList.contains('on') && cur === id; $('lp').classList.remove('on'); if (same) { rp.classList.remove('on') } else { showTab(id); rp.classList.add('on') } syncNav() }
+    function openTools() { const on = !$('lp').classList.contains('on'); rp.classList.remove('on'); $('lp').classList.toggle('on', on); syncNav() }
+
+    function build() {
+      bar.innerHTML = ''; TABS.forEach(([id, ic]) => { const b = document.createElement('button'); b.dataset.tab = id; b.setAttribute('role', 'tab'); b.innerHTML = `<span>${ic}</span>${u(id)}`; b.onclick = () => showTab(id); bar.appendChild(b) });
+      bnav.innerHTML = ''; const tb = document.createElement('button'); tb.innerHTML = `<span>🛠</span>${u('tools')}`; tb.onclick = openTools; bnav.appendChild(tb);
+      TABS.forEach(([id, ic]) => { const b = document.createElement('button'); b.dataset.tab = id; b.innerHTML = `<span>${ic}</span>${u(id)}`; b.onclick = () => openTab(id); bnav.appendChild(b) });
+      gear.innerHTML = mobile() ? '⚙' : '⚙ ' + u('menu'); gear.setAttribute('aria-label', u('menu')); xL.setAttribute('aria-label', u('close')); xR.setAttribute('aria-label', u('close'));
+      showTab(cur); syncNav();
+    }
+    // the old header drawer buttons are replaced by the bottom bar
+    ['hMT', 'hMS'].forEach(id => $(id) && ($(id).style.display = 'none'));
+    // tapping the canvas closes a sheet (the main script already does this for touch)
+    const _sl = setLang; setLang = function (l) { _sl(l); build() };
+    matchMedia('(max-width: 900px)').addEventListener('change', () => { closeSheets(); build() });
+    build();
   })();
   </script>
   <!-- /VoxoB+ -->
