@@ -9,6 +9,7 @@
       en: { make: 'Make', color: 'Colour', anim: 'Motion', edit: 'Edit', file: 'File', tools: 'Tools', menu: 'Settings', close: 'Close', view: 'View' },
       ja: { make: '作る', color: '色', anim: '動き', edit: '編集', file: 'ファイル', tools: 'ツール', menu: '設定', close: '閉じる', view: '表示' },
     };
+    Object.keys(I18N).forEach(l => U[l] = I18N[l].UI);
     const u = (k) => (U[lang] || U.en)[k];
     const TABS = [['make', '🎲', ['ptGn']], ['color', '🎨', ['ptCl', 'ptSty']], ['anim', '🎞', ['ptAG']], ['edit', '✂', ['ptAc', 'ptCP']], ['file', '📁', ['ptPj', 'ptSz', 'ptMd']]];
     const mobile = () => matchMedia('(max-width: 900px)').matches;

@@ -1,4 +1,4 @@
-// Builds the search-friendly guide pages (/ja/, /en/), sitemap.xml and robots.txt next to index.html.
+// Builds the search-friendly guide pages (/ja/, /en/, /es/, /pt/, /zh/), sitemap.xml and robots.txt next to index.html.
 // usage: node site/pages.mjs   (run from the repo root; plain Node, no dependencies)
 import fs from 'node:fs';
 
@@ -10,6 +10,12 @@ const GN = Function(`return ${/const GN = (\{[\s\S]*?\n {4}\});/.exec(html)[1]}`
 // plus the extra generators added in site/plus.js
 const plus = fs.readFileSync('site/plus.js', 'utf8');
 ['en', 'ja'].forEach((lang, i) => Object.assign(GN[lang], Function(`return ${[...plus.matchAll(/ gn: (\{[^}]*\})/g)][i][1]}`)()));
+// and the other languages from site/i18n.js
+const I18N = Function(`${fs.readFileSync('site/i18n.js', 'utf8')}; return I18N`)();
+Object.entries(I18N).forEach(([lang, d]) => { GN[lang] = { ...d.GN, ...d.PLUS.gn } });
+const LANGS = ['ja', 'en', 'es', 'pt', 'zh'];
+// html lang, hreflang, og:locale, name in the language switcher
+const LOC = { ja: ['ja', 'ja', 'ja_JP', '日本語'], en: ['en', 'en', 'en_US', 'English'], es: ['es', 'es', 'es_ES', 'Español'], pt: ['pt-BR', 'pt', 'pt_BR', 'Português'], zh: ['zh-CN', 'zh-Hans', 'zh_CN', '中文'] };
 const NG = Object.keys(GN.en).length;
 const half = (s) => s.normalize('NFKC'); // the app uses half-width katakana to fit buttons
 
@@ -120,17 +126,176 @@ const C = {
     ],
     by: 'Made by Ike mfr (independent project)',
   },
+  es: {
+    title: 'Cómo usar VoxoB — editor de vóxeles online gratis para crear voxel art',
+    desc: `Cómo usar VoxoB, un editor de vóxeles gratis que funciona en el navegador del PC y del móvil, sin instalar ni registrarse: ${NG} generadores de un clic, botón Siguiente paso, animación por fotogramas, conversión de imágenes, vídeo y modelos 3D a vóxeles, y exportación OBJ, STL, GLB y MP4.`,
+    h1: 'Cómo usar VoxoB — crea voxel art gratis',
+    lead: 'VoxoB es un editor de vóxeles (píxeles en 3D) que funciona por completo en tu navegador. Crea pixel art en 3D y modelos de vóxeles en el ordenador, la tableta o el móvil. Sin instalar nada y sin registro. Tu trabajo nunca se sube: se guarda en el navegador que estás usando.',
+    open: 'Abrir VoxoB (gratis)',
+    toc: 'Contenido',
+    home: 'Inicio',
+    upd: 'Última actualización',
+    alt: 'Captura de VoxoB: un modelo de vóxeles creado en el editor del navegador',
+    stepsH: ['steps', 'Crea voxel art en 3 pasos'],
+    steps: [
+      ['Crea una forma', 'En la pestaña Crear del panel derecho, genera una casa, un castillo, un árbol, un terreno y más con un clic, o coloca vóxeles tú mismo con el lápiz y el rectángulo del panel izquierdo.'],
+      ['Termínala', 'Pulsa ✨ Siguiente paso para añadir suelo, tejado, ventanas, sombreado y más; después cambia todos los colores con Estilo o Paleta.'],
+      ['Exporta', 'Con Exportar, arriba a la derecha, guarda OBJ, STL, GLB, PNG o vídeo, listos para impresión 3D, recursos de juegos o redes sociales.'],
+    ],
+    s: [
+      ['start', 'Primeros pasos', ['En tu primera visita puedes elegir: generar algo, empezar con un lienzo vacío o crearlo a partir de una imagen.', 'En el ordenador, elige una herramienta a la izquierda (lápiz, línea, rectángulo, círculo, relleno…) y haz clic en la vista 3D o en el corte 2D. Arrastra con el botón derecho para girar, Shift + arrastrar para mover y la rueda para hacer zoom.', 'En el móvil, abre los paneles desde la barra inferior o con Herramientas y Ajustes. Toca para colocar, usa dos dedos para girar y pellizca para hacer zoom.']],
+      ['generators', `Generadores de un clic (${NG})`, null],
+      ['next', 'Siguiente paso y estilos', ['Pulsa ✨ Siguiente paso arriba (o N) y VoxoB añade el siguiente paso lógico a lo que tienes: suelo, tejado, ventanas, árboles, sombreado o bordes más oscuros, solo los que encajan con la forma. Cada uno se puede deshacer con Ctrl+Z.', 'Estilo, en el panel derecho, cambia los colores de todo el modelo a la vez: japonés, retro, pastel, noche, otoño o mono. Paleta ofrece juegos como los colores tradicionales japoneses o una paleta retro de 16 colores.']],
+      ['animation', 'Animación', ['Añade fotogramas y crea una animación fotograma a fotograma. Generar animación, en el panel derecho, convierte la forma actual en 26 tipos de movimiento: giro, péndulo, crecer, disolver y más.', 'Ajusta la velocidad con FPS y exporta vídeo WebM o MP4.']],
+      ['import', 'Desde imágenes, vídeo y modelos 3D', ['Carga imágenes PNG / JPG / GIF / BMP, vídeo MP4 / WebM / MOV o modelos OBJ / STL y VoxoB los convierte en vóxeles. Las imágenes pueden tomar profundidad de sus colores: ideal para pasar pixel art a 3D.']],
+      ['export', 'Exportar y guardar', ['Exporta OBJ (+MTL), STL para impresión 3D, GLB para motores de juego y web 3D, PNG, vídeo WebM / MP4 o JSON.', 'El trabajo se guarda en el navegador automáticamente y puedes tener varios proyectos con nombre. Compartir mete tu trabajo en una URL (no se guarda nada en un servidor).']],
+    ],
+    usesH: ['uses', 'Para qué se usa'],
+    uses: [
+      'Modelos para impresión 3D (exportación STL)',
+      'Recursos de juego e iconos para Blender, Unity, Godot y más (OBJ / GLB)',
+      'Casas, ciudades, santuarios y pagodas japonesas hechos con bloques',
+      'Animaciones giratorias y vídeos cortos para redes sociales (MP4 / WebM)',
+      'Aprender 3D y geometría espacial en clase o en casa, incluso en equipos donde no se pueden instalar apps',
+    ],
+    keysH: ['keys', 'Atajos de teclado'],
+    keys: [
+      ['B', 'Lápiz'], ['L', 'Línea'], ['R / Shift+R', 'Rectángulo / rectángulo lleno'], ['C / Shift+C', 'Círculo / círculo lleno'], ['Q', 'Elipse'],
+      ['G / F', 'Rellenar / rellenar corte'], ['I', 'Cuentagotas'], ['S', 'Seleccionar'], ['E', 'Dibujar ⇄ borrar'], ['N', '✨ Siguiente paso'],
+      ['[ / ]', 'Pincel más pequeño / más grande'], ['↑ / ↓', 'Subir / bajar el corte'], ['← / →', 'Fotograma anterior / siguiente'], ['Space', 'Reproducir / parar la animación'],
+      ['Ctrl+Z / Ctrl+Y', 'Deshacer / rehacer'], ['Ctrl+V', 'Pegar'], ['Ctrl+S', 'Guardar'], ['Esc', 'Cancelar la acción actual'],
+    ],
+    keyCols: ['Tecla', 'Acción'],
+    faqH: ['faq', 'Preguntas frecuentes'],
+    faq: [
+      ['¿Es gratis?', 'Sí. Y no hace falta registrarse.'],
+      ['¿Hay que instalar algo?', 'No. Abre la página en un navegador como Chrome, Safari, Edge o Firefox. Se necesita un dispositivo compatible con WebGL.'],
+      ['¿Dónde se guardan mis datos?', 'Solo en tu navegador (localStorage). Si borras los datos del navegador, se pierden, así que exporta en JSON los trabajos importantes.'],
+      ['¿Funciona en el móvil?', 'Sí. Toca para colocar, dos dedos para girar y pellizca para hacer zoom. Funciona en iPhone, Android e iPad.'],
+      ['¿Puedo usar mis modelos en Blender o Unity?', 'Sí. Exporta OBJ (+MTL) o GLB e impórtalo en Blender, Unity, Godot y otras herramientas 3D y motores de juego.'],
+      ['¿Puedo imprimir mi modelo en 3D?', 'Sí. Exporta STL y ábrelo en tu laminador (Cura, PrusaSlicer, etc.).'],
+      ['¿Puede convertir una imagen en vóxeles?', 'Sí. Carga un PNG / JPG / GIF / BMP y se convierte en vóxeles, con profundidad según sus colores si quieres. También convierte vídeo y modelos OBJ / STL.'],
+      ['¿En qué se diferencia de MagicaVoxel?', 'VoxoB funciona en el navegador sin instalar nada y también en el móvil. Los generadores de un clic y Siguiente paso te dan una forma sin colocar cada vóxel a mano.'],
+    ],
+    by: 'Hecho por Ike mfr (proyecto independiente)',
+  },
+  pt: {
+    title: 'Como usar o VoxoB — editor de voxels online grátis para criar voxel art',
+    desc: `Como usar o VoxoB, um editor de voxels grátis que roda no navegador do PC e do celular, sem instalar nem criar conta: ${NG} geradores de um clique, botão Próximo passo, animação quadro a quadro, conversão de imagens, vídeo e modelos 3D em voxels, e exportação OBJ, STL, GLB e MP4.`,
+    h1: 'Como usar o VoxoB — crie voxel art de graça',
+    lead: 'O VoxoB é um editor de voxels (pixels em 3D) que roda inteiramente no seu navegador. Crie pixel art 3D e modelos de voxels no computador, no tablet ou no celular. Sem instalação e sem cadastro. Seu trabalho nunca é enviado: ele fica salvo no navegador que você está usando.',
+    open: 'Abrir o VoxoB (grátis)',
+    toc: 'Conteúdo',
+    home: 'Início',
+    upd: 'Última atualização',
+    alt: 'Tela do VoxoB: um modelo de voxels criado no editor do navegador',
+    stepsH: ['steps', 'Crie voxel art em 3 passos'],
+    steps: [
+      ['Crie uma forma', 'Na aba Criar do painel direito, gere uma casa, um castelo, uma árvore, um terreno e mais com um clique, ou coloque voxels você mesmo com o lápis e o retângulo do painel esquerdo.'],
+      ['Finalize', 'Toque em ✨ Próximo passo para adicionar chão, telhado, janelas, sombreamento e mais; depois mude todas as cores com Estilo ou Paleta.'],
+      ['Exporte', 'Em Exportar, no canto superior direito, salve OBJ, STL, GLB, PNG ou vídeo, prontos para impressão 3D, assets de jogos ou redes sociais.'],
+    ],
+    s: [
+      ['start', 'Primeiros passos', ['Na primeira visita você pode escolher: gerar algo, começar com a tela vazia ou criar a partir de uma imagem.', 'No computador, escolha uma ferramenta à esquerda (lápis, linha, retângulo, círculo, preencher…) e clique na vista 3D ou no corte 2D. Arraste com o botão direito para girar, Shift + arrastar para mover e use a roda para dar zoom.', 'No celular, abra os painéis pela barra inferior ou por Ferramentas e Ajustes. Toque para colocar, use dois dedos para girar e faça pinça para dar zoom.']],
+      ['generators', `Geradores de um clique (${NG})`, null],
+      ['next', 'Próximo passo e estilos', ['Toque em ✨ Próximo passo no topo (ou N) e o VoxoB adiciona o próximo passo lógico ao que você tem: chão, telhado, janelas, árvores, sombreamento ou bordas mais escuras, apenas os que combinam com a forma. Cada um pode ser desfeito com Ctrl+Z.', 'Estilo, no painel direito, muda as cores do modelo inteiro de uma vez: japonês, retrô, pastel, noite, outono ou mono. Paleta traz conjuntos como as cores tradicionais japonesas e uma paleta retrô de 16 cores.']],
+      ['animation', 'Animação', ['Adicione quadros e monte uma animação quadro a quadro. Gerar animação, no painel direito, transforma a forma atual em 26 tipos de movimento: giro, pêndulo, crescer, dissolver e mais.', 'Ajuste a velocidade com o FPS e exporte vídeo WebM ou MP4.']],
+      ['import', 'A partir de imagens, vídeo e modelos 3D', ['Carregue imagens PNG / JPG / GIF / BMP, vídeo MP4 / WebM / MOV ou modelos OBJ / STL e o VoxoB os transforma em voxels. As imagens podem ganhar profundidade a partir das cores: ótimo para levar pixel art ao 3D.']],
+      ['export', 'Exportar e salvar', ['Exporte OBJ (+MTL), STL para impressão 3D, GLB para engines de jogos e web 3D, PNG, vídeo WebM / MP4 ou JSON.', 'O trabalho é salvo no navegador automaticamente, e você pode manter vários projetos com nome. Compartilhar coloca seu trabalho em uma URL (nada é guardado em servidor).']],
+    ],
+    usesH: ['uses', 'Para que serve'],
+    uses: [
+      'Modelos para impressão 3D (exportação STL)',
+      'Assets de jogos e ícones para Blender, Unity, Godot e mais (OBJ / GLB)',
+      'Casas, cidades, santuários e pagodes japoneses feitos de blocos',
+      'Animações giratórias e vídeos curtos para redes sociais (MP4 / WebM)',
+      'Aprender 3D e geometria espacial na escola ou em casa, até em aparelhos onde não dá para instalar apps',
+    ],
+    keysH: ['keys', 'Atalhos de teclado'],
+    keys: [
+      ['B', 'Lápis'], ['L', 'Linha'], ['R / Shift+R', 'Retângulo / retângulo cheio'], ['C / Shift+C', 'Círculo / círculo cheio'], ['Q', 'Elipse'],
+      ['G / F', 'Preencher / preencher corte'], ['I', 'Conta-gotas'], ['S', 'Selecionar'], ['E', 'Desenhar ⇄ apagar'], ['N', '✨ Próximo passo'],
+      ['[ / ]', 'Pincel menor / maior'], ['↑ / ↓', 'Subir / descer o corte'], ['← / →', 'Quadro anterior / próximo'], ['Space', 'Reproduzir / parar a animação'],
+      ['Ctrl+Z / Ctrl+Y', 'Desfazer / refazer'], ['Ctrl+V', 'Colar'], ['Ctrl+S', 'Salvar'], ['Esc', 'Cancelar a ação atual'],
+    ],
+    keyCols: ['Tecla', 'Ação'],
+    faqH: ['faq', 'Perguntas frequentes'],
+    faq: [
+      ['É grátis?', 'Sim. E não precisa criar conta.'],
+      ['Preciso instalar alguma coisa?', 'Não. Abra a página em um navegador como Chrome, Safari, Edge ou Firefox. É preciso um aparelho com suporte a WebGL.'],
+      ['Onde meus dados ficam salvos?', 'Só no seu navegador (localStorage). Limpar os dados do navegador apaga tudo, então exporte em JSON os trabalhos importantes.'],
+      ['Funciona no celular?', 'Sim. Toque para colocar, dois dedos para girar e pinça para dar zoom. Funciona no iPhone, Android e iPad.'],
+      ['Posso usar meus modelos no Blender ou no Unity?', 'Sim. Exporte OBJ (+MTL) ou GLB e importe no Blender, Unity, Godot e outras ferramentas 3D e engines de jogos.'],
+      ['Posso imprimir meu modelo em 3D?', 'Sim. Exporte STL e abra no seu fatiador (Cura, PrusaSlicer etc.).'],
+      ['Dá para converter uma imagem em voxels?', 'Sim. Carregue um PNG / JPG / GIF / BMP e ele vira voxels, com profundidade pelas cores se quiser. Vídeos e modelos OBJ / STL também podem ser convertidos.'],
+      ['Qual a diferença para o MagicaVoxel?', 'O VoxoB roda no navegador sem instalar nada e funciona no celular. Os geradores de um clique e o Próximo passo criam uma forma sem você colocar cada voxel à mão.'],
+    ],
+    by: 'Feito por Ike mfr (projeto independente)',
+  },
+  zh: {
+    title: 'VoxoB 使用指南｜免费在线体素编辑器・体素画制作工具（浏览器・手机均可）',
+    desc: `免安装、免注册的免费体素编辑器 VoxoB 使用指南。${NG} 种一键自动生成、“下一步”按钮、逐帧动画、图片／视频／3D 模型转体素，以及 OBJ・STL・GLB・MP4 导出，手机也能用。`,
+    h1: 'VoxoB 使用指南 — 免费制作体素画',
+    lead: 'VoxoB 是一款完全在浏览器中运行的体素（立方体像素）编辑器。在电脑、平板或手机上就能制作 3D 像素画和体素模型。无需安装，无需登录。作品不会上传到外部，只保存在你正在使用的浏览器中。',
+    open: '打开 VoxoB（免费）',
+    toc: '目录',
+    home: '首页',
+    upd: '最后更新',
+    alt: 'VoxoB 截图：用浏览器体素编辑器制作的作品',
+    stepsH: ['steps', '三步制作体素画'],
+    steps: [
+      ['做出形状', '在右侧面板的“制作”标签中，一键自动生成房子、城堡、树木、地形等，或用左侧的画笔、矩形工具从零开始放置体素。'],
+      ['完善细节', '点“✨ 下一步”添加地面、屋顶、窗户、阴影等，再用“风格转换”或“配色”统一整体颜色。'],
+      ['导出', '从右上角的“导出”保存为 OBJ・STL・GLB・PNG 或视频，可直接用于 3D 打印、游戏素材或发到社交媒体。'],
+    ],
+    s: [
+      ['start', '快速上手', ['第一次打开页面时，可以选择“自动生成试试”“从空白画布开始”“从图片制作”三种方式。', '在电脑上，从左侧选择工具（画笔、直线、矩形、圆、填充等），点击 3D 视图或 2D 截面即可放置。右键拖动旋转，Shift＋拖动平移，滚轮缩放。', '在手机上，用底部栏或上方的“工具”“设置”打开面板。单指点按放置，双指旋转，捏合缩放。']],
+      ['generators', `一键自动生成（${NG} 种）`, null],
+      ['next', '下一步与风格转换', ['点击上方的“✨ 下一步”（键盘为 N），会为当前作品添加一个合适的步骤：铺地面、加屋顶、开窗户、种树、加阴影、加深边角，只挑选适合当前形状的。每一步都可以用 Ctrl+Z 撤销。', '右侧面板的“风格转换”可一次性把整个作品的颜色换成和风、复古、马卡龙、夜晚、秋天或黑白。“配色”中可以选择日本传统色、复古 16 色等调色板。']],
+      ['animation', '动画', ['添加帧即可制作逐帧动画。右侧面板的“生成动画”能把当前形状自动做成旋转、摆动、生长、溶解等 26 种动作。', '用 FPS 调整播放速度，并导出为 WebM / MP4 视频。']],
+      ['import', '从图片、视频和 3D 模型制作', ['读取 PNG / JPG / GIF / BMP 图片、MP4 / WebM / MOV 视频或 OBJ / STL 3D 模型，即可转换为体素。图片还能根据颜色生成深度，很适合把像素画变成立体。']],
+      ['export', '导出与保存', ['可导出 OBJ（＋MTL）、STL（适合 3D 打印）、GLB（适合游戏引擎和 Web 3D）、PNG、WebM / MP4 视频以及 JSON。', '作品会自动保存在浏览器中，也可以命名保存多个项目。“分享”会把作品打包进 URL 发送（不会保存到服务器）。']],
+    ],
+    usesH: ['uses', '适用场景'],
+    uses: [
+      '制作 3D 打印模型（导出 STL）',
+      '为 Blender、Unity、Godot 等制作游戏素材和图标（OBJ / GLB）',
+      '用方块搭建房屋、街景，以及和风神社、五重塔',
+      '发到社交媒体的旋转动画和短视频（MP4 / WebM）',
+      '在学校或家里学习 3D 与空间图形（无法安装软件的设备也能用）',
+    ],
+    keysH: ['keys', '键盘快捷键'],
+    keys: [
+      ['B', '画笔'], ['L', '直线'], ['R / Shift+R', '矩形 / 实心矩形'], ['C / Shift+C', '圆 / 实心圆'], ['Q', '椭圆'],
+      ['G / F', '填充 / 截面填充'], ['I', '吸管'], ['S', '选择范围'], ['E', '绘制 ⇄ 删除'], ['N', '✨ 下一步'],
+      ['[ / ]', '画笔变小 / 变大'], ['↑ / ↓', '截面上移 / 下移'], ['← / →', '上一帧 / 下一帧'], ['Space', '播放 / 停止动画'],
+      ['Ctrl+Z / Ctrl+Y', '撤销 / 重做'], ['Ctrl+V', '粘贴'], ['Ctrl+S', '保存'], ['Esc', '取消当前操作'],
+    ],
+    keyCols: ['按键', '操作'],
+    faqH: ['faq', '常见问题'],
+    faq: [
+      ['免费吗？', '是的，完全免费，也不需要注册。'],
+      ['需要安装吗？', '不需要。用 Chrome、Safari、Edge、Firefox 等浏览器打开页面即可使用。需要支持 WebGL 的设备。'],
+      ['数据保存在哪里？', '只保存在你的浏览器中（localStorage）。清除浏览器数据后会丢失，重要的作品请导出为 JSON。'],
+      ['手机可以用吗？', '可以。单指点按放置，双指旋转，捏合缩放。支持 iPhone、Android 和 iPad。'],
+      ['可以在 Blender 或 Unity 中使用吗？', '可以。导出 OBJ（＋MTL）或 GLB 后，就能导入 Blender、Unity、Godot 等 3D 软件和游戏引擎。'],
+      ['可以 3D 打印吗？', '可以。导出 STL，再用切片软件（Cura、PrusaSlicer 等）打开即可。'],
+      ['可以把图片转换成体素吗？', '可以。读取 PNG / JPG / GIF / BMP 即可转换为体素，还能根据颜色生成深度。视频和 OBJ / STL 模型也能转换。'],
+      ['和 MagicaVoxel 有什么不同？', 'VoxoB 无需安装，在浏览器中就能运行，手机上也能用。一键自动生成和“下一步”让你不必逐个放置体素也能做出形状。'],
+    ],
+    by: '作者：Ike mfr（个人开发）',
+  },
 };
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const ICON = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23151820'/><path d='M50 20L80 38V72L50 90L20 72V38Z' fill='%2300d4f0'/><path d='M50 20V55L80 38' fill='%239050f0'/><path d='M20 38L50 55V90' fill='%23f03070'/></svg>`;
 const h2 = ([id, t]) => `<h2 id="${id}">${esc(t)}</h2>`;
-for (const lang of ['ja', 'en']) {
+for (const lang of LANGS) {
   const c = C[lang], url = `${BASE}${lang}/`;
   const gens = Object.values(GN[lang]).map((n) => `<li>${esc(half(n))}</li>`).join('');
   const toc = [c.stepsH, ...c.s.map(([id, h]) => [id, h]), c.usesH, c.keysH, c.faqH];
   const body = [
-    `${h2(c.stepsH)}<ol class="steps">${c.steps.map(([t, d]) => `<li><b>${esc(t)}</b>${lang === 'ja' ? '：' : ': '}${esc(d)}</li>`).join('')}</ol>`,
+    `${h2(c.stepsH)}<ol class="steps">${c.steps.map(([t, d]) => `<li><b>${esc(t)}</b>${lang === 'ja' || lang === 'zh' ? '：' : ': '}${esc(d)}</li>`).join('')}</ol>`,
     ...c.s.map(([id, h, ps]) => `${h2([id, h])}${ps ? ps.map((p) => `<p>${esc(p)}</p>`).join('') : `<ul class="gens">${gens}</ul>`}`),
     `${h2(c.usesH)}<ul>${c.uses.map((u) => `<li>${esc(u)}</li>`).join('')}</ul>`,
     `${h2(c.keysH)}<table class="keys"><thead><tr><th>${esc(c.keyCols[0])}</th><th>${esc(c.keyCols[1])}</th></tr></thead><tbody>${c.keys.map(([k, a]) => `<tr><td><kbd>${esc(k)}</kbd></td><td>${esc(a)}</td></tr>`).join('')}</tbody></table>`,
@@ -139,17 +304,17 @@ for (const lang of ['ja', 'en']) {
   const ld = {
     '@context': 'https://schema.org',
     '@graph': [
-      { '@type': 'WebPage', '@id': `${url}#page`, url, name: c.title, description: c.desc, inLanguage: lang, dateModified: TODAY, primaryImageOfPage: `${BASE}og-image.png`,
+      { '@type': 'WebPage', '@id': `${url}#page`, url, name: c.title, description: c.desc, inLanguage: LOC[lang][0], dateModified: TODAY, primaryImageOfPage: `${BASE}og-image.png`,
         isPartOf: { '@type': 'WebSite', '@id': `${BASE}#site`, name: 'VoxoB', url: BASE },
         about: { '@type': 'WebApplication', '@id': `${BASE}#app`, name: 'VoxoB', url: BASE, applicationCategory: 'DesignApplication', operatingSystem: 'Any (web browser)', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } },
         author: { '@type': 'Person', name: 'Ike mfr' } },
       { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'VoxoB', item: BASE }, { '@type': 'ListItem', position: 2, name: c.h1.split(' — ')[0], item: url }] },
-      { '@type': 'HowTo', name: c.stepsH[1], inLanguage: lang, tool: { '@type': 'HowToTool', name: 'VoxoB' }, step: c.steps.map(([name, text], i) => ({ '@type': 'HowToStep', position: i + 1, name, text, url: `${url}#steps` })) },
+      { '@type': 'HowTo', name: c.stepsH[1], inLanguage: LOC[lang][0], tool: { '@type': 'HowToTool', name: 'VoxoB' }, step: c.steps.map(([name, text], i) => ({ '@type': 'HowToStep', position: i + 1, name, text, url: `${url}#steps` })) },
       { '@type': 'FAQPage', mainEntity: c.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
     ],
   };
   const page = `<!DOCTYPE html>
-<html lang="${lang}">
+<html lang="${LOC[lang][0]}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -159,12 +324,12 @@ for (const lang of ['ja', 'en']) {
 <meta name="theme-color" content="#0e1018">
 <link rel="icon" href="${ICON}">
 <link rel="canonical" href="${url}">
-<link rel="alternate" hreflang="ja" href="${BASE}ja/">
-<link rel="alternate" hreflang="en" href="${BASE}en/">
+${LANGS.map((l) => `<link rel="alternate" hreflang="${LOC[l][1]}" href="${BASE}${l}/">`).join('\n')}
 <link rel="alternate" hreflang="x-default" href="${BASE}">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="VoxoB">
-<meta property="og:locale" content="${lang === 'ja' ? 'ja_JP' : 'en_US'}">
+<meta property="og:locale" content="${LOC[lang][2]}">
+${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${LOC[l][2]}">`).join('\n')}
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${esc(c.title)}">
 <meta property="og:description" content="${esc(c.desc)}">
@@ -195,7 +360,7 @@ nav,footer{font-size:14px;color:var(--sub)}footer{margin-top:40px}
 </head>
 <body>
 <main>
-<nav aria-label="breadcrumb"><a href="/">VoxoB</a> › ${esc(c.h1.split(' — ')[0])} · ${lang === 'ja' ? '<a href="/en/" hreflang="en">English</a>' : '<a href="/ja/" hreflang="ja">日本語</a>'}</nav>
+<nav aria-label="breadcrumb"><a href="/">VoxoB</a> › ${esc(c.h1.split(' — ')[0])} · ${LANGS.filter((l) => l !== lang).map((l) => `<a href="/${l}/" hreflang="${LOC[l][1]}" lang="${LOC[l][0]}">${LOC[l][3]}</a>`).join(' · ')}</nav>
 <h1>${esc(c.h1)}</h1>
 <p class="lead">${esc(c.lead)}</p>
 <a class="cta" href="/">${esc(c.open)}</a>
@@ -211,11 +376,11 @@ ${body}
   fs.mkdirSync(lang, { recursive: true });
   fs.writeFileSync(`${lang}/index.html`, page);
 }
-const alt = [['ja', 'ja/'], ['en', 'en/'], ['x-default', '']].map(([h, p]) => `<xhtml:link rel="alternate" hreflang="${h}" href="${BASE}${p}"/>`).join('');
+const alt = [...LANGS.map((l) => [LOC[l][1], `${l}/`]), ['x-default', '']].map(([h, p]) => `<xhtml:link rel="alternate" hreflang="${h}" href="${BASE}${p}"/>`).join('');
 fs.writeFileSync('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
-${['', 'ja/', 'en/'].map((p) => `  <url><loc>${BASE}${p}</loc><lastmod>${TODAY}</lastmod>${alt}</url>`).join('\n')}
+${['', ...LANGS.map((l) => `${l}/`)].map((p) => `  <url><loc>${BASE}${p}</loc><lastmod>${TODAY}</lastmod>${alt}</url>`).join('\n')}
 </urlset>
 `);
 fs.writeFileSync('robots.txt', `User-agent: *\nAllow: /\nSitemap: ${BASE}sitemap.xml\n`);
-console.log('pages ja en, sitemap, robots');
+console.log(`pages ${LANGS.join(' ')}, sitemap, robots`);
