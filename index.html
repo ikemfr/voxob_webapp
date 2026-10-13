@@ -8,14 +8,17 @@
   <link rel="canonical" href="https://voxob.vercel.app/">
   <link rel="alternate" hreflang="ja" href="https://voxob.vercel.app/ja/">
   <link rel="alternate" hreflang="en" href="https://voxob.vercel.app/en/">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoxoB","url":"https://voxob.vercel.app/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":["ja","en"],"author":{"@type":"Person","name":"Ike mfr"},"description":"Free browser voxel editor with 50 one-click generators, a Next move button, styles, frame animation, image/video/3D-model to voxel conversion, and OBJ/STL/GLB/MP4 export."}</script>
+  <link rel="alternate" hreflang="x-default" href="https://voxob.vercel.app/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoxoB","url":"https://voxob.vercel.app/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":["ja","en"],"author":{"@type":"Person","name":"Ike mfr"},"description":"Free browser voxel editor with 50 one-click generators, a Next move button, styles, frame animation, image/video/3D-model to voxel conversion, and OBJ/STL/GLB/MP4 export.","alternateName":["ボクソブ","VoxoB voxel editor"],"screenshot":"https://voxob.vercel.app/og-image.png","browserRequirements":"Requires WebGL","isAccessibleForFree":true,"featureList":["50 one-click procedural generators (buildings, nature, shapes, patterns)","Next move: adds the next sensible step to your model","Style and palette conversion","Frame animation with WebM/MP4 export","Image, video and OBJ/STL to voxel conversion","OBJ, STL, GLB, PNG and JSON export","Works on PC, tablet and smartphone"],"softwareHelp":[{"@type":"CreativeWork","url":"https://voxob.vercel.app/ja/","inLanguage":"ja"},{"@type":"CreativeWork","url":"https://voxob.vercel.app/en/","inLanguage":"en"}]}</script>
   <meta name="description" content="インストール不要、ブラウザを開いて1秒で起動。プロシージャル生成（自動生成）からアニメーション出力まで完結する、次世代の無料ボクセルエディタ「VoxoB」。">
-  <meta name="keywords" content="VoxoB, Voxel, ボクセルアート, 3Dモデリング, ブラウザ, 自動生成, WebGL, Three.js">
+  <meta name="keywords" content="VoxoB, ボクソブ, ボクセル, ボクセルエディタ, ボクセルアート, 3Dドット絵, 無料, ブラウザ, スマホ, 自動生成, 3Dモデリング, 3Dプリント, voxel editor, voxel art, WebGL, Three.js">
   <meta name="author" content="Ike mfr">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://voxob.vercel.app/">
   <meta property="og:site_name" content="VoxoB">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:locale:alternate" content="en_US">
   <meta property="og:title" content="VoxoB | ブラウザ完結の次世代ボクセルエディタ">
   <meta property="og:description" content="インストール不要！街や地形、フラクタルなどをワンクリックで自動生成。サクサク動く無料のボクセルアート制作ツールです。">
   <meta property="og:image" content="https://voxob.vercel.app/og-image.png">
@@ -1389,6 +1392,13 @@
 </head>
 
 <body data-mode="draw" data-mview="3d">
+  <noscript>
+    <div style="max-width:640px;margin:40px auto;padding:0 16px;font:16px/1.7 sans-serif;color:#e0e4f0">
+      <h1>VoxoB — ブラウザで動く無料ボクセルエディタ</h1>
+      <p>VoxoB を使うには JavaScript を有効にしてください。To use VoxoB, please enable JavaScript.</p>
+      <p><a href="/ja/" style="color:#00d4f0">使い方ガイド（日本語）</a> · <a href="/en/" style="color:#00d4f0">How to use VoxoB (English)</a></p>
+    </div>
+  </noscript>
   <div id="memW"></div>
   <div id="progBar">
     <div class="txt" id="progTxt"></div>
@@ -1792,7 +1802,7 @@
         exMP4: 'Export MP4 Video',
         exLoad: 'Load JSON Project',
         abtDesc: 'A lightweight, browser-based voxel editor and generator.',
-        abtSupp: 'Buy Me a Coffee',
+        abtSupp: 'Buy Me a Coffee', abtGuide: '📖 How to use VoxoB',
         abtCrd: 'CREDITS & LICENSES',
       },
       ja: {
@@ -1828,7 +1838,7 @@
         exMP4: 'MP4 動画エクスポート',
         exLoad: 'JSON プロジェクト読込',
         abtDesc: 'ブラウザで動く軽量なボクセルエディタ＆ジェネレーター',
-        abtSupp: 'コーヒーを奢る（支援）',
+        abtSupp: 'コーヒーを奢る（支援）', abtGuide: '📖 使い方ガイド',
         abtCrd: 'クレジット & ライセンス',
       }
     };
@@ -1862,8 +1872,9 @@
         'lbBgTp': 'bgType', 'opSol': 'bgSolid', 'opGra': 'bgGrad', 'opChk': 'bgCheck', 'lbBgIm': 'bgImg', 'bBgClr': 'bgClear',
         'lbExFn': 'exFilename', 'exObj': 'exObj', 'exStl': 'exStl', 'exGlb': 'exGlb', 'exPng': 'exPng',
         'bFPrev': 'prev', 'bFNext': 'next', 'bFAdd': 'add', 'bFDup': 'dup', 'bFDel': 'del', 'bFCpy': 'fcopy', 'bFPst': 'fpaste', 'bFWork': 'work',
-        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd'
+        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd', 'abtGuide': 'abtGuide'
       };
+      if (document.getElementById('abtGuide')) document.getElementById('abtGuide').href = '/' + l + '/';
       Object.entries(ids).forEach(([id, k]) => {
         const el = document.getElementById(id);
         if (el) el.textContent = T(k);
@@ -3741,7 +3752,9 @@
       <p id="abtDesc" style="font-size: 11px; color: var(--t2); margin-bottom: 4px;">
         A lightweight, browser-based voxel editor and generator.
       </p>
-      <p style="font-size: 11px; color: var(--t2); margin-bottom: 16px;">© Ike mfr</p>
+      <p style="font-size: 11px; color: var(--t2); margin-bottom: 12px;">© Ike mfr</p>
+      <a id="abtGuide" href="/ja/" target="_blank" rel="noopener"
+         style="display: block; margin-bottom: 12px; padding: 8px; border: 1px solid var(--bd); border-radius: 8px; color: var(--ac); text-decoration: none; font-size: 12px; font-weight: bold; text-align: center;">📖 使い方ガイド</a>
 
       <div style="margin-bottom: 16px;">
         <a href="https://buymeacoffee.com/ike_mfr" target="_blank" 
