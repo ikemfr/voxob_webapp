@@ -13,7 +13,7 @@ const plus = fs.readFileSync('site/plus.js', 'utf8');
 // and the other languages from site/i18n.js
 const I18N = Function(`${fs.readFileSync('site/i18n.js', 'utf8')}; return I18N`)();
 Object.entries(I18N).forEach(([lang, d]) => { GN[lang] = { ...d.GN, ...d.PLUS.gn } });
-const LANGS = ['ja', 'en', 'es', 'pt', 'zh'];
+const LANGS = ['en', 'es', 'pt', 'zh', 'ja']; // English first, Japanese last
 // html lang, hreflang, og:locale, name in the language switcher
 const LOC = { ja: ['ja', 'ja', 'ja_JP', '日本語'], en: ['en', 'en', 'en_US', 'English'], es: ['es', 'es', 'es_ES', 'Español'], pt: ['pt-BR', 'pt', 'pt_BR', 'Português'], zh: ['zh-CN', 'zh-Hans', 'zh_CN', '中文'] };
 const NG = Object.keys(GN.en).length;
@@ -333,7 +333,8 @@ for (const lang of LANGS) {
 <title>${esc(c.title)}</title>
 <meta name="description" content="${esc(c.desc)}">
 <meta name="author" content="Ike mfr">
-<meta name="theme-color" content="#0e1018">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16181d" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="${ICON}">
 <link rel="canonical" href="${url}">
 ${LANGS.map((l) => `<link rel="alternate" hreflang="${LOC[l][1]}" href="${BASE}${l}/">`).join('\n')}
@@ -353,27 +354,32 @@ ${LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternat
 <meta name="twitter:image" content="${BASE}og-image.png">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 <style>
-:root{--bg:#0e1018;--fg:#e6e8ee;--sub:#9aa1b2;--ac:#00d4f0;--card:#151820;--bd:#262b38}
-@media (prefers-color-scheme:light){:root{--bg:#f6f7fa;--fg:#161922;--sub:#4c5363;--ac:#007c91;--card:#fff;--bd:#dde1ea}}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP",sans-serif}
-main{max-width:760px;margin:0 auto;padding:24px 16px 56px}
-h1{font-size:28px;line-height:1.3;margin:8px 0 12px}h2{font-size:20px;margin:32px 0 8px;padding-top:8px;border-top:1px solid var(--bd);scroll-margin-top:12px}
-p{margin:0 0 10px}.lead{color:var(--sub)}a{color:var(--ac)}
-.cta{display:inline-block;margin:12px 0 4px;padding:10px 18px;border-radius:8px;background:var(--ac);color:#05141a;font-weight:700;text-decoration:none}
-img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--bd);margin:14px 0}
-.toc{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 16px;margin:16px 0}.toc b{font-size:14px;color:var(--sub)}.toc ol{margin:4px 0 0;padding-left:20px}
-.gens{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:8px 0}.gens li{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:2px 10px;font-size:14px}
-.steps li{margin:4px 0}
-.demo{margin:14px 0 18px}.demo video{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--bd);background:#0e1018;cursor:pointer}.demo figcaption{font-size:14px;color:var(--sub);margin-top:6px}
-.keys{border-collapse:collapse;width:100%;font-size:15px}.keys th,.keys td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:left}.keys th{color:var(--sub);font-weight:600}
-kbd{font:13px ui-monospace,monospace;background:var(--card);border:1px solid var(--bd);border-radius:4px;padding:1px 6px;white-space:nowrap}
-dl dt{font-weight:700;margin-top:12px}dl dd{margin:2px 0 0}
-nav,footer{font-size:14px;color:var(--sub)}footer{margin-top:40px}
+/* every text pair ≥ 7:1 (WCAG AAA), borders and focus ring ≥ 3:1; links are underlined so colour is never the only cue */
+:root{color-scheme:light dark;--bg:#ffffff;--fg:#1b1e24;--sub:#4b5260;--ac:#00566a;--ac-h:#003d4b;--on-ac:#ffffff;--card:#f3f5f8;--bd:#7a8394;--rule:#c9ced8;--focus:#b34700}
+@media (prefers-color-scheme:dark){:root{--bg:#16181d;--fg:#ecedf0;--sub:#b9bfca;--ac:#86dbe8;--ac-h:#b5ebf3;--on-ac:#0b1b20;--card:#1f2229;--bd:#6f7787;--rule:#3a3f4a;--focus:#ffb37a}}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.8 system-ui,-apple-system,"Segoe UI","Hiragino Sans","Noto Sans JP","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:28px;line-height:1.35;margin:8px 0 12px}h2{font-size:21px;line-height:1.4;margin:40px 0 10px;padding-top:12px;border-top:1px solid var(--rule);scroll-margin-top:12px}
+p{margin:0 0 12px}.lead{color:var(--sub)}
+a{color:var(--ac);text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1px}a:hover{color:var(--ac-h);text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:4px}
+.cta{display:inline-block;margin:12px 0 4px;padding:12px 22px;border-radius:8px;background:var(--ac);color:var(--on-ac);font-weight:700;text-decoration:none}.cta:hover{background:var(--ac-h);color:var(--on-ac)}
+img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--bd);margin:16px 0}
+.toc{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:12px 18px;margin:20px 0}.toc b{font-size:15px;color:var(--fg)}.toc ol{margin:6px 0 0;padding-left:22px}.toc li{margin:2px 0}
+.gens{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:10px 0}.gens li{background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:999px;padding:2px 12px;font-size:15px}
+.steps li{margin:6px 0}
+.demo{margin:16px 0 22px}.demo video{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--bd);background:#0e1018;cursor:pointer}.demo figcaption{font-size:15px;color:var(--sub);margin-top:8px}
+.keys{border-collapse:collapse;width:100%;font-size:16px}.keys th,.keys td{border-bottom:1px solid var(--rule);padding:8px;text-align:left}.keys th{color:var(--fg);font-weight:700;border-bottom-color:var(--bd)}
+kbd{font:14px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--fg);background:var(--card);border:1px solid var(--bd);border-bottom-width:2px;border-radius:5px;padding:1px 7px;white-space:nowrap}
+dl dt{font-weight:700;margin-top:16px}dl dd{margin:4px 0 0}
+nav,footer{font-size:15px;color:var(--sub)}.langs{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0}.langs [aria-current]{color:var(--fg);font-weight:700}footer{margin-top:48px;padding-top:16px;border-top:1px solid var(--rule)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
 <main>
-<nav aria-label="breadcrumb"><a href="/">VoxoB</a> › ${esc(c.h1.split(' — ')[0])} · ${LANGS.filter((l) => l !== lang).map((l) => `<a href="/${l}/" hreflang="${LOC[l][1]}" lang="${LOC[l][0]}">${LOC[l][3]}</a>`).join(' · ')}</nav>
+<nav aria-label="breadcrumb"><a href="/">VoxoB</a> › ${esc(c.h1.split(' — ')[0])}</nav>
+<nav class="langs" aria-label="Language">${LANGS.map((l) => l === lang ? `<span aria-current="page" lang="${LOC[l][0]}">${LOC[l][3]}</span>` : `<a href="/${l}/" hreflang="${LOC[l][1]}" lang="${LOC[l][0]}">${LOC[l][3]}</a>`).join('')}</nav>
 <h1>${esc(c.h1)}</h1>
 <p class="lead">${esc(c.lead)}</p>
 <a class="cta" href="/">${esc(c.open)}</a>
