@@ -287,16 +287,27 @@ const C = {
   },
 };
 
+// short looping clips recorded by site/demos.mjs: [scene, section it belongs to, width, height, seconds]
+const DEMOS = [['draw', 'start', 760, 470, 15], ['generate', 'generators', 674, 606, 12], ['next', 'next', 760, 660, 13], ['style', 'next', 674, 606, 15], ['animate', 'animation', 674, 672, 7], ['export', 'export', 760, 600, 3]];
+const CAP = {
+  ja: { draw: '塗り矩形で1段ずつ重ね、ペンで仕上げる。2D 断面で描いた分が右の 3D にすぐ出ます。', generate: '「作る」タブのボタンを押すだけで、城・五重塔・街・家ができあがります。', next: '「✨ 次の一手」を押すたびに、地面・木・陰影など今の形に合う工程がひとつ足されます。', style: '「スタイル変換」で和風・夜・パステル・秋へ。形はそのまま、色だけが一度に変わります。', animate: '「アニメ生成」で弾む動きを付けて再生。', export: '「エクスポート」から OBJ・STL・GLB・PNG・動画・JSON を選んで保存。' },
+  en: { draw: 'Stack filled rectangles one layer at a time, then finish with the pen. What you draw on the 2D slice appears in 3D right away.', generate: 'One click in the Make tab builds a castle, a pagoda, a city or a house.', next: 'Each press of ✨ Next move adds one step that fits the shape: ground, trees, shading and more.', style: 'Style switches to Japanese, night, pastel or autumn. The shape stays; only the colours change.', animate: 'An animation generator adds a bounce, then Play.', export: 'Export to OBJ, STL, GLB, PNG, video or JSON.' },
+  es: { draw: 'Apila rectángulos llenos capa a capa y termina con el lápiz. Lo que dibujas en el corte 2D aparece al instante en 3D.', generate: 'Un clic en la pestaña Crear construye un castillo, una pagoda, una ciudad o una casa.', next: 'Cada pulsación de ✨ Siguiente paso añade un paso que encaja con la forma: suelo, árboles, sombreado y más.', style: 'Estilo cambia a japonés, noche, pastel u otoño. La forma se queda; solo cambian los colores.', animate: 'Un generador de animación añade un rebote y luego se reproduce.', export: 'Exporta a OBJ, STL, GLB, PNG, vídeo o JSON.' },
+  pt: { draw: 'Empilhe retângulos cheios camada por camada e finalize com o lápis. O que você desenha no corte 2D aparece na hora em 3D.', generate: 'Um clique na aba Criar monta um castelo, um pagode, uma cidade ou uma casa.', next: 'Cada toque em ✨ Próximo passo adiciona um passo que combina com a forma: chão, árvores, sombreamento e mais.', style: 'Estilo troca para japonês, noite, pastel ou outono. A forma fica; só as cores mudam.', animate: 'Um gerador de animação adiciona um quique e depois reproduz.', export: 'Exporte para OBJ, STL, GLB, PNG, vídeo ou JSON.' },
+  zh: { draw: '用实心矩形一层层叠起来，再用画笔收尾。在 2D 截面上画的内容会立即出现在 3D 中。', generate: '在“制作”标签中点一下，就能生成城堡、五重塔、城市或房子。', next: '每按一次“✨ 下一步”，就会添加一个适合当前形状的步骤：地面、树木、阴影等。', style: '“风格转换”可切换为和风、夜晚、马卡龙或秋天。形状不变，只有颜色一次性改变。', animate: '用“生成动画”加上弹跳动作并播放。', export: '从“导出”中选择 OBJ、STL、GLB、PNG、视频或 JSON 保存。' },
+};
+
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const ICON = `data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23151820'/><path d='M50 20L80 38V72L50 90L20 72V38Z' fill='%2300d4f0'/><path d='M50 20V55L80 38' fill='%239050f0'/><path d='M20 38L50 55V90' fill='%23f03070'/></svg>`;
 const h2 = ([id, t]) => `<h2 id="${id}">${esc(t)}</h2>`;
+const fig = (lang, [n, , w, h]) => `<figure class="demo"><video poster="/media/${lang}/${n}.jpg" width="${w}" height="${h}" muted loop playsinline preload="none" aria-label="${esc(CAP[lang][n])}"><source src="/media/${lang}/${n}.webm" type="video/webm"><source src="/media/${lang}/${n}.mp4" type="video/mp4"></video><figcaption>${esc(CAP[lang][n])}</figcaption></figure>`;
 for (const lang of LANGS) {
   const c = C[lang], url = `${BASE}${lang}/`;
   const gens = Object.values(GN[lang]).map((n) => `<li>${esc(half(n))}</li>`).join('');
   const toc = [c.stepsH, ...c.s.map(([id, h]) => [id, h]), c.usesH, c.keysH, c.faqH];
   const body = [
     `${h2(c.stepsH)}<ol class="steps">${c.steps.map(([t, d]) => `<li><b>${esc(t)}</b>${lang === 'ja' || lang === 'zh' ? '：' : ': '}${esc(d)}</li>`).join('')}</ol>`,
-    ...c.s.map(([id, h, ps]) => `${h2([id, h])}${ps ? ps.map((p) => `<p>${esc(p)}</p>`).join('') : `<ul class="gens">${gens}</ul>`}`),
+    ...c.s.map(([id, h, ps]) => `${h2([id, h])}${ps ? ps.map((p) => `<p>${esc(p)}</p>`).join('') : `<ul class="gens">${gens}</ul>`}${DEMOS.filter((d) => d[1] === id).map((d) => fig(lang, d)).join('')}`),
     `${h2(c.usesH)}<ul>${c.uses.map((u) => `<li>${esc(u)}</li>`).join('')}</ul>`,
     `${h2(c.keysH)}<table class="keys"><thead><tr><th>${esc(c.keyCols[0])}</th><th>${esc(c.keyCols[1])}</th></tr></thead><tbody>${c.keys.map(([k, a]) => `<tr><td><kbd>${esc(k)}</kbd></td><td>${esc(a)}</td></tr>`).join('')}</tbody></table>`,
     `${h2(c.faqH)}<dl>${c.faq.map(([q, a]) => `<dt>${esc(q)}</dt><dd>${esc(a)}</dd>`).join('')}</dl>`,
@@ -310,6 +321,7 @@ for (const lang of LANGS) {
         author: { '@type': 'Person', name: 'Ike mfr' } },
       { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'VoxoB', item: BASE }, { '@type': 'ListItem', position: 2, name: c.h1.split(' — ')[0], item: url }] },
       { '@type': 'HowTo', name: c.stepsH[1], inLanguage: LOC[lang][0], tool: { '@type': 'HowToTool', name: 'VoxoB' }, step: c.steps.map(([name, text], i) => ({ '@type': 'HowToStep', position: i + 1, name, text, url: `${url}#steps` })) },
+      ...DEMOS.map(([n, , w, h, sec]) => ({ '@type': 'VideoObject', name: `VoxoB — ${CAP[lang][n].split(/[。.]/)[0]}`, description: CAP[lang][n], inLanguage: LOC[lang][0], thumbnailUrl: `${BASE}media/${lang}/${n}.jpg`, contentUrl: `${BASE}media/${lang}/${n}.mp4`, uploadDate: TODAY, duration: `PT${sec}S`, width: w, height: h })),
       { '@type': 'FAQPage', mainEntity: c.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
     ],
   };
@@ -352,6 +364,7 @@ img{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var
 .toc{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:10px 16px;margin:16px 0}.toc b{font-size:14px;color:var(--sub)}.toc ol{margin:4px 0 0;padding-left:20px}
 .gens{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:8px 0}.gens li{background:var(--card);border:1px solid var(--bd);border-radius:999px;padding:2px 10px;font-size:14px}
 .steps li{margin:4px 0}
+.demo{margin:14px 0 18px}.demo video{display:block;width:100%;height:auto;border-radius:10px;border:1px solid var(--bd);background:#0e1018;cursor:pointer}.demo figcaption{font-size:14px;color:var(--sub);margin-top:6px}
 .keys{border-collapse:collapse;width:100%;font-size:15px}.keys th,.keys td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:left}.keys th{color:var(--sub);font-weight:600}
 kbd{font:13px ui-monospace,monospace;background:var(--card);border:1px solid var(--bd);border-radius:4px;padding:1px 6px;white-space:nowrap}
 dl dt{font-weight:700;margin-top:12px}dl dd{margin:2px 0 0}
@@ -368,6 +381,14 @@ nav,footer{font-size:14px;color:var(--sub)}footer{margin-top:40px}
 <nav class="toc" aria-label="${esc(c.toc)}"><b>${esc(c.toc)}</b><ol>${toc.map(([id, t]) => `<li><a href="#${id}">${esc(t)}</a></li>`).join('')}</ol></nav>
 ${body}
 <p><a class="cta" href="/">${esc(c.open)}</a></p>
+<script>
+// clips play only while on screen (and not at all with reduced motion: tap to play instead)
+(() => { const vs = document.querySelectorAll('.demo video'), still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  vs.forEach((v) => v.addEventListener('click', () => v.paused ? v.play() : v.pause()));
+  if (still || !('IntersectionObserver' in window)) { vs.forEach((v) => { v.controls = true; v.preload = 'metadata' }); return }
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) e.target.play().catch(() => {}); else e.target.pause() }), { threshold: .35 });
+  vs.forEach((v) => io.observe(v)) })();
+</script>
 <footer>${esc(c.by)} · <a href="https://github.com/ikemfr/voxob_webapp">GitHub</a> · ${esc(c.upd)}: <time datetime="${TODAY}">${TODAY}</time></footer>
 </main>
 </body>
