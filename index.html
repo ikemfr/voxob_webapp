@@ -8,14 +8,23 @@
   <link rel="canonical" href="https://voxob.vercel.app/">
   <link rel="alternate" hreflang="ja" href="https://voxob.vercel.app/ja/">
   <link rel="alternate" hreflang="en" href="https://voxob.vercel.app/en/">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoxoB","url":"https://voxob.vercel.app/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":["ja","en"],"author":{"@type":"Person","name":"Ike mfr"},"description":"Free browser voxel editor with 50 one-click generators, a Next move button, styles, frame animation, image/video/3D-model to voxel conversion, and OBJ/STL/GLB/MP4 export."}</script>
+  <link rel="alternate" hreflang="es" href="https://voxob.vercel.app/es/">
+  <link rel="alternate" hreflang="pt" href="https://voxob.vercel.app/pt/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://voxob.vercel.app/zh/">
+  <link rel="alternate" hreflang="x-default" href="https://voxob.vercel.app/">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VoxoB","url":"https://voxob.vercel.app/","applicationCategory":"DesignApplication","operatingSystem":"Any (web browser)","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"inLanguage":["ja","en","es","pt-BR","zh-CN"],"author":{"@type":"Person","name":"Ike mfr"},"description":"Free browser voxel editor with 50 one-click generators, a Next move button, styles, frame animation, image/video/3D-model to voxel conversion, and OBJ/STL/GLB/MP4 export.","alternateName":["ボクソブ","VoxoB voxel editor"],"screenshot":"https://voxob.vercel.app/og-image.png","browserRequirements":"Requires WebGL","isAccessibleForFree":true,"featureList":["50 one-click procedural generators (buildings, nature, shapes, patterns)","Next move: adds the next sensible step to your model","Style and palette conversion","Frame animation with WebM/MP4 export","Image, video and OBJ/STL to voxel conversion","OBJ, STL, GLB, PNG and JSON export","Works on PC, tablet and smartphone","Available in English, Japanese, Spanish, Portuguese and Chinese"],"softwareHelp":[{"@type":"CreativeWork","url":"https://voxob.vercel.app/ja/","inLanguage":"ja"},{"@type":"CreativeWork","url":"https://voxob.vercel.app/en/","inLanguage":"en"},{"@type":"CreativeWork","url":"https://voxob.vercel.app/es/","inLanguage":"es"},{"@type":"CreativeWork","url":"https://voxob.vercel.app/pt/","inLanguage":"pt-BR"},{"@type":"CreativeWork","url":"https://voxob.vercel.app/zh/","inLanguage":"zh-CN"}]}</script>
   <meta name="description" content="インストール不要、ブラウザを開いて1秒で起動。プロシージャル生成（自動生成）からアニメーション出力まで完結する、次世代の無料ボクセルエディタ「VoxoB」。">
-  <meta name="keywords" content="VoxoB, Voxel, ボクセルアート, 3Dモデリング, ブラウザ, 自動生成, WebGL, Three.js">
+  <meta name="keywords" content="VoxoB, ボクソブ, ボクセル, ボクセルエディタ, ボクセルアート, 3Dドット絵, 無料, ブラウザ, スマホ, 自動生成, 3Dモデリング, 3Dプリント, voxel editor, voxel art, WebGL, Three.js">
   <meta name="author" content="Ike mfr">
 
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://voxob.vercel.app/">
   <meta property="og:site_name" content="VoxoB">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="es_ES">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <meta property="og:locale:alternate" content="zh_CN">
   <meta property="og:title" content="VoxoB | ブラウザ完結の次世代ボクセルエディタ">
   <meta property="og:description" content="インストール不要！街や地形、フラクタルなどをワンクリックで自動生成。サクサク動く無料のボクセルアート制作ツールです。">
   <meta property="og:image" content="https://voxob.vercel.app/og-image.png">
@@ -1321,13 +1330,13 @@
     body.ui2 #gearM .gcopy { display: block; margin-top: 10px; font-size: 11px; color: var(--t3); text-align: center }
 
     /* left: mode switch + 2-column tool grid */
-    body.ui2 #lp { width: 208px }
+    body.ui2 #lp { width: 216px }
     body.ui2 .ui2lp .lps { padding: var(--pad) }
     body.ui2 .mtg { border-radius: 8px; margin-bottom: 10px }
     body.ui2 .mbtn { min-height: 36px; font-size: 12px; padding: 0 4px; white-space: nowrap; word-break: keep-all; display: inline-flex; align-items: center; justify-content: center; gap: 3px }
     body.ui2 .lpt, body.ui2 .pt { font-family: inherit; font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--t2); margin-bottom: 8px }
-    body.ui2 #tL { display: grid; grid-template-columns: 1fr 1fr; gap: 4px }
-    body.ui2 #tL .tb { min-height: 36px; padding: 4px 8px; font-size: 12px; border-radius: 6px; border-color: var(--bd); background: var(--b2); gap: 6px; line-height: 1.2 }
+    body.ui2 #tL { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px }
+    body.ui2 #tL .tb { min-width: 0; min-height: 36px; padding: 4px 6px; font-size: 12px; border-radius: 6px; border-color: var(--bd); background: var(--b2); gap: 4px; line-height: 1.2 }
     body.ui2 #tL .tb .ti { font-size: 14px; flex: none; width: 16px; text-align: center }
     body.ui2 #tL .tb .tl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
     body.ui2 #tL .tb.on { border-color: var(--ac); color: var(--tx); background: var(--b3) }
@@ -1377,7 +1386,7 @@
       body.ui2 .sgrab { display: flex; justify-content: flex-end; position: sticky; top: 0; z-index: 5; background: var(--b1); padding: 6px 8px 0; border-radius: 14px 14px 0 0 }
       body.ui2 .sgrab::before { content: ''; position: absolute; left: 50%; top: 7px; width: 40px; height: 4px; border-radius: 2px; background: var(--bh); transform: translateX(-50%) }
       body.ui2 .sclose { min-width: 40px; min-height: 36px; background: var(--b3); border: 1px solid var(--bd); border-radius: 8px; color: var(--tx); font-size: 14px }
-      body.ui2 #tL { grid-template-columns: repeat(3, 1fr) }
+      body.ui2 #tL { grid-template-columns: repeat(3, minmax(0, 1fr)) }
       body.ui2 #tL .tb { min-height: 44px }
       body.ui2 #gnG .gg, body.ui2 #agG { grid-template-columns: repeat(4, minmax(0, 1fr)) }
       body.ui2 #rp .btn, body.ui2 #rp .at { min-height: 44px; font-size: 13px }
@@ -1389,6 +1398,13 @@
 </head>
 
 <body data-mode="draw" data-mview="3d">
+  <noscript>
+    <div style="max-width:640px;margin:40px auto;padding:0 16px;font:16px/1.7 sans-serif;color:#e0e4f0">
+      <h1>VoxoB — ブラウザで動く無料ボクセルエディタ</h1>
+      <p>VoxoB を使うには JavaScript を有効にしてください。To use VoxoB, please enable JavaScript.</p>
+      <p><a href="/ja/" style="color:#00d4f0">使い方ガイド（日本語）</a> · <a href="/en/" style="color:#00d4f0">How to use VoxoB (English)</a> · <a href="/es/" style="color:#00d4f0">Español</a> · <a href="/pt/" style="color:#00d4f0">Português</a> · <a href="/zh/" style="color:#00d4f0">中文</a></p>
+    </div>
+  </noscript>
   <div id="memW"></div>
   <div id="progBar">
     <div class="txt" id="progTxt"></div>
@@ -1422,6 +1438,9 @@
       <select class="hsel" id="lnSel" onchange="setLang(this.value)">
         <option value="en">English</option>
         <option value="ja">日本語</option>
+        <option value="es">Español</option>
+        <option value="pt">Português</option>
+        <option value="zh">中文</option>
       </select>
       <span id="volIc" style="font-size:10px;color:var(--t3);flex-shrink:0">🔊</span>
       <input type="range" id="volR" min="0" max="100" value="40"
@@ -1710,6 +1729,275 @@
     </div>
   </div>
 
+  <!-- VoxoB i18n -->
+  <script>
+  // ===== VoxoB i18n: Español · Português · 中文（简体） =====
+  // English and Japanese sit next to the code that uses them; the other languages live here, one block per language,
+  // and are merged into TX / GN / AN / AGENS (main script), L / XS / SEASON / MOTION (VoxoB+) and U (UI layout).
+  // MSG holds alerts and prompts; a function value receives the same arguments as the call site.
+  const LANG_NAMES = { en: 'English', ja: '日本語', es: 'Español', pt: 'Português', zh: '中文' };
+  const I18N = {
+    es: {
+      TX: {
+        tog2D: '◧ Panel 2D', drawMode: '🧱 Dibujar', delMode: '🔨 Borrar', recolorMode: '🎨 Color', tools: 'HERRAMIENTAS', brush: 'PINCEL', snap: 'AJUSTE', symmetry: 'SIMETRÍA',
+        size: 'Tamaño', alpha: 'Opacidad', project: 'PROYECTO', canvasSize: 'TAMAÑO DEL LIENZO', color: 'COLOR', copyPaste: 'COPIAR / PEGAR VÓXELES',
+        camera: 'CÁMARA', media: 'IMPORTAR\n- IMAGEN\n(png/jpg/bmp/gif)\n- VÍDEO\n(mp4/webm/mov)\n- MODELO 3D\n(obj+mtl/stl)', generate: 'GENERAR', animGen: 'GENERAR ANIMACIÓN', actions: 'ACCIONES',
+        apply: 'Aplicar', save: '💾 Guardar', load: '📂 Abrir', import_: '📁 Importar', select: '⬚ Seleccionar', copyRange: '📋 Rango', copyCluster: '🔗 Grupo', paste: '📌 Pegar',
+        undo: '↩ Deshacer', redo: '↪ Rehacer', wireframe: '◫ Malla', share: '🔗 Compartir', background: '🎨 Fondo', export_: '⬇ Exportar',
+        depth: 'Profundidad', impSize: 'Tamaño', depthFromColor: 'Profundidad 3D según el color', overlay: 'Mostrar superposición', startF: 'Inicio', frameLen: 'Long.',
+        pen: 'Lápiz', line: 'Línea', rect: 'Rect.', frect: 'Rect. lleno', circle: 'Círculo', fcircle: 'Círc. lleno', ellipse: 'Elipse', fellipse: 'Elip. llena',
+        fill: 'Rellenar', fillSl: 'Rell. corte', eyedrop: 'Cuentagotas', spray: 'Spray', scatter: 'Dispersar', noisePen: 'Ruido',
+        snapCell: 'Centro de celda', snapEdge: 'Borde',
+        prev: '◀ Ant.', play: '▶ Reproducir', stop: '⏸ Parar', next: 'Sig. ▶▶', add: '＋Añadir', dup: '📋Duplicar', del: '🗑Borrar', fcopy: '📑Copiar F', fpaste: '📌Pegar F', work: '🔧Trabajo',
+        v3hint: 'Arrastrar: girar | Shift: mover | Rueda: zoom', v3confirm: 'Izq.: confirmar | Der.: cancelar',
+        v3hintT: 'Toca: colocar | 2 dedos: girar y pellizcar para zoom', v3confirmT: 'Toca: confirmar | ✕ Cancelar para parar', mExtra: 'VISTA Y MÁS',
+        welcT: 'Bienvenido a VoxoB', welcP: 'Un editor de vóxeles que funciona en tu navegador. No se sube nada: tu trabajo se guarda en este navegador.',
+        welcGenT: '🎲 Generar algo', welcGenS: 'Un toque crea una ciudad, un castillo, un terreno…', welcDrawT: '✏️ Empezar con un lienzo vacío', welcDrawS: 'Coloca vóxeles con el lápiz y las formas',
+        welcImgT: '🖼 Crear desde una imagen', welcImgS: 'Convierte una imagen, un vídeo o un modelo 3D en vóxeles', welcX: 'Toca fuera para cerrar',
+        bgTitle: '🎨 Fondo', exTitle: '⬇ Exportar',
+        thDark: '🌑 Oscuro', thLight: '☀ Claro', thGrey: '⬜ Gris', thWarm: '🔥 Cálido', thSepia: '📜 Sepia', thForest: '🌿 Bosque', thOcean: '🌊 Océano',
+        mTools: '🛠 Herramientas', mSet: '⚙ Ajustes', mView3D: '🧊 3D', mView2D: '🖼 2D', cancelBtn: '✕ Cancelar', resetCam: '🔄 Restablecer',
+        tipUndo: 'Ctrl+Z: Deshacer', tipRedo: 'Ctrl+Y: Rehacer', tipWire: 'Ver malla de alambre', tipShare: 'Compartir con una URL comprimida', tipBg: 'Cambiar el fondo', tipExp: 'Exportar el modelo',
+        tipSavePj: 'Guardar en el navegador', tipSelR: 'Seleccionar un rango', tipCR: 'Copiar el rango', tipCC: 'Copiar el grupo conectado', tipPst: 'Pegar vóxeles', tipImp: 'Importar medios o modelos',
+        tipAnimG: 'Generar animación', tipCam: 'Guardar el ángulo de cámara', tipPrev: 'Fotograma anterior', tipPlay: 'Reproducir/Parar', tipNext: 'Fotograma siguiente', tipAddF: 'Añadir fotograma vacío',
+        tipDupF: 'Duplicar fotograma', tipDelF: 'Borrar fotograma', tipCopyF: 'Copiar fotograma', tipPasteF: 'Pegar fotograma', tipWorkF: 'Fotograma de trabajo',
+        clrAllConf: '¿Borrar todos los vóxeles?',
+        exObj: 'Exportar OBJ + MTL', exStl: 'Exportar STL', exGlb: 'Exportar GLB', exPng: 'Exportar imagen PNG',
+        exSave: 'Guardar proyecto JSON', exGIF: 'Exportar vídeo WebM', exMP4: 'Exportar vídeo MP4', exLoad: 'Abrir proyecto JSON',
+        abtDesc: 'Un editor y generador de vóxeles ligero que funciona en el navegador.',
+        abtSupp: 'Invítame a un café', abtGuide: '📖 Cómo usar VoxoB',
+        abtCrd: 'CRÉDITOS Y LICENCIAS',
+      },
+      GN: { sphere: 'Esfera', torus: 'Toro', cylinder: 'Cilindro', cone: 'Cono', pyramid: 'Pirámide', octahedron: 'Octaedro', diamond: 'Diamante', cross: 'Cruz', star: 'Estrella', spiral: 'Espiral', helix: 'Hélice', mobius: 'Möbius', knot: 'Nudo', rings: 'Anillos', ripple: 'Ondas', grid: 'Cuadrícula', checkerP: 'Ajedrez', honeycomb: 'Panal', voronoi: 'Voronoi', fractal: 'Fractal', maze: 'Laberinto', steps: 'Escalera', gears: 'Engranajes', dna: 'ADN', heart: 'Corazón', random: 'Aleatorio', terrain: 'Terreno', mountain: 'Montaña', island: 'Isla', cave: 'Cueva', wave: 'Ola', crystal: 'Cristal', forest: 'Bosque', mushroom: 'Seta', castle: 'Castillo', city: 'Ciudad', temple: 'Templo', bridge: 'Puente', galaxy: 'Galaxia' },
+      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Voltear X', flipY: '⇅Voltear Y', flipZ: '⇄Voltear Z', shiftUp: '▲Arriba', shiftDn: '▼Abajo', shiftL: '◀Izq.', shiftR: '▶Der.', hollow: '◻Vaciar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erosionar', clrSlice: '✕Corte', clrAll: '🗑Todo' },
+      AG: { spinY: 'Giro Y', spinX: 'Giro X', spinZ: 'Giro Z', twistY: 'Torcer Y', swing: 'Péndulo', orbit: 'Órbita', bounce: 'Rebote', shake: 'Temblor', slideX: 'Deslizar X', slideY: 'Deslizar Y', slideZ: 'Deslizar Z', grow: 'Crecer', breathe: 'Respirar', pulse: 'Pulso', heartbeat: 'Latido', rippleA: 'Expandir', waveA: 'Ondular', rain: 'Lluvia', fire: 'Fuego', buildUp: 'Construir', dissolve: 'Disolver', explodeA: 'Explotar', implode: 'Encoger', fadeIn: 'Aparecer', colorCycle: 'Color', glitch: 'Glitch' },
+      MSG: {
+        memW: '⚠ Aviso de memoria', overlap: 'Hay vóxeles superpuestos. Aceptar = pegar encima, Cancelar = conservar los existentes', placeHint: 'Haz clic para colocar → confirmar',
+        clusterHint: 'Haz clic en un vóxel para copiar su grupo', selFirst: 'Primero selecciona un rango', copyFirst: 'Primero copia algo', framePaste: 'Aceptar = pegar encima / Cancelar = conservar los existentes',
+        noWsAnim: 'No se puede generar una animación desde un fotograma de trabajo.', noVox: 'No hay vóxeles en este fotograma', bigSize: 'Un tamaño tan grande puede ir lento. ¿Continuar?',
+        vidFmt: 'Tu navegador no admite este formato de vídeo.', vidDur: 'No se pudo obtener la duración del vídeo.', vidFrames: (n) => `Unos ${n} fotogramas. ¿Continuar?`, vidLoad: 'Importando vídeo ',
+        pjName: 'Nombre del proyecto:', saved: 'Guardado.', saveFail: 'No se pudo guardar (puede que el almacenamiento del navegador esté lleno)',
+        pjLoad: (n) => `¿Abrir el proyecto «${n}»?\n(Se perderá el trabajo sin guardar)`, pjDel: (n) => `¿Borrar el proyecto «${n}» para siempre?`, pjEmpty: '-- Vacío --',
+        noCompress: 'Tu navegador no admite la compresión de URL.', urlCopied: 'URL copiada (', copyUrl: 'Copia esta URL para compartir:', shareFail: 'No se pudo crear la URL para compartir.',
+        urlFail: 'No se pudo cargar la URL. Puede que el enlace esté cortado o dañado.', need2: 'Hacen falta 2 fotogramas o más', rendering: 'Renderizando ', expFail: 'Falló la exportación.', exporting: 'Exportando ', cancel: '✕ Cancelar',
+      },
+      PLUS: {
+        next: '✨ Siguiente paso', nextTip: 'Siguiente paso (N): añade el siguiente paso lógico\na lo que tienes: suelo, tejado, ventanas,\nárboles, sombreado… Deshaz con Ctrl+Z',
+        cats: { build: 'Edificios', things: 'Objetos', nature: 'Naturaleza', geo: 'Formas', pattern: 'Patrones' }, luck: '🎲 Sorpréndeme',
+        pal: 'Paleta', pals: { def: 'Predeterminada', wa: 'Japonesa', pico: 'Retro 16', gb: 'Portátil 4', pastel: 'Pastel', earth: 'Tierra' },
+        styleT: 'ESTILO', styles: { wa: '🏯 Japonés', retro: '👾 Retro', pastel: '🍬 Pastel', night: '🌙 Noche', autumn: '🍁 Otoño', mono: '⬛ Mono' },
+        styleDone: (n) => `Estilo cambiado (${n} vóxeles). Ctrl+Z para deshacer.`,
+        steps: {
+          empty: ['Empieza con un edificio', 'El lienzo está vacío: aquí tienes algo con lo que trabajar.'],
+          ground: ['Añadir suelo', 'Las cosas parecen colocadas cuando se apoyan en algo.'],
+          roof: ['Poner un tejado', 'Una parte superior plana parece sin terminar; un tejado le da silueta.'],
+          windows: ['Añadir ventanas', 'Las aberturas regulares muestran la escala de una pared.'],
+          trees: ['Plantar árboles', 'Cosas pequeñas alrededor de una grande la hacen parecer más grande.'],
+          shade: ['Añadir sombreado', 'Arriba más claro y abajo más oscuro: la forma se lee mejor.'],
+          outline: ['Oscurecer los bordes', 'Las esquinas más oscuras separan la forma del fondo.'],
+          done: ['Eso es todo por ahora', 'Cambia la forma o genera algo nuevo y habrá más ideas.'],
+        },
+        gn: { house: 'Casa', tree: 'Árbol', torii: 'Torii', pagoda: 'Pagoda', rocket: 'Cohete', snowman: 'Muñeco de nieve', planet: 'Planeta', robot: 'Robot', boat: 'Velero', lighthouse: 'Faro', cactus: 'Cactus' },
+        moodH: 'Cambiar el ambiente: ', moodS: 'La misma forma transmite otra cosa con otra paleta. Ctrl+Z para volver.', motionH: 'Añadir movimiento', motionS: ' (▶ / ■ abajo reproduce y para)',
+      },
+      XS: {
+        door: ['Añadir una puerta', 'Una entrada hace que parezca un edificio con interior y marca la escala.'],
+        path: ['Trazar un camino', 'Un camino hacia la entrada es una línea guía: lleva la mirada hacia dentro.'],
+        fence: ['Poner una valla', 'Un borde enmarca la escena y los postes regulares dan ritmo.'],
+        flowers: ['Esparcir flores', 'Los grupos impares (3, 5, 7) parecen naturales: la regla de los impares.'],
+        rocks: ['Añadir rocas', 'Bultos irregulares contrastan con las formas limpias y aportan naturalidad.'],
+        lanterns: ['Poner farolillos', 'Los puntos pequeños y brillantes atraen la mirada primero: un punto focal.'],
+        flag: ['Bandera en lo alto', 'Una marca en el punto más alto refuerza la silueta.'],
+        clouds: ['Añadir nubes', 'Algo en el cielo del fondo añade capas de profundidad.'],
+        mirror: ['Hacerlo simétrico', 'Una forma casi simétrica se ve más estable al completarla.'],
+        accent: ['Añadir un color de acento', 'Un toque del tono opuesto (complementario): el 10 del 60-30-10.'],
+        gradient: ['Más claro hacia arriba', 'Más brillo arriba se lee como luz que viene de lo alto.'],
+        harmony: ['Unificar los tonos', 'Acercar los tonos al principal (colores análogos) da unidad.'],
+        warm: ['Luz de atardecer', 'Partes altas cálidas y sombras frías sugieren una hora del día.'],
+      },
+      SEASON: { night: 'Noche', autumn: 'Otoño', pastel: 'Pastel', wa: 'Colores japoneses', retro: 'Retro' },
+      MOTION: {
+        spinY: 'Giro: un plato giratorio muestra todos los lados en una vuelta.', bounce: 'Rebote: caer y rebotar transmite peso.', breathe: 'Respirar: hincharse despacio lo hace parecer vivo.',
+        swing: 'Péndulo: un vaivén es fácil de seguir con la vista.', colorCycle: 'Ciclo de color: la forma se queda y el tono da la vuelta.', buildUp: 'Construir: subir desde abajo muestra cómo está hecho.',
+        waveA: 'Onda: pequeños desfases en el tiempo forman una ondulación.', rippleA: 'Ondas: movimiento que se expande desde el centro.', orbit: 'Órbita: girar alrededor de un centro.',
+      },
+      UI: { make: 'Crear', color: 'Color', anim: 'Movimiento', edit: 'Editar', file: 'Archivo', tools: 'Herramientas', menu: 'Ajustes', close: 'Cerrar', view: 'Vista' },
+    },
+    pt: {
+      TX: {
+        tog2D: '◧ Painel 2D', drawMode: '🧱 Desenhar', delMode: '🔨 Apagar', recolorMode: '🎨 Cor', tools: 'FERRAMENTAS', brush: 'PINCEL', snap: 'ENCAIXE', symmetry: 'SIMETRIA',
+        size: 'Tamanho', alpha: 'Opacidade', project: 'PROJETO', canvasSize: 'TAMANHO DA TELA', color: 'COR', copyPaste: 'COPIAR / COLAR VOXELS',
+        camera: 'CÂMERA', media: 'IMPORTAR\n- IMAGEM\n(png/jpg/bmp/gif)\n- VÍDEO\n(mp4/webm/mov)\n- MODELO 3D\n(obj+mtl/stl)', generate: 'GERAR', animGen: 'GERAR ANIMAÇÃO', actions: 'AÇÕES',
+        apply: 'Aplicar', save: '💾 Salvar', load: '📂 Abrir', import_: '📁 Importar', select: '⬚ Selecionar', copyRange: '📋 Área', copyCluster: '🔗 Grupo', paste: '📌 Colar',
+        undo: '↩ Desfazer', redo: '↪ Refazer', wireframe: '◫ Malha', share: '🔗 Compartilhar', background: '🎨 Fundo', export_: '⬇ Exportar',
+        depth: 'Profundidade', impSize: 'Tamanho', depthFromColor: 'Profundidade 3D pela cor', overlay: 'Mostrar sobreposição', startF: 'Início', frameLen: 'Duração',
+        pen: 'Lápis', line: 'Linha', rect: 'Retângulo', frect: 'Ret. cheio', circle: 'Círculo', fcircle: 'Círc. cheio', ellipse: 'Elipse', fellipse: 'Elip. cheia',
+        fill: 'Preencher', fillSl: 'Pint. corte', eyedrop: 'Conta-gotas', spray: 'Spray', scatter: 'Espalhar', noisePen: 'Ruído',
+        snapCell: 'Centro da célula', snapEdge: 'Borda',
+        prev: '◀ Ant.', play: '▶ Reproduzir', stop: '⏸ Parar', next: 'Próx. ▶▶', add: '＋Adicionar', dup: '📋Duplicar', del: '🗑Apagar', fcopy: '📑Copiar Q', fpaste: '📌Colar Q', work: '🔧Trabalho',
+        v3hint: 'Arrastar: girar | Shift: mover | Roda: zoom', v3confirm: 'Esq.: confirmar | Dir.: cancelar',
+        v3hintT: 'Toque: colocar | 2 dedos: girar e pinçar para zoom', v3confirmT: 'Toque: confirmar | ✕ Cancelar para parar', mExtra: 'VISUALIZAÇÃO E MAIS',
+        welcT: 'Boas-vindas ao VoxoB', welcP: 'Um editor de voxels que roda no seu navegador. Nada é enviado: seu trabalho fica salvo neste navegador.',
+        welcGenT: '🎲 Gerar algo', welcGenS: 'Um toque cria uma cidade, um castelo, um terreno…', welcDrawT: '✏️ Começar com a tela vazia', welcDrawS: 'Coloque voxels com o lápis e as formas',
+        welcImgT: '🖼 Criar a partir de uma imagem', welcImgS: 'Transforme uma imagem, um vídeo ou um modelo 3D em voxels', welcX: 'Toque fora para fechar',
+        bgTitle: '🎨 Fundo', exTitle: '⬇ Exportar',
+        thDark: '🌑 Escuro', thLight: '☀ Claro', thGrey: '⬜ Cinza', thWarm: '🔥 Quente', thSepia: '📜 Sépia', thForest: '🌿 Floresta', thOcean: '🌊 Oceano',
+        mTools: '🛠 Ferramentas', mSet: '⚙ Ajustes', mView3D: '🧊 3D', mView2D: '🖼 2D', cancelBtn: '✕ Cancelar', resetCam: '🔄 Redefinir',
+        tipUndo: 'Ctrl+Z: Desfazer', tipRedo: 'Ctrl+Y: Refazer', tipWire: 'Ver malha de arame', tipShare: 'Compartilhar com URL comprimida', tipBg: 'Mudar o fundo', tipExp: 'Exportar o modelo',
+        tipSavePj: 'Salvar no navegador', tipSelR: 'Selecionar uma área', tipCR: 'Copiar a área', tipCC: 'Copiar o grupo conectado', tipPst: 'Colar voxels', tipImp: 'Importar mídia ou modelos',
+        tipAnimG: 'Gerar animação', tipCam: 'Salvar ângulo da câmera', tipPrev: 'Quadro anterior', tipPlay: 'Reproduzir/Parar', tipNext: 'Próximo quadro', tipAddF: 'Adicionar quadro vazio',
+        tipDupF: 'Duplicar quadro', tipDelF: 'Apagar quadro', tipCopyF: 'Copiar quadro', tipPasteF: 'Colar quadro', tipWorkF: 'Quadro de trabalho',
+        clrAllConf: 'Apagar todos os voxels?',
+        exObj: 'Exportar OBJ + MTL', exStl: 'Exportar STL', exGlb: 'Exportar GLB', exPng: 'Exportar imagem PNG',
+        exSave: 'Salvar projeto JSON', exGIF: 'Exportar vídeo WebM', exMP4: 'Exportar vídeo MP4', exLoad: 'Abrir projeto JSON',
+        abtDesc: 'Um editor e gerador de voxels leve que roda no navegador.',
+        abtSupp: 'Me pague um café', abtGuide: '📖 Como usar o VoxoB',
+        abtCrd: 'CRÉDITOS E LICENÇAS',
+      },
+      GN: { sphere: 'Esfera', torus: 'Toro', cylinder: 'Cilindro', cone: 'Cone', pyramid: 'Pirâmide', octahedron: 'Octaedro', diamond: 'Diamante', cross: 'Cruz', star: 'Estrela', spiral: 'Espiral', helix: 'Hélice', mobius: 'Möbius', knot: 'Nó', rings: 'Anéis', ripple: 'Ondas', grid: 'Grade', checkerP: 'Xadrez', honeycomb: 'Colmeia', voronoi: 'Voronoi', fractal: 'Fractal', maze: 'Labirinto', steps: 'Escada', gears: 'Engrenagens', dna: 'DNA', heart: 'Coração', random: 'Aleatório', terrain: 'Terreno', mountain: 'Montanha', island: 'Ilha', cave: 'Caverna', wave: 'Onda', crystal: 'Cristal', forest: 'Floresta', mushroom: 'Cogumelo', castle: 'Castelo', city: 'Cidade', temple: 'Templo', bridge: 'Ponte', galaxy: 'Galáxia' },
+      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Espelhar X', flipY: '⇅Espelhar Y', flipZ: '⇄Espelhar Z', shiftUp: '▲Cima', shiftDn: '▼Baixo', shiftL: '◀Esq.', shiftR: '▶Dir.', hollow: '◻Esvaziar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erodir', clrSlice: '✕Corte', clrAll: '🗑Tudo' },
+      AG: { spinY: 'Giro Y', spinX: 'Giro X', spinZ: 'Giro Z', twistY: 'Torcer Y', swing: 'Pêndulo', orbit: 'Órbita', bounce: 'Quicar', shake: 'Tremer', slideX: 'Deslizar X', slideY: 'Deslizar Y', slideZ: 'Deslizar Z', grow: 'Crescer', breathe: 'Respirar', pulse: 'Pulso', heartbeat: 'Batimento', rippleA: 'Espalhar', waveA: 'Ondular', rain: 'Chuva', fire: 'Fogo', buildUp: 'Construir', dissolve: 'Dissolver', explodeA: 'Explodir', implode: 'Encolher', fadeIn: 'Surgir', colorCycle: 'Cor', glitch: 'Glitch' },
+      MSG: {
+        memW: '⚠ Aviso de memória', overlap: 'Há voxels sobrepostos. OK = colar por cima, Cancelar = manter os existentes', placeHint: 'Clique para posicionar → confirmar',
+        clusterHint: 'Clique em um voxel para copiar o grupo', selFirst: 'Selecione uma área primeiro', copyFirst: 'Copie algo primeiro', framePaste: 'OK = colar por cima / Cancelar = manter os existentes',
+        noWsAnim: 'Não é possível gerar uma animação a partir de um quadro de trabalho.', noVox: 'Não há voxels neste quadro', bigSize: 'Um tamanho tão grande pode ficar lento. Continuar?',
+        vidFmt: 'Seu navegador não suporta este formato de vídeo.', vidDur: 'Não foi possível obter a duração do vídeo.', vidFrames: (n) => `Cerca de ${n} quadros. Continuar?`, vidLoad: 'Importando vídeo ',
+        pjName: 'Nome do projeto:', saved: 'Salvo.', saveFail: 'Falha ao salvar (o armazenamento do navegador pode estar cheio)',
+        pjLoad: (n) => `Abrir o projeto "${n}"?\n(O trabalho não salvo será perdido)`, pjDel: (n) => `Apagar o projeto "${n}" para sempre?`, pjEmpty: '-- Vazio --',
+        noCompress: 'Seu navegador não suporta compressão de URL.', urlCopied: 'URL copiada (', copyUrl: 'Copie esta URL para compartilhar:', shareFail: 'Não foi possível criar a URL de compartilhamento.',
+        urlFail: 'Não foi possível carregar a URL. O link pode estar cortado ou corrompido.', need2: 'São necessários 2 quadros ou mais', rendering: 'Renderizando ', expFail: 'Falha na exportação.', exporting: 'Exportando ', cancel: '✕ Cancelar',
+      },
+      PLUS: {
+        next: '✨ Próximo passo', nextTip: 'Próximo passo (N): adiciona o próximo passo lógico\nao que você tem: chão, telhado, janelas,\nárvores, sombreamento… Desfaça com Ctrl+Z',
+        cats: { build: 'Construções', things: 'Objetos', nature: 'Natureza', geo: 'Formas', pattern: 'Padrões' }, luck: '🎲 Surpreenda-me',
+        pal: 'Paleta', pals: { def: 'Padrão', wa: 'Japonesa', pico: 'Retrô 16', gb: 'Portátil 4', pastel: 'Pastel', earth: 'Terra' },
+        styleT: 'ESTILO', styles: { wa: '🏯 Japonês', retro: '👾 Retrô', pastel: '🍬 Pastel', night: '🌙 Noite', autumn: '🍁 Outono', mono: '⬛ Mono' },
+        styleDone: (n) => `Estilo alterado (${n} voxels). Ctrl+Z para desfazer.`,
+        steps: {
+          empty: ['Comece com uma construção', 'A tela está vazia: aqui está algo para começar.'],
+          ground: ['Adicionar chão', 'As coisas parecem assentadas quando estão apoiadas em algo.'],
+          roof: ['Colocar um telhado', 'Um topo plano parece inacabado; um telhado dá silhueta.'],
+          windows: ['Adicionar janelas', 'Aberturas regulares mostram a escala de uma parede.'],
+          trees: ['Plantar árvores', 'Coisas pequenas ao redor de uma grande a fazem parecer maior.'],
+          shade: ['Adicionar sombreamento', 'Topo mais claro e base mais escura deixam a forma legível.'],
+          outline: ['Escurecer as bordas', 'Cantos mais escuros separam a forma do fundo.'],
+          done: ['Por enquanto é só', 'Mude a forma ou gere algo novo e haverá mais ideias.'],
+        },
+        gn: { house: 'Casa', tree: 'Árvore', torii: 'Torii', pagoda: 'Pagode', rocket: 'Foguete', snowman: 'Boneco de neve', planet: 'Planeta', robot: 'Robô', boat: 'Veleiro', lighthouse: 'Farol', cactus: 'Cacto' },
+        moodH: 'Mudar o clima: ', moodS: 'A mesma forma passa outra sensação com outra paleta. Ctrl+Z para voltar.', motionH: 'Adicionar movimento', motionS: ' (▶ / ■ abaixo reproduz e para)',
+      },
+      XS: {
+        door: ['Adicionar uma porta', 'Uma entrada faz parecer um prédio com interior e dá a escala.'],
+        path: ['Abrir um caminho', 'Um caminho até a entrada é uma linha guia: conduz o olhar para dentro.'],
+        fence: ['Cercar', 'Uma borda emoldura a cena, e estacas regulares dão ritmo.'],
+        flowers: ['Espalhar flores', 'Grupos ímpares (3, 5, 7) parecem naturais: a regra dos ímpares.'],
+        rocks: ['Adicionar pedras', 'Montinhos irregulares contrastam com formas limpas e trazem naturalidade.'],
+        lanterns: ['Colocar lanternas', 'Pontos pequenos e claros atraem o olhar primeiro: um ponto focal.'],
+        flag: ['Bandeira no topo', 'Uma marca no ponto mais alto reforça a silhueta.'],
+        clouds: ['Adicionar nuvens', 'Algo no céu ao fundo cria camadas de profundidade.'],
+        mirror: ['Deixar simétrico', 'Uma forma quase simétrica parece mais estável quando completada.'],
+        accent: ['Adicionar uma cor de destaque', 'Um toque do tom oposto (complementar): o 10 do 60-30-10.'],
+        gradient: ['Mais claro para cima', 'Mais brilho no alto parece luz vindo de cima.'],
+        harmony: ['Unificar os tons', 'Aproximar os tons do principal (cores análogas) dá unidade.'],
+        warm: ['Luz de fim de tarde', 'Topos quentes e sombras frias sugerem uma hora do dia.'],
+      },
+      SEASON: { night: 'Noite', autumn: 'Outono', pastel: 'Pastel', wa: 'Cores japonesas', retro: 'Retrô' },
+      MOTION: {
+        spinY: 'Giro: um prato giratório mostra todos os lados em uma volta.', bounce: 'Quicar: cair e quicar transmite peso.', breathe: 'Respirar: inflar devagar faz parecer vivo.',
+        swing: 'Pêndulo: um vaivém é fácil de acompanhar.', colorCycle: 'Ciclo de cor: a forma fica e o tom dá a volta.', buildUp: 'Construir: subir a partir da base mostra como é feito.',
+        waveA: 'Onda: pequenos atrasos no tempo viram uma ondulação.', rippleA: 'Ondas: movimento que se espalha a partir do centro.', orbit: 'Órbita: girar em torno de um centro.',
+      },
+      UI: { make: 'Criar', color: 'Cor', anim: 'Movimento', edit: 'Editar', file: 'Arquivo', tools: 'Ferramentas', menu: 'Ajustes', close: 'Fechar', view: 'Visualizar' },
+    },
+    zh: {
+      TX: {
+        tog2D: '◧ 2D 面板', drawMode: '🧱 绘制', delMode: '🔨 删除', recolorMode: '🎨 上色', tools: '工具', brush: '画笔', snap: '吸附', symmetry: '对称',
+        size: '大小', alpha: '透明度', project: '项目', canvasSize: '画布大小', color: '颜色', copyPaste: '体素复制 / 粘贴',
+        camera: '相机', media: '导入媒体\n- 图片\n(png/jpg/bmp/gif)\n- 视频\n(mp4/webm/mov)\n- 3D 模型\n(obj+mtl/stl)', generate: '生成', animGen: '生成动画', actions: '操作',
+        apply: '应用', save: '💾 保存', load: '📂 读取', import_: '📁 导入', select: '⬚ 选择范围', copyRange: '📋 复制范围', copyCluster: '🔗 复制整块', paste: '📌 粘贴',
+        undo: '↩ 撤销', redo: '↪ 重做', wireframe: '◫ 线框', share: '🔗 分享', background: '🎨 背景', export_: '⬇ 导出',
+        depth: '深度', impSize: '大小', depthFromColor: '根据颜色生成 3D 深度', overlay: '显示叠加', startF: '起始帧', frameLen: '长度',
+        pen: '画笔', line: '直线', rect: '矩形', frect: '实心矩形', circle: '圆', fcircle: '实心圆', ellipse: '椭圆', fellipse: '实心椭圆',
+        fill: '填充', fillSl: '截面填充', eyedrop: '吸管', spray: '喷枪', scatter: '散布', noisePen: '噪点',
+        snapCell: '格子中心', snapEdge: '边',
+        prev: '◀ 上一帧', play: '▶ 播放', stop: '⏸ 停止', next: '下一帧 ▶▶', add: '＋添加', dup: '📋复制', del: '🗑删除', fcopy: '📑复制帧', fpaste: '📌粘贴帧', work: '🔧工作帧',
+        v3hint: '拖动:旋转 | Shift:平移 | 滚轮:缩放', v3confirm: '左键:确定 | 右键:取消',
+        v3hintT: '点按:放置 | 双指:旋转、捏合缩放', v3confirmT: '点按:确定 | ✕ 取消可中止', mExtra: '显示与更多',
+        welcT: '欢迎使用 VoxoB', welcP: '在浏览器中运行的体素编辑器。数据不会上传，作品保存在这个浏览器中。',
+        welcGenT: '🎲 自动生成试试', welcGenS: '一键生成城市、城堡、地形等', welcDrawT: '✏️ 从空白画布开始', welcDrawS: '用画笔和图形放置体素',
+        welcImgT: '🖼 从图片制作', welcImgS: '把图片、视频或 3D 模型转换为体素', welcX: '点按外侧关闭',
+        bgTitle: '🎨 背景设置', exTitle: '⬇ 导出',
+        thDark: '🌑 深色', thLight: '☀ 浅色', thGrey: '⬜ 灰色', thWarm: '🔥 暖色', thSepia: '📜 复古棕', thForest: '🌿 森林', thOcean: '🌊 海洋',
+        mTools: '🛠 工具', mSet: '⚙ 设置', mView3D: '🧊 3D', mView2D: '🖼 2D', cancelBtn: '✕ 取消', resetCam: '🔄 重置',
+        tipUndo: 'Ctrl+Z: 撤销', tipRedo: 'Ctrl+Y: 重做', tipWire: '切换线框显示', tipShare: '通过压缩 URL 分享', tipBg: '更改背景', tipExp: '导出模型',
+        tipSavePj: '保存到浏览器', tipSelR: '选择范围', tipCR: '复制选中范围', tipCC: '复制相连的整块', tipPst: '粘贴体素', tipImp: '导入媒体或模型',
+        tipAnimG: '生成动画', tipCam: '保存相机角度', tipPrev: '上一帧', tipPlay: '播放/停止', tipNext: '下一帧', tipAddF: '添加空白帧',
+        tipDupF: '复制帧', tipDelF: '删除帧', tipCopyF: '复制帧内容', tipPasteF: '粘贴帧内容', tipWorkF: '添加工作帧',
+        clrAllConf: '要清除所有体素吗？',
+        exObj: '导出 OBJ + MTL', exStl: '导出 STL', exGlb: '导出 GLB', exPng: '导出 PNG 图片',
+        exSave: '保存 JSON 项目', exGIF: '导出 WebM 视频', exMP4: '导出 MP4 视频', exLoad: '读取 JSON 项目',
+        abtDesc: '在浏览器中运行的轻量体素编辑器与生成器。',
+        abtSupp: '请我喝杯咖啡（支持）', abtGuide: '📖 使用指南',
+        abtCrd: '致谢与许可',
+      },
+      GN: { sphere: '球体', torus: '圆环', cylinder: '圆柱', cone: '圆锥', pyramid: '金字塔', octahedron: '八面体', diamond: '钻石', cross: '十字', star: '星星', spiral: '螺旋', helix: '双螺旋', mobius: '莫比乌斯', knot: '绳结', rings: '双环', ripple: '波纹', grid: '网格', checkerP: '棋盘格', honeycomb: '蜂巢', voronoi: '泰森多边形', fractal: '分形', maze: '迷宫', steps: '阶梯', gears: '齿轮', dna: 'DNA', heart: '爱心', random: '随机', terrain: '地形', mountain: '山', island: '岛', cave: '洞穴', wave: '波浪', crystal: '水晶', forest: '森林', mushroom: '蘑菇', castle: '城堡', city: '城市', temple: '神殿', bridge: '桥', galaxy: '银河' },
+      AN: { rotY: '↻Y旋转', rotX: '↻X旋转', rotZ: '↻Z旋转', flipX: '⇄X翻转', flipY: '⇅Y翻转', flipZ: '⇄Z翻转', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻挖空', outline: '▣外形', dilate: '⊕膨胀', erode: '⊖侵蚀', clrSlice: '✕清除截面', clrAll: '🗑全部清除' },
+      AG: { spinY: 'Y旋转', spinX: 'X旋转', spinZ: 'Z旋转', twistY: 'Y扭转', swing: '摆动', orbit: '公转', bounce: '弹跳', shake: '震动', slideX: 'X滑动', slideY: 'Y滑动', slideZ: 'Z滑动', grow: '生长', breathe: '呼吸', pulse: '脉动', heartbeat: '心跳', rippleA: '扩散', waveA: '波动', rain: '下雨', fire: '火焰', buildUp: '搭建', dissolve: '溶解', explodeA: '爆炸', implode: '收缩', fadeIn: '淡入', colorCycle: '变色', glitch: '故障' },
+      MSG: {
+        memW: '⚠ 内存警告', overlap: '有重叠的体素。确定 = 覆盖（粘贴优先），取消 = 保留现有', placeHint: '点击定位 → 确定',
+        clusterHint: '点击一个体素以复制整块', selFirst: '请先选择范围', copyFirst: '请先复制', framePaste: '确定 = 覆盖（粘贴优先） / 取消 = 保留现有',
+        noWsAnim: '不能从工作帧开始生成动画。', noVox: '当前帧中没有体素', bigSize: '尺寸较大，可能会变卡。要继续吗？',
+        vidFmt: '你的浏览器不支持这种视频格式。', vidDur: '无法获取视频时长。', vidFrames: (n) => `约有 ${n} 帧。要继续吗？`, vidLoad: '正在导入视频 ',
+        pjName: '输入项目名称：', saved: '已保存。', saveFail: '保存失败（浏览器存储空间可能已满）',
+        pjLoad: (n) => `要读取项目“${n}”吗？\n（当前未保存的内容将会丢失）`, pjDel: (n) => `确定要永久删除项目“${n}”吗？`, pjEmpty: '-- 没有保存的数据 --',
+        noCompress: '你的浏览器不支持压缩分享。', urlCopied: '已复制 URL（', copyUrl: '请复制这个 URL 进行分享：', shareFail: '生成分享 URL 失败。',
+        urlFail: '读取 URL 数据失败。\n链接可能过长被截断，或数据已损坏。', need2: '需要 2 帧以上', rendering: '正在渲染 ', expFail: '视频导出失败。', exporting: '正在导出视频 ', cancel: '✕ 取消',
+      },
+      PLUS: {
+        next: '✨ 下一步', nextTip: '下一步（N）：为当前作品添加一个合适的步骤\n（地面、屋顶、窗户、树木、阴影等）\nCtrl+Z 可撤销',
+        cats: { build: '建筑', things: '物品', nature: '自然', geo: '图形', pattern: '图案' }, luck: '🎲 随机来一个',
+        pal: '配色', pals: { def: '默认', wa: '日本传统色', pico: '复古 16 色', gb: '掌机 4 色', pastel: '马卡龙', earth: '大地色' },
+        styleT: '风格转换', styles: { wa: '🏯 和风', retro: '👾 复古', pastel: '🍬 马卡龙', night: '🌙 夜晚', autumn: '🍁 秋天', mono: '⬛ 黑白' },
+        styleDone: (n) => `已转换风格（${n} 个体素）。Ctrl+Z 可撤销。`,
+        steps: {
+          empty: ['从一座建筑开始', '画布是空的，先放一个可以继续加工的形状。'],
+          ground: ['铺上地面', '站在某个东西上，看起来才像“放在那里”。'],
+          roof: ['加上屋顶', '平顶看起来像没做完，屋顶能让轮廓更清晰。'],
+          windows: ['开窗户', '规则的窗户能体现墙面的尺度。'],
+          trees: ['种树', '在大物体周围放些小东西，会显得它更大。'],
+          shade: ['加上阴影', '上亮下暗，立体感就出来了。'],
+          outline: ['加深边角', '边角稍暗一些，形状就能从背景中突出。'],
+          done: ['目前的建议就这些', '改变形状或重新生成后，会有新的建议。'],
+        },
+        gn: { house: '房子', tree: '树', torii: '鸟居', pagoda: '五重塔', rocket: '火箭', snowman: '雪人', planet: '行星', robot: '机器人', boat: '帆船', lighthouse: '灯塔', cactus: '仙人掌' },
+        moodH: '换个氛围：', moodS: '同样的形状，换了配色感觉就完全不同。Ctrl+Z 可撤销。', motionH: '添加动作', motionS: '（用下方 ▶ / ■ 播放、停止）',
+      },
+      XS: {
+        door: ['加一扇门', '有了入口，看起来就像“有内部的建筑”，也能体现尺度。'],
+        path: ['铺一条小路', '通向入口的路是引导视线的“引导线”。'],
+        fence: ['用栅栏围起来', '边框让画面更紧凑，等距的木桩带来节奏感。'],
+        flowers: ['撒些花', '以奇数（3、5、7）成簇摆放会更自然（奇数法则）。'],
+        rocks: ['放些石头', '大小不一的石块与规整的形状形成对比，更显自然。'],
+        lanterns: ['立起灯笼', '暗处的小亮点最先吸引目光，成为焦点。'],
+        flag: ['顶上插旗', '最高处的标志能强化轮廓的“顶点”。'],
+        clouds: ['飘几朵云', '在远处的天空加些元素，前后层次就有了纵深。'],
+        mirror: ['整理成左右对称', '九成对称的形状补齐后会显得更稳定（对称性）。'],
+        accent: ['加入点缀色', '只用一成主色的对立色（补色），即配色“60·30·10”中的 10。'],
+        gradient: ['越往上越亮', '越高越亮，会让人感觉光从上方照下来。'],
+        harmony: ['统一色相', '把颜色向主色靠拢（类似色），整体会更协调。'],
+        warm: ['傍晚的光', '顶面偏暖、阴影偏冷，就能营造出时间段的感觉。'],
+      },
+      SEASON: { night: '夜晚', autumn: '秋天', pastel: '马卡龙', wa: '日本传统色', retro: '复古' },
+      MOTION: {
+        spinY: '旋转：转盘转一圈就能展示所有侧面。', bounce: '弹跳：落下再弹起，能表现出重量。', breathe: '呼吸：缓慢膨胀，看起来像活的一样。',
+        swing: '摆动：钟摆式的动作，眼睛很容易跟上。', colorCycle: '颜色循环：形状不变，色相转一圈。', buildUp: '搭建：从下往上组装，展示制作过程。',
+        waveA: '波动：每个位置稍微错开一点，就形成起伏。', rippleA: '波纹：从中心向外扩散的动作。', orbit: '公转：绕着中心转动。',
+      },
+      UI: { make: '制作', color: '颜色', anim: '动作', edit: '编辑', file: '文件', tools: '工具', menu: '设置', close: '关闭', view: '显示' },
+    },
+  };
+  </script>
+  <!-- /VoxoB i18n -->
   <script>
     // Due to extreme size constraints, core logic is compacted below.
     // All requested features are implemented.
@@ -1746,8 +2034,9 @@
       onR();
     }
     // ===== STATE =====
-    let lang = (() => { try { const l = localStorage.getItem('vs_lang'); if (l === 'ja' || l === 'en') return l } catch (e) { } return (navigator.language || navigator.userLanguage || "en").toLowerCase().startsWith("ja") ? "ja" : "en" })(), W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
-    document.documentElement.setAttribute("lang", lang);
+    let lang = (() => { try { const l = localStorage.getItem('vs_lang'); if (LANG_NAMES[l]) return l } catch (e) { } for (const n of (navigator.languages || [navigator.language || navigator.userLanguage || 'en'])) { const c = String(n).slice(0, 2).toLowerCase(); if (LANG_NAMES[c]) return c } return 'en' })(), W = 16, H = 16, D = 16, color = '#ff3070', alpha = 255, tool = 'pen', mode = 'draw', sAx = 'y', sIdx = 0, bSz = 1, tAnc = null, pvx = [], wire = false, fps = 8, playing = false, playTm = null, vol = .4, actx;
+    const htmlLang = (l) => l === 'zh' ? 'zh-CN' : l;
+    document.documentElement.setAttribute("lang", htmlLang(lang));
     let g2d = true, g3d = true;
     let undoSt = [], redoSt = [], frames = [{ v: {}, ws: false, cam: null }], curFrame = 0, frameClip = null;
     let clipboard = null, clipIs3D = false, pasteMode = false, clusterCopyMode = false;
@@ -1792,7 +2081,7 @@
         exMP4: 'Export MP4 Video',
         exLoad: 'Load JSON Project',
         abtDesc: 'A lightweight, browser-based voxel editor and generator.',
-        abtSupp: 'Buy Me a Coffee',
+        abtSupp: 'Buy Me a Coffee', abtGuide: '📖 How to use VoxoB',
         abtCrd: 'CREDITS & LICENSES',
       },
       ja: {
@@ -1828,16 +2117,20 @@
         exMP4: 'MP4 動画エクスポート',
         exLoad: 'JSON プロジェクト読込',
         abtDesc: 'ブラウザで動く軽量なボクセルエディタ＆ジェネレーター',
-        abtSupp: 'コーヒーを奢る（支援）',
+        abtSupp: 'コーヒーを奢る（支援）', abtGuide: '📖 使い方ガイド',
         abtCrd: 'クレジット & ライセンス',
       }
     };
 
+    Object.keys(I18N).forEach(l => TX[l] = I18N[l].TX);
+
     const TOUCH = matchMedia('(pointer: coarse)').matches;
     function T(k) { if (TOUCH && (k === 'v3hint' || k === 'v3confirm')) k += 'T'; return TX[lang]?.[k] || TX.en[k] || k; }
+    // alerts / prompts: Japanese and English are written at the call site, other languages come from I18N[lang].MSG[k]
+    function M(k, ja, en, ...a) { if (lang === 'ja') return ja; const v = I18N[lang]?.MSG?.[k]; if (v == null) return en; return typeof v === 'function' ? v(...a) : v }
 
     function setLang(l) {
-      lang = l; document.documentElement.lang = l;
+      lang = l; document.documentElement.lang = htmlLang(l);
       document.querySelectorAll('#hU,#hR,#hEx').forEach(b => delete b.dataset.full);
       if (document.getElementById('lnSel')) document.getElementById('lnSel').value = l;
       try { localStorage.setItem('vs_lang', l); } catch (e) { }
@@ -1862,8 +2155,11 @@
         'lbBgTp': 'bgType', 'opSol': 'bgSolid', 'opGra': 'bgGrad', 'opChk': 'bgCheck', 'lbBgIm': 'bgImg', 'bBgClr': 'bgClear',
         'lbExFn': 'exFilename', 'exObj': 'exObj', 'exStl': 'exStl', 'exGlb': 'exGlb', 'exPng': 'exPng',
         'bFPrev': 'prev', 'bFNext': 'next', 'bFAdd': 'add', 'bFDup': 'dup', 'bFDel': 'del', 'bFCpy': 'fcopy', 'bFPst': 'fpaste', 'bFWork': 'work',
-        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd'
+        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd', 'abtGuide': 'abtGuide'
       };
+      // the About dialog is declared after this script, so on the first call label it once the page has loaded
+      const labelAbout = () => { ['abtDesc', 'abtSupp', 'abtCrd', 'abtGuide'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = T(id) }); const g = document.getElementById('abtGuide'); if (g) g.href = '/' + lang + '/' };
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', labelAbout, { once: true }); else labelAbout();
       Object.entries(ids).forEach(([id, k]) => {
         const el = document.getElementById(id);
         if (el) el.textContent = T(k);
@@ -1922,7 +2218,7 @@
     let memTm;
     function showMem(m) {
       // Display memory warning in Japanese if the current language is 'ja', otherwise in English
-      $('memW').textContent = m || (lang === 'ja' ? '⚠ メモリ警告' : '⚠ Memory warning');
+      $('memW').textContent = m || M('memW', '⚠ メモリ警告', '⚠ Memory warning');
       $('memW').style.display = 'block';
       clearTimeout(memTm);
       memTm = setTimeout(() => $('memW').style.display = 'none', 4000);
@@ -2248,7 +2544,7 @@
         clearGhost();// Check overlap
         let hasOverlap = false; Object.keys(clipboard).forEach(k => { const p = pv_(k); const pk = vk(tAnc.x + p[0], tAnc.y + p[1], tAnc.z + p[2]); if (V()[pk]) hasOverlap = true });
         let doPaste = true, priority = 'paste';
-        if (hasOverlap) { const r = confirm(lang === 'ja' ? '重複しています。OK=上書き(ペースト優先)、キャンセル=既存を維持' : 'Overlap detected. OK=paste priority, Cancel=existing priority'); if (!r) priority = 'existing' }
+        if (hasOverlap) { const r = confirm(M('overlap', '重複しています。OK=上書き(ペースト優先)、キャンセル=既存を維持', 'Overlap detected. OK=paste priority, Cancel=existing priority')); if (!r) priority = 'existing' }
         const b = []; Object.entries(clipboard).forEach(([k, v]) => {
           const p = pv_(k); const nx = tAnc.x + p[0], ny = tAnc.y + p[1], nz = tAnc.z + p[2];
           if (nx < 0 || ny < 0 || nz < 0 || nx >= W || ny >= H || nz >= D) return;// clip to bounds
@@ -2259,7 +2555,7 @@
         tAnc = null;
         // Do not disable pasteMode to allow repeated pasting
         snd('place'); d2D(); uCnt();
-        $('v3hint').textContent = lang === 'ja' ? 'Click to position -> Confirm' : 'Click to position → confirm';
+        $('v3hint').textContent = M('placeHint', 'クリックで位置決め → 確定', 'Click to position → confirm');
         return
       }// stays in paste mode
       // 2-click tools with ghost
@@ -2342,7 +2638,7 @@
       return acts;
     }
     // ===== COPY/PASTE =====
-    function startClusterCopy() { clusterCopyMode = true; $('v3hint').textContent = lang === 'ja' ? 'Click a voxel to copy cluster' : 'Click a voxel to copy cluster'; snd('click') }
+    function startClusterCopy() { clusterCopyMode = true; $('v3hint').textContent = M('clusterHint', 'ボクセルをクリックして塊をコピー', 'Click a voxel to copy cluster'); snd('click') }
     function copyConnAt(x, y, z) {
       const k0 = vk(x, y, z); if (!V()[k0]) { snd('click'); return }
       const vis = new Set(), q = [[x, y, z]]; clipboard = {}; clipIs3D = true;
@@ -2353,8 +2649,8 @@
       }
       snd('copy'); $('v3hint').textContent = T('v3hint') + ' (' + Object.keys(clipboard).length + ' copied)'
     }
-    function copySelR() { if (!clipboard || !Object.keys(clipboard).length) alert(lang === 'ja' ? 'Select range first' : 'Select a range first'); else snd('copy') }
-    function startPaste() { if (!clipboard || !Object.keys(clipboard).length) { alert(lang === 'ja' ? 'Copy first' : 'Copy first'); return } pasteMode = true; tAnc = null; clearGhost(); $('v3hint').textContent = lang === 'ja' ? 'Click to position -> Confirm' : 'Click to position → confirm'; snd('click') }
+    function copySelR() { if (!clipboard || !Object.keys(clipboard).length) alert(M('selFirst', '先に範囲を選択してください', 'Select a range first')); else snd('copy') }
+    function startPaste() { if (!clipboard || !Object.keys(clipboard).length) { alert(M('copyFirst', '先にコピーしてください', 'Copy first')); return } pasteMode = true; tAnc = null; clearGhost(); $('v3hint').textContent = M('placeHint', 'クリックで位置決め → 確定', 'Click to position → confirm'); snd('click') }
 
     // ===== 2D EDITOR (same as v8 but with cluster copy support) =====
     const c2 = $('c2d'), cx_ = c2.getContext('2d'), pC_ = $('pv'), pX_ = pC_.getContext('2d'); let cs_ = 20;
@@ -2517,7 +2813,7 @@
       if (pasteMode && clipboard) {
         const b = []; let hasOverlap = false;
         Object.entries(clipboard).forEach(([k, v]) => { const p = pv_(k); const w = s2w(c.sx + p[0], c.sy + p[1]); const pk = vk(w.x, w.y, w.z); if (V()[pk]) hasOverlap = true });
-        let priority = 'paste'; if (hasOverlap) { const r = confirm(lang === 'ja' ? '重複しています。OK=上書き(ペースト優先)、キャンセル=既存を維持' : 'Overlap detected. OK=paste priority, Cancel=existing priority'); if (!r) priority = 'existing' }
+        let priority = 'paste'; if (hasOverlap) { const r = confirm(M('overlap', '重複しています。OK=上書き(ペースト優先)、キャンセル=既存を維持', 'Overlap detected. OK=paste priority, Cancel=existing priority')); if (!r) priority = 'existing' }
         Object.entries(clipboard).forEach(([k, v]) => {
           const p = pv_(k); const w = s2w(c.sx + p[0], c.sy + p[1]); if (w.x < 0 || w.y < 0 || w.z < 0 || w.x >= W || w.y >= H || w.z >= D) return;
           if (priority === 'existing' && V()[vk(w.x, w.y, w.z)]) return;
@@ -2711,7 +3007,7 @@
     }
     function uFUI() { $('fsl').max = frames.length - 1; $('fsl').value = curFrame; $('flbl').textContent = (curFrame + 1) + '/' + frames.length + (frames[curFrame].ws ? ' [WS]' : '') }
     function copyFrame() { frameClip = JSON.parse(JSON.stringify(V())); snd('copy') }
-    function pasteFrame() { if (!frameClip) return; const prio = confirm(lang === 'ja' ? 'OK=上書き(ペースト優先) / キャンセル=既存を維持' : 'OK=Paste / Cancel=Existing'); const b = []; Object.entries(frameClip).forEach(([k, v]) => { if (prio || !V()[k]) { const [x, y, z] = pv_(k); const a = setV(x, y, z, v.c, v.a || 255); if (a) b.push(a) } }); pU(b); d2D(); uCnt(); snd('place') }
+    function pasteFrame() { if (!frameClip) return; const prio = confirm(M('framePaste', 'OK=上書き(ペースト優先) / キャンセル=既存を維持', 'OK=Paste / Cancel=Existing')); const b = []; Object.entries(frameClip).forEach(([k, v]) => { if (prio || !V()[k]) { const [x, y, z] = pv_(k); const a = setV(x, y, z, v.c, v.a || 255); if (a) b.push(a) } }); pU(b); d2D(); uCnt(); snd('place') }
     // ===== GENERATORS =====
     const GENS = [
       // Geometrics
@@ -2732,6 +3028,7 @@
       en: { sphere: 'Sphere', torus: 'Torus', cylinder: 'Cylinder', cone: 'Cone', pyramid: 'Pyramid', octahedron: 'Octa', diamond: 'Diamond', cross: 'Cross', star: 'Star', spiral: 'Spiral', helix: 'Helix', mobius: 'Mobius', knot: 'Knot', rings: 'Rings', ripple: 'Ripple', grid: 'Grid', checkerP: 'Checker', honeycomb: 'Hexagon', voronoi: 'Voronoi', fractal: 'Fractal', maze: 'Maze', steps: 'Steps', gears: 'Gears', dna: 'DNA', heart: 'Heart', random: 'Random', terrain: 'Terrain', mountain: 'Mountain', island: 'Island', cave: 'Cave', wave: 'Wave', crystal: 'Crystal', forest: 'Forest', mushroom: 'Mushroom', castle: 'Castle', city: 'City', temple: 'Temple', bridge: 'Bridge', galaxy: 'Galaxy' },
       ja: { sphere: '球体', torus: 'ﾄｰﾗｽ', cylinder: '円柱', cone: '円錐', pyramid: 'ﾋﾟﾗﾐｯﾄﾞ', octahedron: '正八面体', diamond: 'ﾀﾞｲﾔ', cross: '十字', star: '星', spiral: '螺旋', helix: '二重螺旋', mobius: 'ﾒﾋﾞｳｽ', knot: '結び目', rings: '双輪', ripple: '波紋', grid: 'ｸﾞﾘｯﾄﾞ', checkerP: '市松', honeycomb: '蜂の巣', voronoi: 'ﾎﾞﾛﾉｲ', fractal: 'ﾌﾗｸﾀﾙ', maze: '迷路', steps: '階段', gears: '歯車', dna: 'DNA', heart: 'ﾊｰﾄ', random: 'ﾗﾝﾀﾞﾑ', terrain: '地形', mountain: '山', island: '島', cave: '洞窟', wave: '波', crystal: '結晶', forest: '森', mushroom: 'ｷﾉｺ', castle: '城', city: '都市', temple: '神殿', bridge: '橋', galaxy: '銀河' }
     };
+    Object.keys(I18N).forEach(l => GN[l] = { ...I18N[l].GN });
     function buildGen() { $('gnG').innerHTML = ''; GENS.forEach(g => { const b = document.createElement('button'); b.className = 'gb'; b.innerHTML = `<span class="gi">${g.i}</span>${(GN[lang] || GN.en)[g.id]}`; b.onclick = () => { gen(g.id); snd('gen') }; $('gnG').appendChild(b) }) }
     function n2(x, z, s) { return (Math.sin(x * s) * Math.cos(z * s * .7) + Math.sin(x * s * 1.3 + z * s * .5)) / 2 }
     function gen(t) {
@@ -2816,13 +3113,14 @@
       { id: 'colorCycle', i: '🌈', n: { en: 'Color', ja: '色循環' } },
       { id: 'glitch', i: '👾', n: { en: 'Glitch', ja: 'ｸﾞﾘｯﾁ' } }
     ];
+    AGENS.forEach(g => Object.keys(I18N).forEach(l => { if (I18N[l].AG[g.id]) g.n[l] = I18N[l].AG[g.id] }));
     function buildAnimGen() { $('agG').innerHTML = ''; AGENS.forEach(g => { const b = document.createElement('button'); b.className = 'gb'; b.innerHTML = `<span class="gi">${g.i}</span>${g.n[lang] || g.n.en}`; b.onclick = () => { animGen(g.id); snd('gen') }; $('agG').appendChild(b) }) }
     function animGen(t) {
       const sf = Math.max(0, +$('agSF').value - 1 || 0), fl = Math.max(2, Math.min(32, +$('agFL').value || 8));
 
       // Check if the starting frame is a workspace frame and alert the user
       if (frames[sf] && frames[sf].ws) {
-        alert(lang === 'ja' ? 'ワークスペースフレームからアニメーションを開始することはできません。' : 'Cannot start animation generation from a workspace frame.');
+        alert(M('noWsAnim', 'ワークスペースフレームからアニメーションを開始することはできません。', 'Cannot start animation generation from a workspace frame.'));
         return;
       }
 
@@ -2841,7 +3139,7 @@
 
       const startV = frames[sf] ? frames[sf].v : V(), same = animLast && animLast.sf === sf && JSON.stringify(startV) === animLast.out;
       const src = JSON.parse(same ? animLast.src : JSON.stringify(startV)); const srcKeys = Object.keys(src);
-      if (srcKeys.length === 0) { alert(lang === 'ja' ? '現在のフレームにボクセルがありません' : 'No voxels in current frame'); return }
+      if (srcKeys.length === 0) { alert(M('noVox', '現在のフレームにボクセルがありません', 'No voxels in current frame')); return }
       const cx_ = W / 2, cy_ = H / 2, cz_ = D / 2;
 
       for (let fi = 0; fi < fl; fi++) {
@@ -2888,6 +3186,7 @@
       en: { rotY: '↻RotY', rotX: '↻RotX', rotZ: '↻RotZ', flipX: '⇄FlipX', flipY: '⇅FlipY', flipZ: '⇄FlipZ', shiftUp: '▲Up', shiftDn: '▼Down', shiftL: '◀Left', shiftR: '▶Right', hollow: '◻Hollow', outline: '▣Outline', dilate: '⊕Dilate', erode: '⊖Erode', clrSlice: '✕Slice', clrAll: '🗑All' },
       ja: { rotY: '↻Y回転', rotX: '↻X回転', rotZ: '↻Z回転', flipX: '⇄X反転', flipY: '⇅Y反転', flipZ: '⇄Z反転', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻中空化', outline: '▣外形', dilate: '⊕膨張', erode: '⊖侵食', clrSlice: '✕断面消去', clrAll: '🗑全消去' }
     };
+    Object.keys(I18N).forEach(l => AN[l] = I18N[l].AN);
     function buildAct() { $('acG').innerHTML = ''; ACTS.forEach(id => { const b = document.createElement('button'); b.className = 'at' + (id.startsWith('clr') ? ' w' : ''); b.textContent = (AN[lang] || AN.en)[id]; b.onclick = () => { doAct(id); snd('click') }; $('acG').appendChild(b) }) }
     function doAct(id) {
       const o = { ...V() }, acts = []; const clr = () => Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); const a = delV(x, y, z); if (a) acts.push(a) }); const put = (k, v) => { const [x, y, z] = pv_(k); if (x >= 0 && y >= 0 && z >= 0 && x < W && y < H && z < D) { const a = setV(x, y, z, v.c, v.a || 255); if (a) acts.push(a) } };
@@ -2911,7 +3210,7 @@
     function appSz() {
       // Remove maximum size validation
       const nw = Math.max(4, +$('sW').value || 16), nh = Math.max(4, +$('sH').value || 16), nd = Math.max(4, +$('sD').value || 16);
-      if (nw * nh * nd > 100000 && !confirm(lang === 'ja' ? 'サイズが大きいため動作が重くなる可能性があります。続行しますか？' : 'Large size may cause lag. Continue?')) return;
+      if (nw * nh * nd > 100000 && !confirm(M('bigSize', 'サイズが大きいため動作が重くなる可能性があります。続行しますか？', 'Large size may cause lag. Continue?'))) return;
       if (nw === W && nh === H && nd === D) return; const o = { ...V() }; Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) });
       W = nw; H = nh; D = nd; sIdx = Math.min(sIdx, smx() - 1); $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2);
       Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); if (x < W && y < H && z < D) setV(x, y, z, v.c, v.a || 255) });
@@ -3017,7 +3316,7 @@
       };
 
       vid.onerror = () => {
-        alert(lang === 'ja' ? 'この動画形式はお使いのブラウザでサポートされていません。' : 'This video format is not supported by your browser.');
+        alert(M('vidFmt', 'この動画形式はお使いのブラウザでサポートされていません。', 'This video format is not supported by your browser.'));
         cleanup();
       };
 
@@ -3025,13 +3324,13 @@
       vid.addEventListener('loadeddata', () => {
         const dur = vid.duration;
         if (!dur || isNaN(dur)) {
-          alert(lang === 'ja' ? '動画の長さを取得できませんでした。' : 'Could not determine video duration.');
+          alert(M('vidDur', '動画の長さを取得できませんでした。', 'Could not determine video duration.'));
           cleanup();
           return;
         }
 
         const maxFr = Math.min(Math.ceil(dur * 4), 64); 
-        if (maxFr > 24 && !confirm(lang === 'ja' ? `約${maxFr}フレームあります。続行しますか？` : `~${maxFr} frames. Continue?`)) {
+        if (maxFr > 24 && !confirm(M('vidFrames', `約${maxFr}フレームあります。続行しますか？`, `~${maxFr} frames. Continue?`, maxFr))) {
           cleanup();
           return;
         }
@@ -3057,7 +3356,7 @@
         const do3d = $('i3d').checked;
 
         // --- Start Progress ---
-        const progPrefix = lang === 'ja' ? '動画読込中 ' : 'Importing Video ';
+        const progPrefix = M('vidLoad', '動画読込中 ', 'Importing Video ');
         showProg(progPrefix + '0%', 0);
 
         vid.onseeked = () => {
@@ -3208,7 +3507,7 @@
     function autoLoad() { try { const d = JSON.parse(localStorage.getItem('vs9')); if (d) { W = d.W || 16; H = d.H || 16; D = d.D || 16; frames = d.frames || [{ v: {}, ws: false, cam: null }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2); rebMesh(); return true } } catch (e) { } return false }
 
     function savePj() {
-      const n = prompt(lang === 'ja' ? 'プロジェクト名を入力:' : 'Project Name:', 'P' + Date.now() % 10000);
+      const n = prompt(M('pjName', 'プロジェクト名を入力:', 'Project Name:'), 'P' + Date.now() % 10000);
       if (!n) return;
       try {
         const p = JSON.parse(localStorage.getItem('vs9p') || '{}');
@@ -3217,16 +3516,16 @@
         updPj();
         $('pjS').value = n;
         snd('gen');
-        alert(lang === 'ja' ? '保存しました。' : 'Saved successfully.');
+        alert(M('saved', '保存しました。', 'Saved successfully.'));
       } catch (e) {
-        alert(lang === 'ja' ? '保存失敗 (ブラウザの保存容量オーバーの可能性があります)' : 'Save failed (Storage might be full)');
+        alert(M('saveFail', '保存失敗 (ブラウザの保存容量オーバーの可能性があります)', 'Save failed (Storage might be full)'));
       }
     }
 
     function loadPj() {
       const s = $('pjS');
       if (!s.value) return;
-      if (!confirm(lang === 'ja' ? `プロジェクト「${s.value}」を読み込みますか？\n(現在の未保存の作業は破棄されます)` : `Load project "${s.value}"?\n(Unsaved progress will be lost)`)) return;
+      if (!confirm(M('pjLoad', `プロジェクト「${s.value}」を読み込みますか？\n(現在の未保存の作業は破棄されます)`, `Load project "${s.value}"?\n(Unsaved progress will be lost)`, s.value))) return;
       const p = JSON.parse(localStorage.getItem('vs9p') || '{}')[s.value];
       if (!p) return;
 
@@ -3247,7 +3546,7 @@
     function delPj() {
       const s = $('pjS');
       if (!s.value) return;
-      if (!confirm(lang === 'ja' ? `プロジェクト「${s.value}」を本当に削除しますか？` : `Delete project "${s.value}" permanently?`)) return;
+      if (!confirm(M('pjDel', `プロジェクト「${s.value}」を本当に削除しますか？`, `Delete project "${s.value}" permanently?`, s.value))) return;
       const p = JSON.parse(localStorage.getItem('vs9p') || '{}');
       delete p[s.value];
       localStorage.setItem('vs9p', JSON.stringify(p));
@@ -3266,7 +3565,7 @@
       });
       if (keys.length === 0) {
         const o = document.createElement('option');
-        o.value = ''; o.textContent = lang === 'ja' ? '-- 保存データなし --' : '-- Empty --';
+        o.value = ''; o.textContent = M('pjEmpty', '-- 保存データなし --', '-- Empty --');
         s.appendChild(o);
       }
     }
@@ -3277,7 +3576,7 @@
         
         // Check if the browser supports CompressionStream API
         if (typeof CompressionStream === 'undefined') {
-          alert(lang === 'ja' ? 'お使いのブラウザは圧縮共有に対応していません。' : 'Your browser does not support URL compression.');
+          alert(M('noCompress', 'お使いのブラウザは圧縮共有に対応していません。', 'Your browser does not support URL compression.'));
           return;
         }
 
@@ -3299,7 +3598,7 @@
           // Attempt to write to clipboard if the API is available
           if (navigator.clipboard && navigator.clipboard.writeText) {
             await navigator.clipboard.writeText(fullURL);
-            alert((lang === 'ja' ? 'URLをコピーしました (' : 'URL copied (') + Math.round(b64.length / 1024) + 'KB)');
+            alert(M('urlCopied', 'URLをコピーしました (', 'URL copied (') + Math.round(b64.length / 1024) + 'KB)');
           } else {
             throw new Error('Clipboard API unavailable');
           }
@@ -3307,13 +3606,11 @@
           // 3. Fallback: If Clipboard API fails, display a prompt for manual copying
           // This remains the most reliable method for certain iOS Safari versions
           console.warn("Clipboard API failed, falling back to prompt.", err);
-          window.prompt(lang === 'ja' ? "URLをコピーして共有してください:" : "Copy this URL to share:", fullURL);
+          window.prompt(M('copyUrl', "URLをコピーして共有してください:", "Copy this URL to share:"), fullURL);
         }
       } catch (e) {
         console.error(e);
-        alert(lang === 'ja'
-          ? '共有URLの作成に失敗しました。'
-          : 'Error generating share URL.');
+        alert(M('shareFail', '共有URLの作成に失敗しました。', 'Error generating share URL.'));
       }
     }
     async function loadURL() {
@@ -3338,9 +3635,7 @@
       } catch (e) {
         console.error("URL Load Error:", e);
         // Prevent clearing the user's current work if the URL was truncated/corrupted
-        alert(lang === 'ja'
-          ? 'URLデータの読み込みに失敗しました。\nURLが長すぎて途切れているか、データが破損しています。'
-          : 'Failed to load URL. The link might be truncated or corrupted.');
+        alert(M('urlFail', 'URLデータの読み込みに失敗しました。\nURLが長すぎて途切れているか、データが破損しています。', 'Failed to load URL. The link might be truncated or corrupted.'));
         location.hash = ''; // Clear broken hash to prevent reload loops
       }
     }
@@ -3357,7 +3652,7 @@
       hideExp(); 
       const playable = frames.filter(f => !f.ws); 
       if (playable.length < 2) { 
-        alert(lang === 'ja' ? '2フレーム以上必要です' : 'Need 2+ frames'); 
+        alert(M('need2', '2フレーム以上必要です', 'Need 2+ frames')); 
         return; 
       }
 
@@ -3367,7 +3662,7 @@
       // --- PHASE 1: Pre-render all frames to memory ---
       // This separates heavy 3D rendering from the time-sensitive video recording
       const preRendered = [];
-      const progPrefix = lang === 'ja' ? 'レンダリング中 ' : 'Rendering ';
+      const progPrefix = M('rendering', 'レンダリング中 ', 'Rendering ');
       showProg(progPrefix + '0%', 0);
 
       for (let i = 0; i < playable.length; i++) {
@@ -3418,7 +3713,7 @@
       rec.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data) };
       rec.onstop = () => { 
         if (chunks.length === 0) {
-          alert(lang === 'ja' ? '動画の出力に失敗しました。' : 'Export failed.');
+          alert(M('expFail', '動画の出力に失敗しました。', 'Export failed.'));
           hideProg();
           return;
         }
@@ -3434,7 +3729,7 @@
 
       let fi = 0;
       const total = preRendered.length;
-      const recPrefix = lang === 'ja' ? '動画出力中 ' : 'Exporting ';
+      const recPrefix = M('exporting', '動画出力中 ', 'Exporting ');
       showProg(recPrefix + '50%', 50);
 
       rec.start();
@@ -3668,7 +3963,7 @@
       // [IMPORTANT] Show cancel when there is an active anchor or special mode
       const needsCancel = !!(tAnc || pasteMode || clusterCopyMode);
       const targetState = needsCancel ? 'block' : 'none';
-      const cncLabel = lang === 'ja' ? '✕ キャンセル' : '✕ Cancel';
+      const cncLabel = M('cancel', '✕ キャンセル', '✕ Cancel');
 
       // Update floating cancel button (3D / desktop)
       const btn = document.getElementById('bCnc');
@@ -3741,7 +4036,9 @@
       <p id="abtDesc" style="font-size: 11px; color: var(--t2); margin-bottom: 4px;">
         A lightweight, browser-based voxel editor and generator.
       </p>
-      <p style="font-size: 11px; color: var(--t2); margin-bottom: 16px;">© Ike mfr</p>
+      <p style="font-size: 11px; color: var(--t2); margin-bottom: 12px;">© Ike mfr</p>
+      <a id="abtGuide" href="/ja/" target="_blank" rel="noopener"
+         style="display: block; margin-bottom: 12px; padding: 8px; border: 1px solid var(--bd); border-radius: 8px; color: var(--ac); text-decoration: none; font-size: 12px; font-weight: bold; text-align: center;">📖 使い方ガイド</a>
 
       <div style="margin-bottom: 16px;">
         <a href="https://buymeacoffee.com/ike_mfr" target="_blank" 
@@ -3785,6 +4082,7 @@
           done: ['That is everything for now', 'Change the shape or generate something new, and there will be more ideas.'],
         },
         gn: { house: 'House', tree: 'Tree', torii: 'Torii', pagoda: 'Pagoda', rocket: 'Rocket', snowman: 'Snowman', planet: 'Planet', robot: 'Robot', boat: 'Boat', lighthouse: 'Lighthouse', cactus: 'Cactus' },
+        moodH: 'Change the mood: ', moodS: 'The same shape feels different with another palette. Ctrl+Z to go back.', motionH: 'Add motion', motionS: ' (▶ / ■ below plays and stops)',
       },
       ja: {
         next: '✨ 次の一手', nextTip: '次の一手（N）：今の作品に合う次の工程を\nひとつ足します（地面・屋根・窓・木・陰影など）\nCtrl+Z で取り消し',
@@ -3803,8 +4101,10 @@
           done: ['今の提案はここまで', '形を変えたり新しく生成したりすると、また提案します。'],
         },
         gn: { house: '家', tree: '木', torii: '鳥居', pagoda: '五重塔', rocket: 'ロケット', snowman: '雪だるま', planet: '惑星', robot: 'ロボット', boat: '帆船', lighthouse: '灯台', cactus: 'サボテン' },
+        moodH: '季節・時間を変える：', moodS: '同じ形でも配色だけで印象が大きく変わります。Ctrl+Z で戻せます。', motionH: '動きを付ける', motionS: '（下の ▶ / ■ で再生・停止）',
       },
     };
+    Object.keys(I18N).forEach(l => L[l] = I18N[l].PLUS);
     const t = (k) => (L[lang] || L.en)[k];
 
     // ---------- small helpers ----------
@@ -3921,7 +4221,7 @@
       },
     };
     const NEW_I = { house: '🏠', tree: '🌳', torii: '⛩', pagoda: '🏯', rocket: '🚀', snowman: '⛄', planet: '🪐', robot: '🤖', boat: '⛵', lighthouse: '🗼', cactus: '🌵' };
-    Object.keys(NEW).forEach(id => { GENS.push({ id, i: NEW_I[id] }); GN.en[id] = L.en.gn[id]; GN.ja[id] = L.ja.gn[id] });
+    Object.keys(NEW).forEach(id => { GENS.push({ id, i: NEW_I[id] }); Object.keys(L).forEach(l => GN[l][id] = L[l].gn[id]) });
     const CAT = {
       build: ['house', 'castle', 'city', 'temple', 'pagoda', 'torii', 'bridge', 'lighthouse'],
       things: ['rocket', 'robot', 'boat', 'snowman', 'heart', 'gears', 'dna', 'mushroom'],
@@ -4089,6 +4389,11 @@
       rippleA: ML('波紋：中心から外へ広がる動きです。', 'Ripple: motion spreading out from the centre.'),
       orbit: ML('公転：中心のまわりを回る動きです。', 'Orbit: going round a centre.'),
     };
+    Object.keys(I18N).forEach(l => {
+      Object.entries(I18N[l].XS).forEach(([id, m]) => { if (XS[id] && XS[id].msg) XS[id].msg[l] = m });
+      Object.entries(I18N[l].SEASON).forEach(([id, m]) => { if (SEASON[id]) SEASON[id][l] = m });
+      Object.entries(I18N[l].MOTION).forEach(([id, m]) => { if (MOTION[id]) MOTION[id][l] = m });
+    });
     const CYCLE = ['b', 'c', 'b', 'm', 'b', 'c'];
     Object.assign(nm, { recent: [], i: 0, once: new Set(), anim: null, season: null });
     let depth = 0;
@@ -4116,8 +4421,8 @@
       if (id !== 'motion' && nm.anim && frames.length > 1) { animGen(nm.anim); if (!playing) togPlay() }
       let h, s;
       if (base.includes(id) || id === 'shade' || id === 'outline') [h, s] = t('steps')[id];
-      else if (id === 'season') { h = (lang === 'ja' ? '季節・時間を変える：' : 'Change the mood: ') + SEASON[nm.season][lang]; s = lang === 'ja' ? '同じ形でも配色だけで印象が大きく変わります。Ctrl+Z で戻せます。' : 'The same shape feels different with another palette. Ctrl+Z to go back.' }
-      else if (id === 'motion') { h = lang === 'ja' ? '動きを付ける' : 'Add motion'; s = MOTION[nm.anim][lang] + (lang === 'ja' ? '（下の ▶ / ■ で再生・停止）' : ' (▶ / ■ below plays and stops)') }
+      else if (id === 'season') { h = t('moodH') + (SEASON[nm.season][lang] || SEASON[nm.season].en); s = t('moodS') }
+      else if (id === 'motion') { h = t('motionH'); s = (MOTION[nm.anim][lang] || MOTION[nm.anim].en) + t('motionS') }
       else [h, s] = XS[id].msg[lang] || XS[id].msg.en;
       toast('✨ ' + h, s); snd('gen'); schedSave(); depth = 0;
     }
@@ -4147,6 +4452,7 @@
       en: { make: 'Make', color: 'Colour', anim: 'Motion', edit: 'Edit', file: 'File', tools: 'Tools', menu: 'Settings', close: 'Close', view: 'View' },
       ja: { make: '作る', color: '色', anim: '動き', edit: '編集', file: 'ファイル', tools: 'ツール', menu: '設定', close: '閉じる', view: '表示' },
     };
+    Object.keys(I18N).forEach(l => U[l] = I18N[l].UI);
     const u = (k) => (U[lang] || U.en)[k];
     const TABS = [['make', '🎲', ['ptGn']], ['color', '🎨', ['ptCl', 'ptSty']], ['anim', '🎞', ['ptAG']], ['edit', '✂', ['ptAc', 'ptCP']], ['file', '📁', ['ptPj', 'ptSz', 'ptMd']]];
     const mobile = () => matchMedia('(max-width: 900px)').matches;

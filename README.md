@@ -15,6 +15,7 @@ No installation required. Run instantly in your browser.
 * **Styles & palettes:** recolour a whole model as Japanese, retro, pastel, night, autumn or mono; palette presets including traditional Japanese colours.
 * **Animation Support:** Create frame-by-frame voxel animations and export them directly to WebM/MP4.
 * **Broad Export Options:** Export your creations as OBJ, STL, GLB, or PNG.
+* **Five languages:** English, 日本語, Español, Português and 中文 (picked from your browser language). Step-by-step guides with short demo clips: [/en/](https://voxob.vercel.app/en/) · [/ja/](https://voxob.vercel.app/ja/) · [/es/](https://voxob.vercel.app/es/) · [/pt/](https://voxob.vercel.app/pt/) · [/zh/](https://voxob.vercel.app/zh/)
 
 ## 🛠 Technology Stack
 * **Graphics:** [Three.js](https://threejs.org/) (WebGL)

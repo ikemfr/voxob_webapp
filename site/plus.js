@@ -19,6 +19,7 @@
           done: ['That is everything for now', 'Change the shape or generate something new, and there will be more ideas.'],
         },
         gn: { house: 'House', tree: 'Tree', torii: 'Torii', pagoda: 'Pagoda', rocket: 'Rocket', snowman: 'Snowman', planet: 'Planet', robot: 'Robot', boat: 'Boat', lighthouse: 'Lighthouse', cactus: 'Cactus' },
+        moodH: 'Change the mood: ', moodS: 'The same shape feels different with another palette. Ctrl+Z to go back.', motionH: 'Add motion', motionS: ' (▶ / ■ below plays and stops)',
       },
       ja: {
         next: '✨ 次の一手', nextTip: '次の一手（N）：今の作品に合う次の工程を\nひとつ足します（地面・屋根・窓・木・陰影など）\nCtrl+Z で取り消し',
@@ -37,8 +38,10 @@
           done: ['今の提案はここまで', '形を変えたり新しく生成したりすると、また提案します。'],
         },
         gn: { house: '家', tree: '木', torii: '鳥居', pagoda: '五重塔', rocket: 'ロケット', snowman: '雪だるま', planet: '惑星', robot: 'ロボット', boat: '帆船', lighthouse: '灯台', cactus: 'サボテン' },
+        moodH: '季節・時間を変える：', moodS: '同じ形でも配色だけで印象が大きく変わります。Ctrl+Z で戻せます。', motionH: '動きを付ける', motionS: '（下の ▶ / ■ で再生・停止）',
       },
     };
+    Object.keys(I18N).forEach(l => L[l] = I18N[l].PLUS);
     const t = (k) => (L[lang] || L.en)[k];
 
     // ---------- small helpers ----------
@@ -155,7 +158,7 @@
       },
     };
     const NEW_I = { house: '🏠', tree: '🌳', torii: '⛩', pagoda: '🏯', rocket: '🚀', snowman: '⛄', planet: '🪐', robot: '🤖', boat: '⛵', lighthouse: '🗼', cactus: '🌵' };
-    Object.keys(NEW).forEach(id => { GENS.push({ id, i: NEW_I[id] }); GN.en[id] = L.en.gn[id]; GN.ja[id] = L.ja.gn[id] });
+    Object.keys(NEW).forEach(id => { GENS.push({ id, i: NEW_I[id] }); Object.keys(L).forEach(l => GN[l][id] = L[l].gn[id]) });
     const CAT = {
       build: ['house', 'castle', 'city', 'temple', 'pagoda', 'torii', 'bridge', 'lighthouse'],
       things: ['rocket', 'robot', 'boat', 'snowman', 'heart', 'gears', 'dna', 'mushroom'],
@@ -323,6 +326,11 @@
       rippleA: ML('波紋：中心から外へ広がる動きです。', 'Ripple: motion spreading out from the centre.'),
       orbit: ML('公転：中心のまわりを回る動きです。', 'Orbit: going round a centre.'),
     };
+    Object.keys(I18N).forEach(l => {
+      Object.entries(I18N[l].XS).forEach(([id, m]) => { if (XS[id] && XS[id].msg) XS[id].msg[l] = m });
+      Object.entries(I18N[l].SEASON).forEach(([id, m]) => { if (SEASON[id]) SEASON[id][l] = m });
+      Object.entries(I18N[l].MOTION).forEach(([id, m]) => { if (MOTION[id]) MOTION[id][l] = m });
+    });
     const CYCLE = ['b', 'c', 'b', 'm', 'b', 'c'];
     Object.assign(nm, { recent: [], i: 0, once: new Set(), anim: null, season: null });
     let depth = 0;
@@ -350,8 +358,8 @@
       if (id !== 'motion' && nm.anim && frames.length > 1) { animGen(nm.anim); if (!playing) togPlay() }
       let h, s;
       if (base.includes(id) || id === 'shade' || id === 'outline') [h, s] = t('steps')[id];
-      else if (id === 'season') { h = (lang === 'ja' ? '季節・時間を変える：' : 'Change the mood: ') + SEASON[nm.season][lang]; s = lang === 'ja' ? '同じ形でも配色だけで印象が大きく変わります。Ctrl+Z で戻せます。' : 'The same shape feels different with another palette. Ctrl+Z to go back.' }
-      else if (id === 'motion') { h = lang === 'ja' ? '動きを付ける' : 'Add motion'; s = MOTION[nm.anim][lang] + (lang === 'ja' ? '（下の ▶ / ■ で再生・停止）' : ' (▶ / ■ below plays and stops)') }
+      else if (id === 'season') { h = t('moodH') + (SEASON[nm.season][lang] || SEASON[nm.season].en); s = t('moodS') }
+      else if (id === 'motion') { h = t('motionH'); s = (MOTION[nm.anim][lang] || MOTION[nm.anim].en) + t('motionS') }
       else [h, s] = XS[id].msg[lang] || XS[id].msg.en;
       toast('✨ ' + h, s); snd('gen'); schedSave(); depth = 0;
     }
