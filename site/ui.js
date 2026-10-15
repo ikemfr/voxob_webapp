@@ -11,7 +11,7 @@
     };
     Object.keys(I18N).forEach(l => U[l] = I18N[l].UI);
     const u = (k) => (U[lang] || U.en)[k];
-    const TABS = [['make', '🎲', ['ptGn']], ['color', '🎨', ['ptCl', 'ptSty']], ['anim', '🎞', ['ptAG']], ['edit', '✂', ['ptAc', 'ptCP']], ['file', '📁', ['ptPj', 'ptSz', 'ptMd']]];
+    const TABS = [['make', '🎲', ['ptCv', 'ptGn']], ['color', '🎨', ['ptCl', 'ptSty']], ['anim', '🎞', ['ptAG']], ['edit', '✂', ['ptAc', 'ptCP']], ['file', '📁', ['ptPj', 'ptSz', 'ptMd']]];
     const mobile = () => matchMedia('(max-width: 900px)').matches;
     document.body.classList.add('ui2');
 

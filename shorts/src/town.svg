@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="800" height="800">
+  <!-- An original illustration made for VoxoB's sample Shorts (CC0): a map read as a city. -->
+  <rect width="400" height="400" fill="#f3efe6"/>
+  <path d="M0 300 Q120 250 200 290 T400 270 L400 400 L0 400Z" fill="#3d7fd6"/>
+  <rect x="24" y="24" width="120" height="110" rx="10" fill="#4caf50"/>
+  <circle cx="270" cy="120" r="80" fill="#e74c3c"/><circle cx="270" cy="120" r="40" fill="#8e1b12"/>
+  <rect x="60" y="160" width="90" height="90" fill="#2c3e50"/>
+  <rect x="180" y="210" width="60" height="50" fill="#f1c40f"/>
+  <rect x="320" y="200" width="56" height="56" fill="#4caf50"/>
+</svg>

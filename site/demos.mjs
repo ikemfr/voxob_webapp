@@ -10,7 +10,8 @@ import { execFileSync } from 'node:child_process';
 
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright');
 const ROOT = process.cwd();
-const LANGS = process.argv.slice(2).length ? process.argv.slice(2) : ['ja', 'en', 'es', 'pt', 'zh'];
+const ARGS = process.argv.slice(2), SI = ARGS.indexOf('--scenes'), ONLY = SI >= 0 ? ARGS.slice(SI + 1) : null, LA = SI >= 0 ? ARGS.slice(0, SI) : ARGS;
+const LANGS = LA.length ? LA : ['ja', 'en', 'es', 'pt', 'zh'];   // node site/demos.mjs [lang ...] [--scenes name ...]
 const VW = 1280, VH = 720, OUT_W = 760, FPS = 20; // OUT_W = the guide page's text column
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'voxob-demos-'));
 
@@ -84,6 +85,15 @@ const SCENES = {
     await wait(p, 3200);
   } },
   // Export: OBJ / STL / GLB / PNG / video / JSON
+  // Convert: type a word, pick City, convert, and watch the process frames play
+  convert: { crop: VIEW_RIGHT, setup: (p) => p.evaluate(() => { color = '#e2413b' }), run: async (p) => {
+    await tab(p, 'make'); await p.evaluate(() => { $('rp').scrollTop = 0 });
+    await clickEl(p, p.locator('#cvTe'), 300);
+    await p.locator('#cvTx').pressSequentially('VoxoB', { delay: 110 }); await wait(p, 300);
+    await clickEl(p, p.locator('#cvSts [data-st=city]'), 400);
+    await clickEl(p, p.locator('#cvGo'), 300); await p.waitForFunction(() => !$('cvGo').disabled); await wait(p, 300);
+    await p.evaluate(() => { goFrame(0); if (!playing) togPlay() }); await wait(p, 2600); await p.evaluate(() => { if (playing) togPlay(); goFrame(frames.length - 1) }); await wait(p, 900);
+  } },
   export: { crop: [420, 0, 760, 600], setup: (p) => p.evaluate(() => gen('castle')), run: async (p) => {
     await clickEl(p, p.locator('#hEx'), 2600);
   } },
@@ -122,6 +132,6 @@ async function record(browser, lang, name) {
 }
 
 const browser = await chromium.launch(process.env.CHROMIUM ? { executablePath: process.env.CHROMIUM } : {});
-for (const lang of LANGS) for (const name of Object.keys(SCENES)) await record(browser, lang, name);
+for (const lang of LANGS) for (const name of Object.keys(SCENES).filter((n) => !ONLY || ONLY.includes(n))) await record(browser, lang, name);
 await browser.close();
 fs.rmSync(TMP, { recursive: true, force: true });

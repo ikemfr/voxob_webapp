@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="800" height="800">
+  <!-- An original illustration made for VoxoB's sample Shorts (CC0). -->
+  <rect width="400" height="400" fill="#ffffff"/>
+  <path d="M95 300 Q60 200 120 130 Q190 60 270 110 Q340 160 320 250 Q300 330 210 340 Q130 345 95 300Z" fill="#4aa3df"/>
+  <path d="M120 250 Q150 330 230 325 Q290 315 300 260 Q240 300 180 290 Q140 280 120 250Z" fill="#f6e3b4"/>
+  <path d="M200 200 Q270 190 300 240 Q250 250 215 240 Q195 225 200 200Z" fill="#2f7fb8"/>
+  <path d="M95 300 Q40 290 30 250 Q70 265 100 270Z" fill="#2f7fb8"/>
+  <path d="M300 150 L360 165 L302 182Z" fill="#f39c12"/>
+  <circle cx="265" cy="145" r="20" fill="#ffffff"/><circle cx="270" cy="146" r="11" fill="#1b1e24"/><circle cx="274" cy="141" r="4" fill="#ffffff"/>
+  <circle cx="240" cy="185" r="13" fill="#f7a1b5"/>
+  <path d="M170 140 Q185 100 215 95 Q200 115 205 135Z" fill="#2f7fb8"/>
+  <path d="M175 338 L170 372 M185 340 L192 372 M235 335 L232 370 M245 334 L255 368" stroke="#e67e22" stroke-width="9" stroke-linecap="round"/>
+</svg>

@@ -69,7 +69,7 @@
       if (before.length) { if (undoSt.length > n0) undoSt[undoSt.length - 1].a = [...before, ...undoSt[undoSt.length - 1].a]; else pU(before) }
       nm.done.clear(); if (nm.once) nm.once.clear(); nm.anim = null; schedSave();
     };
-    let sT = 0; function schedSave() { clearTimeout(sT); sT = setTimeout(autoSave, 700) }
+    let sT = 0; function schedSave() { clearTimeout(sT); sT = setTimeout(autoSave, vCount() > BIGSAVE ? 3000 : 700) }   // big projects: save less often
     const _pU = pU; pU = function (a) { _pU(a); schedSave() };
     const _undo = undo; undo = function () { _undo(); schedSave() };
     const _redo = redo; redo = function () { _redo(); schedSave() };
