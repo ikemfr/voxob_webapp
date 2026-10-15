@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 440" width="720" height="880">
+  <!-- An original anime-style character made for VoxoB (CC0): flat colours with dark outlines. -->
+  <rect width="360" height="440" fill="#ffffff"/>
+  <g stroke="#2a1f2e" stroke-width="5" stroke-linejoin="round">
+    <path d="M60 440 Q70 340 180 330 Q290 340 300 440Z" fill="#f2f2f7"/>
+    <path d="M140 330 L180 380 L220 330" fill="#e2405c"/>
+    <path d="M70 230 Q55 70 180 60 Q305 70 290 230 L300 330 Q260 300 255 250 L105 250 Q100 300 60 330Z" fill="#7a5cc9"/>
+    <path d="M100 190 Q100 300 180 315 Q260 300 260 190 Q255 120 180 115 Q105 120 100 190Z" fill="#fde3d3"/>
+    <path d="M95 170 Q120 95 180 92 Q250 95 268 170 Q240 130 215 150 Q200 120 180 140 Q160 118 140 150 Q120 130 95 170Z" fill="#7a5cc9"/>
+    <ellipse cx="140" cy="215" rx="24" ry="30" fill="#ffffff"/><ellipse cx="220" cy="215" rx="24" ry="30" fill="#ffffff"/>
+  </g>
+  <ellipse cx="142" cy="220" rx="15" ry="22" fill="#3f8fd9"/><ellipse cx="218" cy="220" rx="15" ry="22" fill="#3f8fd9"/>
+  <ellipse cx="143" cy="224" rx="8" ry="12" fill="#1c2b4a"/><ellipse cx="217" cy="224" rx="8" ry="12" fill="#1c2b4a"/>
+  <circle cx="136" cy="208" r="6" fill="#ffffff"/><circle cx="212" cy="208" r="6" fill="#ffffff"/>
+  <path d="M168 268 Q180 276 192 268" stroke="#2a1f2e" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="118" cy="255" rx="14" ry="7" fill="#ff9fb0" opacity=".7"/><ellipse cx="242" cy="255" rx="14" ry="7" fill="#ff9fb0" opacity=".7"/>
+</svg>

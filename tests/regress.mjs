@@ -232,7 +232,71 @@ const out = {};
   ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
   await ctx.close();
 }
-// ---------- 6. languages load cleanly, with every Convert label filled ----------
+// ---------- 6. realistic depth, 3D models, smooth view, clear all, drop, rotate, typing, sound ----------
+{
+  console.log('more');
+  const { p, ctx, errs } = await open('ja');
+  const svg = (f) => 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(ROOT, 'shorts/src', f)).toString('base64');
+  const real = async (f, bg) => p.evaluate(async ([u, bg]) => { const im = new Image(); im.src = u; await im.decode(); VoxoBConvert.setSource({ kind: 'image', el: im, name: 'x' }); $('cvSt').value = 'real'; $('cvR').value = '64'; $('cvBg').checked = bg; $('cvPr').checked = false; await VoxoBConvert.convert();
+    const zs = new Map(); for (const k of Object.keys(V())) { const [x, y, z] = pv_(k); const c = x + ',' + y; zs.set(c, (zs.get(c) || 0) + 1) } const thick = [...zs.values()].sort((a, b) => b - a)[Math.floor(zs.size / 10)];
+    return { n: Object.keys(V()).length, D, back: Object.keys(V()).filter((k) => pv_(k)[2] === 0).length, thick } }, [svg(f), bg]);
+  const por = await real('portrait.svg', false), ani = await real('anime.svg', false), lan = await real('landscape.svg', true);
+  ok(por.thick >= 8 && por.back === 0, `realistic portrait: a figure ${por.thick}+ voxels thick (${por.n} voxels), no backdrop`);
+  ok(ani.thick >= 8, `realistic anime: ${ani.thick}+ voxels thick (${ani.n})`);
+  ok(lan.back > 500 && lan.D >= 16, `realistic landscape: sky backdrop of ${lan.back} voxels, ${lan.D} deep`);
+  // 3D models (fixtures made for these tests)
+  const fx = (...f) => f.map((x) => path.join(ROOT, 'tests/fixtures', x));
+  const model = async (files, R) => { await p.setInputFiles('#cvMoF', fx(...files)); return p.evaluate(async (R) => { $('cvR').value = String(R); $('cvPr').checked = false; await VoxoBConvert.convert(); const cs = {}; for (const v of Object.values(V())) cs[v.c] = (cs[v.c] || 0) + 1; return { n: Object.keys(V()).length, colours: Object.keys(cs).length, top: Object.entries(cs).sort((a, b) => b[1] - a[1]).slice(0, 4).map((e) => e[0]), dims: [W, H, D].join('×') } }, R) };
+  const glb = await model(['shapes.glb'], 64);
+  ok(glb.n > 5000 && glb.colours > 50 && glb.top.some((c) => /^#[ef]/.test(c)) && glb.top.some((c) => /^#e[0-9a-f]4/.test(c) || /^#e/.test(c)), `GLB: ${glb.n} voxels, ${glb.colours} colours (texture checker, vertex colours, material) ${glb.dims}`);
+  const obj = await model(['pyramid.obj', 'p.mtl'], 32);
+  ok(obj.n > 1000 && obj.top.includes('#f2bf33') && obj.top.includes('#664d33'), `OBJ + MTL: ${obj.n} voxels, materials ${obj.top.slice(0, 2)}`);
+  const tri = await model(['triangle-text.stl'], 32);
+  ok(tri.n >= 32 * 32 / 2 - 40 && tri.n <= 32 * 32 / 2 + 80, `text STL triangle filled: ${tri.n} voxels (~${32 * 32 / 2})`);
+  const stl = await model(['house-binary.stl'], 32);
+  ok(stl.n > 1000, `binary STL (VoxoB's own export) re-imported: ${stl.n} voxels`);
+  // the File tab import uses the same voxelizer (not just the corners of triangles)
+  await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }]; curFrame = 0; W = H = D = 32; $('sW').value = $('sH').value = $('sD').value = 32; $('iSz').value = 24; rebMesh(); rebGrid() });
+  await p.setInputFiles('#imgIn', fx('triangle-text.stl')); await p.waitForTimeout(800);
+  const fileTab = await p.evaluate(() => Object.keys(V()).length);
+  ok(fileTab > 200, `File tab STL import fills the triangle: ${fileTab} voxels`);
+  // smooth view: surface faces outward, exports follow, and switching back shows cubes again
+  const sm = await p.evaluate(async () => { gen('sphere'); VoxoBSmooth.set(true); ren.render(scn, cam); const s = VoxoBSmooth.surface(), c = [W / 2, H / 2, D / 2]; let out = 0, tot = 0;
+    for (let i = 0; i < s.idx.length; i += 3) { const v = [0, 1, 2].map((j) => s.idx[i + j] * 3), P = (q, k) => s.pos[q + k], u = [0, 1, 2].map((k) => P(v[1], k) - P(v[0], k)), w = [0, 1, 2].map((k) => P(v[2], k) - P(v[0], k)), n = [u[1] * w[2] - u[2] * w[1], u[2] * w[0] - u[0] * w[2], u[0] * w[1] - u[1] * w[0]], m = [0, 1, 2].map((k) => (P(v[0], k) + P(v[1], k) + P(v[2], k)) / 3 - c[k]); if (n[0] * m[0] + n[1] * m[1] + n[2] * m[2] > 0) out++; tot++ }
+    window.__dl = []; xGLB(); xSTL(); xOBJ(); const get = async (e) => (await fetch(window.__dl.find((d) => d.name.endsWith(e)).href)).arrayBuffer();
+    const stl = await get('.stl'), glbB = await get('.glb'), objT = new TextDecoder().decode(await get('.obj'));
+    const r = { out: out / tot, tot, hidden: !vG.visible, stlTris: new DataView(stl).getUint32(80, true), stlOk: stl.byteLength === 84 + 50 * new DataView(stl).getUint32(80, true), glb: new TextDecoder().decode(glbB.slice(0, 4)), objV: (objT.match(/^v /gm) || []).length };
+    VoxoBSmooth.set(false); r.back = vG.visible; return r });
+  ok(sm.out === 1 && sm.hidden && sm.back, `smooth view: ${sm.tot} triangles, all facing out; cubes hidden while on, back when off`);
+  ok(sm.stlOk && sm.stlTris === sm.tot && sm.glb === 'glTF' && sm.objV > 100, `smooth exports: STL ${sm.stlTris} triangles, GLB, OBJ ${sm.objV} vertices`);
+  // clear all: every frame, one undo step, redo clears again
+  const ca = await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }, { v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); gen('house'); frames[1].v = { ...frames[0].v }; const n0 = Object.keys(frames[1].v).length;
+    $('hClr').click(); const a = frames.map((f) => Object.keys(f.v).length).join(); undo(); const b = frames.map((f) => Object.keys(f.v).length).join(); redo(); const c = frames.map((f) => Object.keys(f.v).length).join(); undo();
+    const box = $('hClr').getBoundingClientRect(); return { n0, a, b, c, shown: box.width > 0 && box.top < 60 && box.right > innerWidth * .5 } });
+  ok(ca.a === '0,0' && ca.b === `${ca.n0},${ca.n0}` && ca.c === '0,0' && ca.shown, `Clear all in the header: ${ca.n0},${ca.n0} → ${ca.a} → undo ${ca.b} → redo ${ca.c}`);
+  // drop: a floating voxel falls to the floor, a stack stays a stack
+  const dr = await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); setV(3, 9, 3, '#f00', 255); setV(3, 12, 3, '#0f0', 255); setV(5, 0, 5, '#00f', 255); doAct('gravity'); const v = V(); return [v['3,0,3']?.c, v['3,1,3']?.c, v['5,0,5']?.c, Object.keys(v).length].join() });
+  ok(dr === '#f00,#0f0,#00f,3', `drop: ${dr}`);
+  // turning a canvas that is not a cube swaps its sides and keeps every voxel
+  const rt = await p.evaluate(() => { W = 30; H = 10; D = 20; $('sW').value = 30; $('sH').value = 10; $('sD').value = 20; frames = [{ v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); rebGrid(); for (let x = 0; x < 30; x++) setV(x, 2, 5, '#888', 255); const n = Object.keys(V()).length; doAct('rotY'); const a = [W, H, D, Object.keys(V()).length].join(); undo(); return { n, a, b: [W, H, D, Object.keys(V()).length].join() } });
+  ok(rt.a === `20,10,30,${rt.n}` && rt.b === `30,10,20,${rt.n}`, `rotate a 30×10×20 canvas: ${rt.a}, undo ${rt.b}`);
+  // resizing cuts every frame, not only the current one
+  const rs = await p.evaluate(() => { W = H = D = 16; $('sW').value = $('sH').value = $('sD').value = 16; frames = [{ v: {}, ws: false, cam: null }, { v: { '15,0,15': { c: '#fff', a: 255 }, '2,0,2': { c: '#fff', a: 255 } }, ws: false, cam: null }]; curFrame = 0; rebMesh(); $('sW').value = 8; $('sD').value = 8; appSz(); return Object.keys(frames[1].v).join('|') });
+  ok(rs === '2,0,2', 'resize clips the other frames too: ' + rs);
+  // a big slice fits the 2D panel
+  const sl = await p.evaluate(() => { $('sW').value = $('sH').value = $('sD').value = 256; appSz(); rs2(); d2D(); return [c2.width, c2.height, $('cw').clientWidth, $('cw').clientHeight].join() });
+  const [cw2, ch2, pw, ph] = sl.split(',').map(Number); ok(cw2 <= pw && ch2 <= ph && cw2 >= 256, `256 slice fits the panel: ${cw2}×${ch2} in ${pw}×${ph}`);
+  // typing in the text box does not switch tools; Space on a focused button does not play
+  const ty = await p.evaluate(() => { setTool('pen'); return true }); await p.evaluate(() => { $('cvTe').click() }); await p.locator('#cvTx').fill(''); await p.locator('#cvTx').type('lrgb e');
+  ok(await p.evaluate(() => tool === 'pen' && mode === 'draw'), 'typing "lrgb e" in the text box leaves the tool and mode alone');
+  await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }, { v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); $('hU').focus() }); await p.keyboard.press(' ');
+  ok(await p.evaluate(() => !playing), 'Space on a focused button does not start playback');
+  // sounds: every kind plays without errors
+  ok(await p.evaluate(() => { vol = .4; for (const k of ['place', 'erase', 'paint', 'click', 'copy', 'undo', 'redo', 'clear', 'done', 'gen', 'other']) snd(k); mode = 'del'; snd('place'); mode = 'draw'; return true }), 'sound engine plays every kind');
+  ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
+  await ctx.close();
+}
+// ---------- 7. languages load cleanly, with every Convert label filled ----------
 for (const l of ['en', 'ja', 'es', 'pt', 'zh']) {
   const { p, ctx, errs } = await open(l);
   const bad = await p.evaluate(() => [...document.querySelectorAll('.cvp button, .cvp .pt, .cvp label span, .cvp .cvtip, .cvp .cvnote')].map((e) => e.textContent).filter((t) => !t.trim() || /undefined/.test(t)));
@@ -240,7 +304,7 @@ for (const l of ['en', 'ja', 'es', 'pt', 'zh']) {
   await ctx.close();
 }
 
-// ---------- 7. performance on a big canvas ----------
+// ---------- 8. performance on a big canvas ----------
 if (BENCH) {
   console.log('bench');
   for (const N of [64, 128]) {

@@ -83,3 +83,41 @@
 - 時間の彫刻：[Tx-transform](https://en.wikipedia.org/wiki/Tx-transform)
 - チャンク化と結合：[three.js forum](https://discourse.threejs.org/t/what-is-the-most-efficient-way-to-render-complex-geometry/25326), [Babylon.js forum](https://forum.babylonjs.com/t/instanced-meshes-vs-merged-meshes/54848)
 - 他ツール：[SupaVoxel](https://moge.ai/product/supavoxel), [Trellis2](https://trellis2.app/image-to-stl), [FileToVox](https://gitee.com/heng32032/FileToVox)
+
+## 8. 追記：絵や3Dモデルを「リアルに」3D化する（2026-10）
+
+### 方針
+1枚の絵から奥行きを推定する方法は、大きく2つあります。
+
+| 方法 | 権利面 | 採否 |
+|---|---|---|
+| 学習済みの深度推定モデル（例：Depth Anything V2） | Small のみ Apache-2.0。Base / Large / Giant は CC-BY-NC-4.0（非商用）。重みを Hugging Face などから取得する必要がある | 今回は**使わない**。この開発環境から Hugging Face・jsDelivr に接続できず、動作確認ができないため。将来入れる場合は、Apache-2.0 の Small に限り、端末内で動かす（画像は送らない） |
+| 古典的な画像の手がかり（前景の切り抜き、陰影、空の検出、画面内の高さ、大気遠近、細部の量）とエッジを保つ平滑化 | 第三者のモデルやデータを使わない、独自実装 | **採用**。完全にオフラインで動き、テストできる |
+
+### 実装（📐 リアル）
+- **無地の背景の人物・キャラクター（写真風・アニメ調）**
+  - 輪郭をポアソン方程式で膨らませて厚みを出す。前は厚め、後ろは薄め。
+  - 局所的な明暗差を細かな凹凸として加える。アニメの主線は溝になる。
+- **風景**
+  - 空は上端から塗りつぶして検出し、地面とつながらない雲や太陽も空に含める。
+  - 地平線からの高さ、細部の量、大気遠近（かすみ・青み）を組み合わせて近さを決める。
+  - 色の近い画素どうしで奥行きをならす（ジョイントバイラテラルフィルタ）。
+  - 奥行きの段差は壁で埋め、すき間を作らない。
+- **テスト素材**：`shorts/src/landscape.svg`・`portrait.svg`・`anime.svg` は、いずれもこのプロジェクトのために描いた架空の題材です。
+
+### 3Dモデル
+- 以前の読み込みは三角形の**頂点だけ**をボクセルにしていたため、面が点々になっていた。バイナリ STL や GLB にも非対応だった。
+- 新しいボクセル化：
+  - 三角形を半セル以下の間隔でサンプリングして面を埋め、外から届かない内側も埋める。
+  - 色はテクスチャ（UV を補間して点ごとに参照）、頂点カラー、マテリアルから取る。
+- 対応形式：OBJ（MTL・テクスチャ）、STL（テキスト・バイナリ）、glTF / GLB（埋め込み・同時に選んだファイル）。
+- 解析はブラウザ内で行う。three.js の GLTFLoader などは同梱せず、独自の最小実装にした。
+- テスト用のモデル（`tests/fixtures/`）も、テスト中に自作した図形です。
+
+### なめらか表示
+- ボクセルの占有を軽くぼかし、Surface Nets で面を作る。
+- 頂点を少し寄せ合わせ、色は周囲のボクセルの平均にする。
+- 表示を切り替えるだけで、データはボクセルのまま。書き出しは表示に合わせる。
+
+### 出典
+- [Depth Anything V2（GitHub、ライセンス記載）](https://github.com/DepthAnything/Depth-Anything-V2)

@@ -1,0 +1,4 @@
+newmtl base
+Kd 0.4 0.3 0.2
+newmtl side
+Kd 0.95 0.75 0.2

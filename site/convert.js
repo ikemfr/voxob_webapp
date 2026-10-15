@@ -5,18 +5,18 @@
   (() => {
     const CVL = {
       en: {
-        title: 'CONVERT', image: '🖼 Image', video: '🎞 Video', text: '🔤 Text', textPh: 'Type a word or a name…', go: '✨ Convert', again: '↻ Convert again',
-        styles: { city: '🏙 City', creature: '🐾 Creature', tower: '🏯 Tower', terrain: '⛰ Terrain', relief: '🗿 Relief', flat: '▦ Flat', time: '⏳ Time sculpture' },
-        tips: { city: 'The picture becomes a city map: dark or vivid parts grow into tall buildings, green into parks, blue into water. From straight above, the roofs show the picture.', creature: 'The outline is cut out and puffed up into a round 3D figure, thick where the shape is wide.', tower: 'The outline is turned around a vertical axis like a potter’s wheel: towers, vases, pagodas.', terrain: 'Brightness becomes height: water, sand, grass, rock and snow.', relief: 'A carved panel: the subject stands out from the background.', flat: 'One voxel per pixel, like pixel art.', time: 'Video only: moving things are stacked frame by frame into a solid trail through time.' },
-        detail: 'Detail', process: 'Keep the conversion process as animation', note: 'Use pictures, videos and text you made yourself or have the rights to. Avoid other people’s faces and works.',
+        title: 'CONVERT', image: '🖼 Image', video: '🎞 Video', text: '🔤 Text', model: '🧊 3D model', modelTip: 'OBJ (with its MTL and textures), STL or glTF / GLB. Every triangle is filled, the inside too, and colours come from textures, vertex colours or materials. Pick the model together with its MTL and texture files.', textPh: 'Type a word or a name…', go: '✨ Convert', again: '↻ Convert again',
+        styles: { real: '📐 Realistic', city: '🏙 City', creature: '🐾 Creature', tower: '🏯 Tower', terrain: '⛰ Terrain', relief: '🗿 Relief', flat: '▦ Flat', time: '⏳ Time sculpture' },
+        tips: { real: 'Depth is worked out from the picture itself (no AI model, nothing uploaded): a figure on a plain background becomes a 3D figure you can walk around, with its shading as fine relief; a landscape becomes a deep diorama, using the sky, height in the picture, haze and detail.', city: 'The picture becomes a city map: dark or vivid parts grow into tall buildings, green into parks, blue into water. From straight above, the roofs show the picture.', creature: 'The outline is cut out and puffed up into a round 3D figure, thick where the shape is wide.', tower: 'The outline is turned around a vertical axis like a potter’s wheel: towers, vases, pagodas.', terrain: 'Brightness becomes height: water, sand, grass, rock and snow.', relief: 'A carved panel: the subject stands out from the background.', flat: 'One voxel per pixel, like pixel art.', time: 'Video only: moving things are stacked frame by frame into a solid trail through time.' },
+        detail: 'Detail', keepBg: 'Keep the background', process: 'Keep the conversion process as animation', note: 'Use pictures, videos and text you made yourself or have the rights to. Avoid other people’s faces and works.',
         noSrc: 'Pick an image, a video or type some text first.', busy: 'Converting…', done: (n, f) => `Done: ${n.toLocaleString()} voxels${f > 1 ? `, ${f} frames` : ''}. Ctrl+Z to undo.`, timeOnlyVideo: 'Time sculpture needs a video.', empty: 'Nothing to convert was found in this source.',
         shorts: '📱 Shorts (9:16)', shortsTip: 'Record a vertical video: the source, the conversion, then a turn around the result.', shortsNo: 'Convert something first.', shortsBusy: 'Recording…', before: 'BEFORE', after: 'AFTER',
       },
       ja: {
-        title: '変換', image: '🖼 画像', video: '🎞 動画', text: '🔤 文字', textPh: '言葉や名前を入力…', go: '✨ 変換', again: '↻ もう一度変換',
-        styles: { city: '🏙 街', creature: '🐾 生き物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 レリーフ', flat: '▦ 平面', time: '⏳ 時間の彫刻' },
-        tips: { city: '絵を街の地図として読みます。濃い色・鮮やかな色は高いビル、緑は公園、青は水辺に。真上から見ると屋根が元の絵になります。', creature: '輪郭を切り抜き、幅の広いところほど厚く膨らませて丸い立体にします。', tower: '輪郭をろくろのように縦軸で回して、塔・器・五重塔のような形にします。', terrain: '明るさを高さにして、水・砂・草・岩・雪に塗り分けます。', relief: '背景から主題が浮き出る彫刻パネルにします。', flat: '1ピクセルを1ボクセルにした平面（ドット絵）です。', time: '動画専用：動いているものをフレームごとに奥へ積み、時間の軌跡を立体にします。' },
-        detail: '細かさ', process: '変換の過程をアニメーションとして残す', note: '自分で撮った・描いた・書いた素材か、使う権利のある素材を使ってください。他人の顔や作品は避けましょう。',
+        title: '変換', image: '🖼 画像', video: '🎞 動画', text: '🔤 文字', model: '🧊 3Dモデル', modelTip: 'OBJ（MTL・テクスチャ付きも可）、STL、glTF / GLB を読み込みます。三角形を面ごと埋め、中身も詰め、色はテクスチャ・頂点カラー・マテリアルから取ります。MTL やテクスチャの画像は一緒に選んでください。', textPh: '言葉や名前を入力…', go: '✨ 変換', again: '↻ もう一度変換',
+        styles: { real: '📐 リアル', city: '🏙 街', creature: '🐾 生き物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 レリーフ', flat: '▦ 平面', time: '⏳ 時間の彫刻' },
+        tips: { real: '絵そのものから奥行きを推定します（AIモデルは使わず、外にも送りません）。無地の背景の人物やキャラクターは、陰影を細かな凹凸にした回り込める立体に。風景は空・画面内の高さ・かすみ・細かさから奥行きを読んだ立体ジオラマにします。', city: '絵を街の地図として読みます。濃い色・鮮やかな色は高いビル、緑は公園、青は水辺に。真上から見ると屋根が元の絵になります。', creature: '輪郭を切り抜き、幅の広いところほど厚く膨らませて丸い立体にします。', tower: '輪郭をろくろのように縦軸で回して、塔・器・五重塔のような形にします。', terrain: '明るさを高さにして、水・砂・草・岩・雪に塗り分けます。', relief: '背景から主題が浮き出る彫刻パネルにします。', flat: '1ピクセルを1ボクセルにした平面（ドット絵）です。', time: '動画専用：動いているものをフレームごとに奥へ積み、時間の軌跡を立体にします。' },
+        detail: '細かさ', keepBg: '背景も残す', process: '変換の過程をアニメーションとして残す', note: '自分で撮った・描いた・書いた素材か、使う権利のある素材を使ってください。他人の顔や作品は避けましょう。',
         noSrc: '先に画像・動画を選ぶか、文字を入力してください。', busy: '変換中…', done: (n, f) => `完成：${n.toLocaleString()} ボクセル${f > 1 ? `・${f} フレーム` : ''}。Ctrl+Z で戻せます。`, timeOnlyVideo: '時間の彫刻は動画のときだけ使えます。', empty: 'この素材からは変換できる形が見つかりませんでした。',
         shorts: '📱 ショート動画 (9:16)', shortsTip: '縦長の動画を書き出します：元の素材 → 変換の過程 → 完成品をぐるっと一周。', shortsNo: '先に何か変換してください。', shortsBusy: '録画中…', before: 'BEFORE', after: 'AFTER',
       },
@@ -41,7 +41,7 @@
     function fgMask(g) {
       const { w, h, d } = g, n = w * h, m = new Uint8Array(n);
       let tr = 0; for (let i = 0; i < n; i++) if (d[i * 4 + 3] < 128) tr++;
-      if (tr > n * .02) { for (let i = 0; i < n; i++) m[i] = d[i * 4 + 3] >= 128 ? 1 : 0; return m }
+      if (tr > n * .02) { for (let i = 0; i < n; i++) m[i] = d[i * 4 + 3] >= 128 ? 1 : 0; m.how = 'alpha'; return m }
       const cnt = new Map(), border = []; for (let x = 0; x < w; x++) border.push(x, (h - 1) * w + x); for (let y = 0; y < h; y++) border.push(y * w, y * w + w - 1);
       for (const i of border) { const q = (d[i * 4] >> 4) << 8 | (d[i * 4 + 1] >> 4) << 4 | d[i * 4 + 2] >> 4; cnt.set(q, (cnt.get(q) || 0) + 1) }
       let bq = 0, bc = -1; cnt.forEach((c, q) => { if (c > bc) { bc = c; bq = q } });
@@ -50,19 +50,86 @@
       const bgm = new Uint8Array(n), st = []; for (const i of border) if (near(i) && !bgm[i]) { bgm[i] = 1; st.push(i) }
       while (st.length) { const i = st.pop(), x = i % w, y = (i / w) | 0; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && !bgm[j] && near(j)) { bgm[j] = 1; st.push(j) } }
       let fg = 0; for (let i = 0; i < n; i++) { m[i] = bgm[i] ? 0 : 1; fg += m[i] }
-      if (fg > n * .03 && fg < n * .97) return m;
+      if (fg > n * .03 && fg < n * .97) { m.how = 'border'; m.bgShare = bc / border.length; return m }
       // no clear background: split by brightness (Otsu) and keep the smaller side
       const hist = new Array(64).fill(0), L = new Float32Array(n); for (let i = 0; i < n; i++) { L[i] = lumOf(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]); hist[Math.min(63, (L[i] * 64) | 0)]++ }
       let best = 32, bv = -1, sum = 0; for (let i = 0; i < 64; i++) sum += i * hist[i]; let w0 = 0, s0 = 0;
       for (let i = 0; i < 64; i++) { w0 += hist[i]; if (!w0 || w0 === n) continue; s0 += i * hist[i]; const m0 = s0 / w0, m1 = (sum - s0) / (n - w0), v = w0 * (n - w0) * (m0 - m1) ** 2; if (v > bv) { bv = v; best = i } }
       let dark = 0; for (let i = 0; i < n; i++) if (L[i] * 64 <= best) dark++;
       const keepDark = dark <= n / 2; for (let i = 0; i < n; i++) m[i] = (L[i] * 64 <= best) === keepDark ? 1 : 0;
-      return m;
+      m.how = 'otsu'; return m;
     }
     function bgLum(g, m) { let s = 0, c = 0; for (let i = 0; i < g.w * g.h; i++) if (!m[i]) { s += lumOf(g.d[i * 4], g.d[i * 4 + 1], g.d[i * 4 + 2]); c++ } return c ? s / c : 1 }
 
+    // Poisson inflation (∇²u = −1 inside the mask, 0 outside): returns the half-thickness per pixel; a disk becomes a half-sphere
+    function inflate(m, w, h) {
+      const u = new Float32Array(w * h);
+      for (let it = 0, N = Math.max(200, Math.max(w, h) * 6); it < N; it++) for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; if (!m[i]) continue; const nu = (u[i - 1] + u[i + 1] + u[i - w] + u[i + w] + 1) / 4; u[i] += 1.85 * (nu - u[i]) }
+      const hh = new Float32Array(w * h); let hm = 0; for (let i = 0; i < w * h; i++) if (m[i]) { hh[i] = Math.sqrt(Math.max(0, u[i])) * 2; hm = Math.max(hm, hh[i]) }
+      return { hh, hm };
+    }
+    const boxBlur = (a, w, h, r) => { const o = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0, c = 0; for (let j = -r; j <= r; j++) for (let k = -r; k <= r; k++) { const yy = y + j, xx = x + k; if (yy >= 0 && yy < h && xx >= 0 && xx < w) { s += a[yy * w + xx]; c++ } } o[y * w + x] = s / c } return o };
+    // depth from one picture, without any learned model (see docs/research-conversion-shorts.md):
+    // a subject on a plain ground is puffed up front and back, with its own shading as fine relief (dark lines sink in);
+    // a scene is laid out by sky, height in the picture, haze (aerial perspective) and detail, smoothed along colour edges
+    function realDepth(g) {
+      const { w, h, d } = g, n = w * h, m = fgMask(g), L = new Float32Array(n);
+      for (let i = 0; i < n; i++) L[i] = lumOf(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]);
+      let fg = 0; for (let i = 0; i < n; i++) fg += m[i];
+      const subject = (m.how === 'alpha' || (m.how === 'border' && m.bgShare > .55)) && fg > n * .04 && fg < n * .88;
+      if (subject) {
+        const { hh, hm } = inflate(m, w, h), mean = boxBlur(L, w, h, 2), det = new Float32Array(n);
+        for (let i = 0; i < n; i++) det[i] = m[i] ? Math.max(-.5, Math.min(.5, (L[i] - mean[i]) * 2.2)) : 0;
+        return { subject: true, m, hh, hm, det };
+      }
+      // scene: sky from the top edge, then near/far cues
+      const sky = new Uint8Array(n), G = new Float32Array(n);
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; G[i] = Math.hypot(L[i + 1] - L[i - 1], L[i + w] - L[i - w]) }
+      const isSky = (i) => { const r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], [s] = satHue(r, gg, b); return G[i] < .09 && ((b >= r && b >= gg * .92 && L[i] > .3) || (s < .14 && L[i] > .62)) };
+      const st = []; for (let x = 0; x < w; x++) if (isSky(x)) { sky[x] = 1; st.push(x) }
+      while (st.length) { const i = st.pop(), x = i % w; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w]) if (j >= 0 && j < n && !sky[j] && isSky(j)) { sky[j] = 1; st.push(j) } }
+      // clouds, the sun, birds: anything not joined to the ground from the bottom edge belongs to the sky
+      { const gr = new Uint8Array(n), q = []; for (let x = 0; x < w; x++) { const i = (h - 1) * w + x; if (!sky[i]) { gr[i] = 1; q.push(i) } }
+        while (q.length) { const i = q.pop(), x = i % w; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w]) if (j >= 0 && j < n && !gr[j] && !sky[j]) { gr[j] = 1; q.push(j) } }
+        for (let i = 0; i < n; i++) if (!gr[i]) sky[i] = 1 }
+      let hz = 0, hc = 0; for (let x = 0; x < w; x++) { let y = 0; while (y < h && sky[y * w + x]) y++; hz += y; hc++ } hz = hc ? hz / hc : 0;   // average horizon row
+      const T = boxBlur(G, w, h, 2); let tmx = 1e-6; { const s2 = [...T].sort((a, b) => a - b); tmx = s2[Math.floor(n * .95)] || 1e-6 }
+      let near = new Float32Array(n);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (sky[i]) continue;
+        const v = Math.max(0, Math.min(1, (y - hz) / Math.max(1, h - 1 - hz))), [s] = satHue(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), haze = (1 - s) * L[i] * (d[i * 4 + 2] >= d[i * 4] ? 1 : .6);
+        near[i] = .62 * v + .23 * Math.min(1, T[i] / tmx) + .15 * (1 - haze) }
+      // joint bilateral smoothing: pixels of a similar colour nearby end up at a similar depth
+      for (let it = 0; it < 6; it++) { const o = new Float32Array(n);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (sky[i]) continue; let s = 0, ws = 0;
+          for (let j = -2; j <= 2; j++) for (let k = -2; k <= 2; k++) { const yy = y + j, xx = x + k; if (yy < 0 || yy >= h || xx < 0 || xx >= w) continue; const q = yy * w + xx; if (sky[q]) continue;
+            const dr = d[i * 4] - d[q * 4], dg = d[i * 4 + 1] - d[q * 4 + 1], db = d[i * 4 + 2] - d[q * 4 + 2], wt = Math.exp(-(dr * dr + dg * dg + db * db) / 1250 - (j * j + k * k) / 8); s += near[q] * wt; ws += wt }
+          o[i] = s / ws }
+        near = o }
+      return { subject: false, sky, near };
+    }
+
     // ---------- styles: each returns { W, H, D, vox: [[x, y, z, colour, order]] } ----------
     const ST = {
+      // the most life-like: a figure you can walk around (subject) or a deep diorama (scene); opt.bg keeps the background
+      real(g, opt = {}) {
+        const { w, h, d } = g, R = realDepth(g), vox = [], keepBg = opt.bg !== false;
+        if (R.subject) {
+          const { m, hh, hm, det } = R, F = .95, B = .55, DD = Math.max(8, Math.min(MAXS, Math.ceil(hm * (F + B)) + (keepBg ? 6 : 4))), cz = Math.round(hm * B) + 2;
+          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], wy = h - 1 - y;
+            if (!m[i]) { if (keepBg && d[i * 4 + 3] >= 128) vox.push([x, wy, 0, shade(r, gg, b, .9), 0]); continue }
+            const zf = Math.min(DD - 1, Math.round(cz + hh[i] * F + det[i] * Math.min(2.5, hm * .12))), zb = Math.max(keepBg ? 1 : 0, Math.round(cz - hh[i] * B));
+            for (let z = zb; z <= zf; z++) vox.push([x, wy, z, z === zf ? hex(r, gg, b) : z === zb ? shade(r, gg, b, .72) : shade(r, gg, b, .86), Math.abs(z - cz) / (hm * F || 1)]) }
+          return { W: w, H: h, D: DD, vox };
+        }
+        const { sky, near } = R, DD = Math.max(8, Math.min(MAXS, Math.round(Math.max(w, h) * .45))), Z = new Int16Array(w * h);
+        for (let i = 0; i < w * h; i++) Z[i] = sky[i] ? -1 : 1 + Math.round(near[i] * (DD - 2));
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], wy = h - 1 - y;
+          if (Z[i] < 0) { if (keepBg) vox.push([x, wy, 0, hex(r, gg, b), 0]); continue }
+          // from the nearest surface back to the furthest neighbour, so steps in depth become walls rather than gaps
+          let lo = Z[i]; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && Z[j] >= 0) lo = Math.min(lo, Z[j] + 1);
+          if (!keepBg) lo = Math.min(lo, Z[i]); for (let z = Math.max(1, lo); z <= Z[i]; z++) vox.push([x, wy, z, z === Z[i] ? hex(r, gg, b) : shade(r, gg, b, .82), near[i] * .9 + .1]) }
+        return { W: w, H: h, D: DD, vox };
+      },
       // Poisson inflation (∇²u = −1 inside the outline, 0 on it): a disk becomes a half-sphere, a thin limb a thin tube
       creature(g) {
         const { w, h, d } = g, m = fgMask(g), u = new Float32Array(w * h);
@@ -203,30 +270,33 @@
     async function convert() {
       const style = $('cvSt').value, R = Math.max(16, Math.min(MAXS, +$('cvR').value || 64)), proc = $('cvPr').checked;
       if (!src || (src.kind === 'text' && !$('cvTx').value.trim())) { busy(false, t('noSrc')); return }
-      if (style === 'time' && src.kind !== 'video') { busy(false, t('timeOnlyVideo')); return }
+      if (style === 'time' && src.kind !== 'video' && src.kind !== 'model') { busy(false, t('timeOnlyVideo')); return }
       busy(true, t('busy')); await new Promise(r => setTimeout(r, 30));
       try {
         let res, srcC, maps = [];
-        if (src.kind === 'video') {
+        if (src.kind === 'model') {
+          const mesh = await VoxoBModel.parse(src.files); if (!mesh || !mesh.pos.length) { busy(false, t('empty')); return }
+          res = VoxoBModel.voxelize(mesh, R, color); if (!res) { busy(false, t('empty')); return } fitSize(res); srcC = VoxoBModel.snapshot(mesh);
+        } else if (src.kind === 'video') {
           const v = src.el;
           if (style === 'time') { const N = Math.min(64, Math.max(12, Math.round(R * .6))), gs = await videoFrames(v, R, N); res = fitSize(timeSculpture(gs)); await seek(v, v.duration * .5); srcC = srcCanvasOf(v) }
           else {   // one conversion per sampled frame → an animation
-            const N = Math.min(24, Math.max(6, Math.round(v.duration * 4))), gs = await videoFrames(v, R, N), all = gs.map(g => ST[style](g)), dims = fitSize({ W: Math.max(...all.map(r => r.W)), H: Math.max(...all.map(r => r.H)), D: Math.max(...all.map(r => r.D)) });
+            const N = Math.min(24, Math.max(6, Math.round(v.duration * 4))), gs = await videoFrames(v, R, N), all = gs.map(g => ST[style](g, { bg: $('cvBg').checked })), dims = fitSize({ W: Math.max(...all.map(r => r.W)), H: Math.max(...all.map(r => r.H)), D: Math.max(...all.map(r => r.D)) });
             await seek(v, 0); srcC = srcCanvasOf(v);
             all.forEach(r => maps.push(toMap({ ...r, ...dims }, 1, Math.floor((dims.W - r.W) / 2), Math.floor((dims.D - r.D) / 2))));   // frames of different sizes share one centre last = { srcCanvas: srcC, style, frames: maps, dims, process: false };
-            commitFrames(dims, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('gen'); return;
+            commitFrames(dims, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('done'); return;
           }
         } else {
           srcC = src.kind === 'text' ? textCanvas($('cvTx').value) : srcCanvasOf(src.el);
           if (!srcC) { busy(false, t('noSrc')); return }
           // text needs about 18 cells a character to stay readable
           const RR = src.kind === 'text' ? Math.min(MAXS, Math.max(R, 18 * Math.max(...$('cvTx').value.split(/\n/).map(l => Array.from(l.trim()).length)))) : R;
-          res = fitSize(ST[style](grid(srcC, RR)));
+          res = fitSize(ST[style](grid(srcC, RR), { bg: $('cvBg').checked }));
         }
         if (!res.vox.length) { busy(false, t('empty')); return }
         if (proc) { const K = 12; for (let i = 1; i <= K; i++) maps.push(toMap(res, i === K ? 1 : Math.pow(i / K, 1.2))) } else maps.push(toMap(res, 1));
-        last = { srcCanvas: srcC, style, frames: maps, dims: { W: res.W, H: res.H, D: res.D }, process: proc };
-        commitFrames(res, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('gen');
+        last = { srcCanvas: srcC, style: src.kind === 'model' ? 'model' : style, frames: maps, dims: { W: res.W, H: res.H, D: res.D }, process: proc };
+        commitFrames(res, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('done');
       } catch (e) { console.error(e); busy(false, String(e && e.message || e)) }
     }
 
@@ -256,7 +326,7 @@
         const split = s < T_SRC + T_PROC ? 760 : Math.max(0, 760 - (s - T_SRC - T_PROC) * 900);
         if (split > 140) { ox.save(); ox.beginPath(); ox.rect(40, 120, OW - 80, split - 140); ox.clip(); drawSrc(40, 120, OW - 80, split - 140); ox.restore(); if (split > 420) label(t('before'), 220) }
         ren.render(scn, cam); ox.drawImage(c3, 0, Math.max(split, split + (OH - split - 1080) / 2), 1080, 1080);
-        if (s >= T_SRC && s < T_SRC + T_PROC) label(t('styles')[last.style] + '  ' + Math.round(Math.min(1, (s - T_SRC) / T_PROC) * 100) + '%', split + 90);
+        if (s >= T_SRC && s < T_SRC + T_PROC) label((t('styles')[last.style] || t('model')) + '  ' + Math.round(Math.min(1, (s - T_SRC) / T_PROC) * 100) + '%', split + 90);
         if (s >= T_SRC + T_PROC) label(t('after'), OH - 260);
         ox.font = '700 44px system-ui, sans-serif'; ox.textAlign = 'center'; ox.fillStyle = 'rgba(255,255,255,.85)'; ox.fillText(s > total - T_END ? 'VoxoB — voxob.vercel.app' : 'VoxoB', OW / 2, OH - 90);
       };
@@ -279,30 +349,34 @@
     // ---------- panel (Make tab, above Generate) ----------
     const box = document.createElement('div'); box.className = 'ps cvp';
     box.innerHTML = `<div class="pt" id="ptCv"></div>
-      <div class="cvsrc"><button class="btn" id="cvIm"></button><button class="btn" id="cvVi"></button><button class="btn" id="cvTe"></button></div>
-      <input type="file" id="cvFile" accept="image/*,video/*" style="display:none">
+      <div class="cvsrc"><button class="btn" id="cvIm"></button><button class="btn" id="cvVi"></button><button class="btn" id="cvTe"></button><button class="btn" id="cvMo"></button></div>
+      <input type="file" id="cvFile" accept="image/*,video/*" style="display:none"><input type="file" id="cvMoF" accept=".obj,.mtl,.stl,.glb,.gltf,.bin,image/*" multiple style="display:none">
       <div class="cvname" id="cvName"></div>
       <textarea id="cvTx" rows="2" maxlength="60" style="display:none"></textarea>
       <div class="cvst" id="cvSts" role="radiogroup"></div><input type="hidden" id="cvSt" value="city">
       <div class="cvtip" id="cvTip"></div>
       <div class="sr"><label id="cvRl" for="cvR"></label><select id="cvR"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option></select></div>
+      <label class="ck" id="cvBgL"><input type="checkbox" id="cvBg" checked><span id="cvBgl"></span></label>
       <label class="ck"><input type="checkbox" id="cvPr" checked><span id="cvPrl"></span></label>
       <div class="cvgo"><button class="btn pri" id="cvGo"></button><button class="btn" id="cvSh"></button></div>
       <div class="cvmsg" id="cvMsg" role="status" aria-live="polite"></div>
       <div class="cvnote" id="cvNote"></div>`;
     const gnPs = $('ptGn').closest('.ps'); gnPs.parentNode.insertBefore(box, gnPs);
-    const STY = ['city', 'creature', 'tower', 'terrain', 'relief', 'flat', 'time'];
-    function setSt(id) { $('cvSt').value = id; box.querySelectorAll('.cvst button').forEach(b => { const on = b.dataset.st === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)) }); $('cvTip').textContent = t('tips')[id] }
-    function showSrc() { $('cvTx').style.display = src && src.kind === 'text' ? 'block' : 'none'; $('cvName').textContent = src && src.kind !== 'text' ? src.name : ''; [['cvIm', 'image'], ['cvVi', 'video'], ['cvTe', 'text']].forEach(([id, k]) => $(id).classList.toggle('on', !!src && src.kind === k)); box.querySelector('[data-st=time]').hidden = !(src && src.kind === 'video'); if ($('cvSt').value === 'time' && !(src && src.kind === 'video')) setSt('city') }
+    const STY = ['real', 'city', 'creature', 'tower', 'terrain', 'relief', 'flat', 'time'];
+    function setSt(id) { $('cvSt').value = id; box.querySelectorAll('.cvst button').forEach(b => { const on = b.dataset.st === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)) }); $('cvTip').textContent = t('tips')[id]; $('cvBgL').hidden = id !== 'real' }
+    function showSrc() { $('cvTx').style.display = src && src.kind === 'text' ? 'block' : 'none'; $('cvName').textContent = src && src.kind !== 'text' ? src.name : ''; [['cvIm', 'image'], ['cvVi', 'video'], ['cvTe', 'text'], ['cvMo', 'model']].forEach(([id, k]) => $(id).classList.toggle('on', !!src && src.kind === k)); box.querySelector('[data-st=time]').hidden = !(src && src.kind === 'video');
+      const mdl = !!src && src.kind === 'model'; $('cvSts').hidden = mdl; $('cvBgL').hidden = mdl || $('cvSt').value !== 'real'; $('cvTip').textContent = mdl ? t('modelTip') : t('tips')[$('cvSt').value]; if ($('cvSt').value === 'time' && !(src && src.kind === 'video')) setSt('city') }
     function relabel() {
-      $('ptCv').textContent = t('title'); $('cvIm').textContent = t('image'); $('cvVi').textContent = t('video'); $('cvTe').textContent = t('text'); $('cvTx').placeholder = t('textPh');
-      $('cvRl').textContent = t('detail'); $('cvPrl').textContent = t('process'); $('cvGo').textContent = last ? t('again') : t('go'); $('cvSh').textContent = t('shorts'); $('cvSh').dataset.tip = t('shortsTip'); $('cvNote').textContent = t('note');
+      $('ptCv').textContent = t('title'); $('cvIm').textContent = t('image'); $('cvVi').textContent = t('video'); $('cvTe').textContent = t('text'); $('cvMo').textContent = t('model'); $('cvTx').placeholder = t('textPh');
+      $('cvRl').textContent = t('detail'); $('cvBgl').textContent = t('keepBg'); $('cvPrl').textContent = t('process'); $('cvGo').textContent = last ? t('again') : t('go'); $('cvSh').textContent = t('shorts'); $('cvSh').dataset.tip = t('shortsTip'); $('cvNote').textContent = t('note');
       const g = $('cvSts'); g.innerHTML = ''; STY.forEach(id => { const b = document.createElement('button'); b.className = 'at'; b.dataset.st = id; b.setAttribute('role', 'radio'); b.textContent = t('styles')[id]; b.onclick = () => { setSt(id); snd('click') }; g.appendChild(b) });
       setSt($('cvSt').value); showSrc();
     }
     $('cvIm').onclick = () => { $('cvFile').accept = 'image/*'; $('cvFile').click() };
     $('cvVi').onclick = () => { $('cvFile').accept = 'video/*'; $('cvFile').click() };
     $('cvTe').onclick = () => { src = { kind: 'text' }; showSrc(); $('cvTx').focus() };
+    $('cvMo').onclick = () => $('cvMoF').click();
+    $('cvMoF').onchange = (e) => { const fs = [...e.target.files]; e.target.value = ''; const main = fs.find(f => /\.(obj|stl|glb|gltf)$/i.test(f.name)); if (!main) return; src = { kind: 'model', files: fs, name: fs.map(f => f.name).join(', ') }; showSrc() };
     $('cvFile').onchange = (e) => {
       const f = e.target.files[0]; e.target.value = ''; if (!f) return; const url = URL.createObjectURL(f);
       if (f.type.startsWith('video')) { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url; v.onloadeddata = async () => { if (!isFinite(v.duration)) { v.currentTime = 1e9; await new Promise(r => v.ondurationchange = r); v.currentTime = 0 } src = { kind: 'video', el: v, name: f.name }; showSrc(); setSt('time') }; v.onerror = () => { $('cvMsg').textContent = M('vidFmt', 'この動画形式はお使いのブラウザでサポートされていません。', 'This video format is not supported by your browser.') } }
@@ -313,6 +387,21 @@
     $('cvTx').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); convert().then(() => relabel()) } e.stopPropagation() });
     const _sl = setLang; setLang = function (l) { _sl(l); relabel() };
     relabel();
+    // the File tab's import used to place only the corners of each triangle; send 3D files through the voxelizer instead
+    { const _lm = loadMedia;
+      loadMedia = async function (e) {
+        const fs = [...(e.target.files || [])], main = fs.find(f => /\.(obj|stl|glb|gltf)$/i.test(f.name));
+        if (!main) return _lm(e);
+        e.target.value = '';
+        try {
+          const mesh = await VoxoBModel.parse(fs); if (!mesh || !mesh.pos.length) return;
+          const sz = Math.max(4, Math.min(MAXS, +$('iSz').value || 16)), r = VoxoBModel.voxelize(mesh, Math.min(sz, Math.max(W, H, D)), color); if (!r) return;
+          const ox = Math.floor((W - r.W) / 2), oz = Math.floor((D - r.D) / 2), acts = [];
+          for (const [x, y, z, c] of r.vox) { const a = setV(x + ox, y, z + oz, c, 255); if (a) acts.push(a) }
+          pU(acts); d2D(); uCnt(); snd('gen');
+        } catch (err) { console.error(err); alert(String(err && err.message || err)) }
+      };
+    }
     // for tests and the demo recorder
     window.VoxoBConvert = { ST, grid, fgMask, timeSculpture, textCanvas, setSource: (s) => { src = s; showSrc() }, convert, shorts, get last() { return last } };
   })();

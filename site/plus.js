@@ -52,6 +52,7 @@
     function bbox() { let b = null; for (const k of keys()) { const [x, y, z] = pv_(k); if (!b) b = { x0: x, x1: x, y0: y, y1: y, z0: z, z1: z }; else { b.x0 = Math.min(b.x0, x); b.x1 = Math.max(b.x1, x); b.y0 = Math.min(b.y0, y); b.y1 = Math.max(b.y1, y); b.z0 = Math.min(b.z0, z); b.z1 = Math.max(b.z1, z) } } return b }
     function commit(acts, msg) { acts = acts.filter(Boolean); if (!acts.length) return 0; pU(acts); rebMesh(); d2D(); uCnt(); if (msg) toast(msg); return acts.length }
     let tT = 0;
+    window.vxToast = (m, sub) => toast(m, sub);   // for the other modules
     function toast(m, sub) {
       let el = $('vxToast'); if (!el) { el = document.createElement('div'); el.id = 'vxToast'; document.body.appendChild(el) }
       el.innerHTML = ''; const b = document.createElement('b'); b.textContent = m; el.appendChild(b); if (sub) { const s = document.createElement('span'); s.textContent = sub; el.appendChild(s) }
