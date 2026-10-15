@@ -15,7 +15,7 @@ const JOBS = [
   { name: 'pagoda-tower', src: { img: svg('pagoda.svg') }, style: 'tower', R: 96 },
   { name: 'island-terrain', src: { img: svg('island.svg') }, style: 'terrain', R: 96 },
   { name: 'text-city', src: { text: 'VoxoB' }, style: 'city', R: 64 },
-  { name: 'dance-time', src: { video: 'dance' }, style: 'time', R: 72 },
+  { name: 'dance-time', src: { video: 'dance' }, style: 'time', R: 64 },
 ];
 const want = process.argv.slice(2);
 
@@ -33,7 +33,9 @@ for (const job of JOBS.filter((j) => !want.length || want.includes(j.name))) {
   if (job.src.text) await p.evaluate((tx) => { $('cvTx').value = tx; VoxoBConvert.setSource({ kind: 'text' }) }, job.src.text);
   if (job.src.video) {
     // an original 4 s clip: a ribbon of colour dancing across a plain wall, recorded in the page and kept as shorts/src/dance.webm
-    const b64 = await p.evaluate(async () => {
+    const saved = path.join(OUT, 'src', 'dance.webm'), have = fs.existsSync(saved) ? fs.readFileSync(saved).toString('base64') : null;   // reuse the clip once made, so the source stays the same
+    const b64 = await p.evaluate(async (have) => {
+      if (have) { const v = document.createElement('video'); v.muted = true; v.src = 'data:video/webm;base64,' + have; await new Promise((r) => v.onloadeddata = r); if (!isFinite(v.duration)) { v.currentTime = 1e9; await new Promise((r) => v.ondurationchange = r); v.currentTime = 0 } VoxoBConvert.setSource({ kind: 'video', el: v, name: 'dance.webm' }); return have }
       const c = document.createElement('canvas'); c.width = 360; c.height = 360; const x = c.getContext('2d'), rec = new MediaRecorder(c.captureStream(30), { mimeType: 'video/webm' }), ch = []; rec.ondataavailable = (e) => ch.push(e.data);
       rec.start(); const t0 = performance.now();
       await new Promise((res) => { const f = () => { const s = (performance.now() - t0) / 4000; x.fillStyle = '#eef2f7'; x.fillRect(0, 0, 360, 360);
@@ -44,12 +46,14 @@ for (const job of JOBS.filter((j) => !want.length || want.includes(j.name))) {
       if (!isFinite(v.duration)) { v.currentTime = 1e9; await new Promise((r) => v.ondurationchange = r); v.currentTime = 0 }
       VoxoBConvert.setSource({ kind: 'video', el: v, name: 'dance.webm' });
       return await new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result.split(',')[1]); fr.readAsDataURL(blob) });
-    });
+    }, have);
     fs.writeFileSync(path.join(OUT, 'src', 'dance.webm'), Buffer.from(b64, 'base64'));
   }
   await p.evaluate(([st, R]) => { $('cvSt').value = st; $('cvR').value = String(R); $('cvPr').checked = true }, [job.style, job.R]);
   await p.evaluate(() => VoxoBConvert.convert());
-  console.log(job.name, await p.evaluate(() => $('cvMsg').textContent));
+  const made = await p.evaluate(() => ({ msg: $('cvMsg').textContent, n: Object.keys(V()).length, ok: !!VoxoBConvert.last }));
+  console.log(job.name, made.msg);
+  if (!made.ok || !made.n) { console.error(`  ✗ ${job.name}: nothing converted, skipped`); process.exitCode = 1; await ctx.close(); continue }
 
   const file = path.join(OUT, job.name + '.mp4');
   const ff = spawn('ffmpeg', ['-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', '30', '-c:v', 'mjpeg', '-i', '-', '-c:v', 'libx264', '-preset', 'slow', '-crf', '21', '-pix_fmt', 'yuv420p', '-r', '30', '-movflags', '+faststart', file], { stdio: ['pipe', 'inherit', 'inherit'] });

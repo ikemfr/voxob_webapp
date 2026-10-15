@@ -4830,7 +4830,14 @@
       return c;
     }
     function srcCanvasOf(el) { const c = document.createElement('canvas'), w = el.videoWidth || el.naturalWidth || el.width, h = el.videoHeight || el.naturalHeight || el.height; c.width = w; c.height = h; c.getContext('2d').drawImage(el, 0, 0); return c }
-    function seek(v, tm) { return new Promise((res) => { const done = () => { v.removeEventListener('seeked', done); res() }; v.addEventListener('seeked', done); v.currentTime = Math.min(Math.max(0, tm), Math.max(0, v.duration - .05)) }) }
+    const once = (el, ev) => new Promise((res) => el.addEventListener(ev, res, { once: true }));
+    // seek and wait for that frame; an earlier seek still running (e.g. the rewind after reading a recorded clip's length) is let finish first
+    async function seek(v, tm) {
+      if (v.seeking) await once(v, 'seeked');
+      const to = Math.min(Math.max(0, tm), Math.max(0, v.duration - .05)); if (Math.abs(v.currentTime - to) < 1e-4 && v.readyState >= 2) return;
+      const ok = once(v, 'seeked'); v.currentTime = to; await ok;
+      if (v.readyState < 2) await once(v, 'loadeddata');
+    }
     async function videoFrames(v, R, N) { const out = []; for (let f = 0; f < N; f++) { await seek(v, v.duration * (f + .5) / N); out.push(grid(v, R)) } return out }
 
     // ---------- apply ----------
@@ -4846,7 +4853,7 @@
     }
     const busy = (on, msg) => { $('cvGo').disabled = on; $('cvSh').disabled = on; if (msg !== undefined) $('cvMsg').textContent = msg };
     async function convert() {
-      const style = $('cvSt').value, R = +$('cvR').value, proc = $('cvPr').checked;
+      const style = $('cvSt').value, R = Math.max(16, Math.min(MAXS, +$('cvR').value || 64)), proc = $('cvPr').checked;
       if (!src || (src.kind === 'text' && !$('cvTx').value.trim())) { busy(false, t('noSrc')); return }
       if (style === 'time' && src.kind !== 'video') { busy(false, t('timeOnlyVideo')); return }
       busy(true, t('busy')); await new Promise(r => setTimeout(r, 30));
