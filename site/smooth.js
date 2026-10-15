@@ -99,5 +99,7 @@
         dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, tl, true); dv.setUint32(12, jb.length, true); dv.setUint32(16, 0x4E4F534A, true); u8.set(jb, 20); const bo = 20 + jb.length; dv.setUint32(bo, off, true); dv.setUint32(bo + 4, 0x004E4942, true);
         let q = bo + 8; parts.forEach(a => { u8.set(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), q); q += a.byteLength }); dlF(exFn() + '.glb', glb, 'model/gltf-binary'); hideExp() };
     }
-    window.VoxoBSmooth = { get on() { return on }, set: setSmooth, surface, smoothExport };
+    // for compositing (e.g. a Shorts wipe): show one or the other without changing the setting
+    function show(smooth) { if (smooth && (dirtyS || !built)) rebuild(); vG.visible = !smooth; sG.visible = smooth }
+    window.VoxoBSmooth = { get on() { return on }, set: setSmooth, surface, smoothExport, show };
   })();
