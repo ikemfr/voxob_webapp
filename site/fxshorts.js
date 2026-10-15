@@ -1,6 +1,8 @@
   // ===== VoxoB FX Shorts: the punchy 1080×1920 cut (hook, glitch, build-up with sparks, impact, turn, optional smooth-view wipe, end card) =====
   // Frame by frame through opts.onFrame(canvas); returns the moments of sound cues ({ t, k }) so shorts/fx.mjs can lay the sound under them.
   (() => {
+    // Japanese typefaces only (a Chinese fallback draws kanji in the wrong shapes); opts.fx.font picks another, e.g. a web font the caller loaded
+    const JP = '"Hiragino Sans","Noto Sans JP","Yu Gothic","Meiryo","IPAPGothic",sans-serif';
     const ease = (u) => u < .5 ? 2 * u * u : 1 - (-2 * u + 2) ** 2 / 2, outBack = (u) => { const c = 1.7; return 1 + (c + 1) * (u - 1) ** 3 + c * (u - 1) ** 2 }, clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
     async function fxShorts(opts) {
       const last = VoxoBConvert.last; if (!last) throw new Error('convert first');
@@ -13,7 +15,7 @@
       if (T.smooth) cues.push({ t: T.smooth, k: 'sweep' });
       const sparks = []; let shown = -1, seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
       const tmp = document.createElement('canvas'); tmp.width = tmp.height = 1080; const tx = tmp.getContext('2d');
-      const text = (s, x, y, size, fill = '#fff', stroke = '#000', sw = 14) => { ox.font = `900 ${size}px "Noto Sans JP","Hiragino Sans",system-ui,sans-serif`; ox.textAlign = 'center'; ox.lineJoin = 'round'; ox.lineWidth = sw; ox.strokeStyle = stroke; ox.strokeText(s, x, y); ox.fillStyle = fill; ox.fillText(s, x, y) };
+      const text = (s, x, y, size, fill = '#fff', stroke = '#000', sw = 14) => { ox.font = `900 ${size}px ${fx.font || JP}`; ox.textAlign = 'center'; ox.lineJoin = 'round'; ox.lineWidth = sw; ox.strokeStyle = stroke; ox.strokeText(s, x, y); ox.fillStyle = fill; ox.fillText(s, x, y) };
       const fit = (img, x, y, w, h) => { const k = Math.min(w / img.width, h / img.height), dw = img.width * k, dh = img.height * k; ox.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh) };
       const bg = (s) => { const g = ox.createRadialGradient(OW / 2, OH * .45, 100, OW / 2, OH * .45, OH * .8); g.addColorStop(0, fx.bg1 || '#2a1f5c'); g.addColorStop(1, fx.bg2 || '#07070d'); ox.fillStyle = g; ox.fillRect(0, 0, OW, OH);
         ox.save(); ox.translate(OW / 2, OH * .45); ox.rotate(s * .25); ox.globalAlpha = .12; ox.fillStyle = '#fff'; for (let i = 0; i < 18; i++) { ox.rotate(Math.PI * 2 / 18); ox.beginPath(); ox.moveTo(0, 0); ox.lineTo(1500, -60); ox.lineTo(1500, 60); ox.fill() } ox.restore() };
@@ -74,7 +76,7 @@
       x.save(); x.translate(250, 400); x.rotate(-.08); x.fillStyle = '#fff'; x.shadowColor = 'rgba(0,0,0,.5)'; x.shadowBlur = 30; x.beginPath(); x.roundRect(-190, -190, 380, 380, 28); x.fill(); x.shadowBlur = 0; const s = last.srcCanvas, k = Math.min(330 / s.width, 330 / s.height); x.drawImage(s, -s.width * k / 2, -s.height * k / 2, s.width * k, s.height * k); x.restore();
       x.drawImage(c3, 540, 0, 720, 720);
       x.fillStyle = '#ffe14d'; x.beginPath(); x.moveTo(470, 330); x.lineTo(560, 400); x.lineTo(470, 470); x.closePath(); x.fill();
-      const t = (s2, y, size, fill) => { x.font = `900 ${size}px "Noto Sans JP","Hiragino Sans",system-ui,sans-serif`; x.textAlign = 'left'; x.lineJoin = 'round'; x.lineWidth = 16; x.strokeStyle = '#111'; x.strokeText(s2, 40, y); x.fillStyle = fill; x.fillText(s2, 40, y) };
+      const t = (s2, y, size, fill) => { x.font = `900 ${size}px ${fx.font || JP}`; x.textAlign = 'left'; x.lineJoin = 'round'; x.lineWidth = 16; x.strokeStyle = '#111'; x.strokeText(s2, 40, y); x.fillStyle = fill; x.fillText(s2, 40, y) };
       t(fx.thumb1 || '', 110, 92, '#fff'); t(fx.thumb2 || '', 690, 84, '#ffe14d');
       if (window.VoxoBSmooth) VoxoBSmooth.show(VoxoBSmooth.on); if (gG) gG.visible = gw; ren.setPixelRatio(pr); ren.setSize(keep.w / pr, keep.h / pr, false); c3.style.width = keep.sw; c3.style.height = keep.sh; cam.aspect = keep.aspect; cam.updateProjectionMatrix(); cT = keep.cT; cP = keep.cP; cD = keep.cD; cTgt.copy(keep.tgt); uCam();
       return c;

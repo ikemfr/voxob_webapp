@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { synth } from './synth.mjs';
+import { css } from './fonts.mjs';
 
 const { chromium } = await import(process.env.PLAYWRIGHT || 'playwright');
 const ROOT = process.cwd(), OUT = path.join(ROOT, 'shorts', 'fx'); fs.mkdirSync(OUT, { recursive: true });
@@ -44,8 +45,10 @@ for (const job of JOBS.filter((j) => !want.length || want.includes(j.name))) {
   const p = await ctx.newPage(); p.on('pageerror', (e) => console.error(job.name, e.message));
   await p.goto('file://' + path.join(ROOT, 'index.html')); await p.waitForTimeout(800);
   await p.evaluate(async ([u, st, R]) => { const im = new Image(); im.src = u; await im.decode(); VoxoBConvert.setSource({ kind: 'image', el: im, name: 'src' }); $('cvSt').value = st; $('cvR').value = String(R); $('cvBg').checked = false; $('cvPr').checked = true; await VoxoBConvert.convert() }, [svg(job.img), job.style, job.R]);
+  await p.addStyleTag({ content: css('dela-gothic-one') });   // a Japanese display face (OFL); the container's own fallback would draw kanji the Chinese way
   console.log(job.name, await p.evaluate(() => $('cvMsg').textContent));
-  const fx = { ...job.fx, smooth: !!job.smooth, bg1: job.bg1, bg2: job.bg2, credit: CREDIT, thumb1: job.thumb[0], thumb2: job.thumb[1] };
+  const fx = { ...job.fx, smooth: !!job.smooth, bg1: job.bg1, bg2: job.bg2, credit: CREDIT, thumb1: job.thumb[0], thumb2: job.thumb[1], font: '"Dela Gothic One"' };
+  await p.evaluate((fx) => document.fonts.load('100px "Dela Gothic One"', Object.values(fx).filter((v) => typeof v === 'string').join('')), fx);
   // thumbnail
   const th = await p.evaluate((fx) => VoxoBFx.thumb(fx).toDataURL('image/jpeg', .92), fx);
   fs.writeFileSync(path.join(OUT, job.name + '-thumb.jpg'), Buffer.from(th.split(',')[1], 'base64'));

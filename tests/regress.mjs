@@ -203,6 +203,12 @@ const out = {};
   // text: wide enough to read, and not empty
   const tx = await p.evaluate(async () => { $('cvTx').value = 'こんにちは'; VoxoBConvert.setSource({ kind: 'text' }); $('cvSt').value = 'relief'; $('cvR').value = '32'; await VoxoBConvert.convert(); return { W, n: Object.keys(V()).length } });
   ok(tx.W >= 80 && tx.n > 200, `text "こんにちは" relief: ${tx.W} wide, ${tx.n} voxels`);
+  // text on a transparent ground: white inside the letters (an emoji's teeth, white text) stays; "keep background" still adds the ground
+  const tw = await p.evaluate(async () => { const keep = color; $('cvTx').value = '😁'; VoxoBConvert.setSource({ kind: 'text' }); $('cvSt').value = 'flat'; $('cvR').value = '32'; $('cvBg').checked = false; await VoxoBConvert.convert();
+    const white = (m) => Object.values(m).filter((v) => { const n = parseInt(v.c.slice(1), 16); return (n >> 16) > 200 && ((n >> 8) & 255) > 200 && (n & 255) > 200 }).length;
+    const a = white(V()), na = Object.keys(V()).length; color = '#ffffff'; $('cvTx').value = 'AB'; await VoxoBConvert.convert(); const b = Object.keys(V()).length;
+    $('cvBg').checked = true; await VoxoBConvert.convert(); const c = Object.keys(V()).length; $('cvBg').checked = false; color = keep; return { a, na, b, c } });
+  ok(tw.a > 5 && tw.b > 20 && tw.c > tw.b, `text keeps white inside: 😁 ${tw.a} white of ${tw.na}; white "AB" ${tw.b} voxels, ${tw.c} with its ground`);
   const noSrc = await p.evaluate(async () => { $('cvTx').value = '  '; await VoxoBConvert.convert(); return $('cvMsg').textContent });
   ok(/text|文字/i.test(noSrc), 'empty text is refused with a message: ' + noSrc);
   // time sculpture needs a video; with a video it stacks frames in depth
