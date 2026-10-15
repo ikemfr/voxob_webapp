@@ -43,3 +43,7 @@ Playwright（Chromium）と ffmpeg が必要です。フレームを1枚ずつ�
 アプリの「📱 ショート動画 (9:16)」ボタンでも同じ構成の動画を書き出せます。H.264 で録画できるブラウザ（Chrome・Edge・Safari）では MP4、それ以外では WebM になります。YouTube はどちらも受け付けます。
 
 このフォルダはサイトには公開されません（`.vercelignore` で除外）。
+
+## くるくる風車（ループ動画）
+
+`node shorts/windmill.mjs` → `shorts/fx/windmill-loop.mp4`（サムネイル・説明文つき）。絵文字 👆👈😁👉👇 を組み合わせた風車がボクセル表示 → なめらか表示で回り、怒った 🫵🫨🫵 に変わって画面に突っ込み、白フラッシュで最初につながります。🫪 は Fluent Emoji に無いので 🫨 で代用しています。効果音は `shorts/synth.mjs` で合成（`fx.mjs` と共用）。

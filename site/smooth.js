@@ -7,8 +7,15 @@
     const sG = new THREE.Group(); scn.add(sG);
     const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .62, metalness: .04 });
     try { on = localStorage.getItem('vs_smooth') === '1' } catch (e) { }
-    const touchS = () => { dirtyS = true; lastEdit = performance.now() };
-    { const a = addM, r = remM, b = rebMesh; addM = function (...x) { touchS(); return a.apply(this, x) }; remM = function (...x) { touchS(); return r.apply(this, x) }; rebMesh = function (...x) { touchS(); return b.apply(this, x) } }
+    // a smooth surface per frame's voxels, so playing an animation in the smooth view shows every frame (built once, then reused)
+    let cache = new Map(), viaGo = false, urgent = false;
+    const drop = (k) => { const c = cache.get(k); if (c) { if (c !== built) c.geo.dispose(); cache.delete(k) } };
+    const dropAll = () => { cache.forEach((c) => { if (c !== built) c.geo.dispose() }); cache.clear() };
+    const touchS = () => { dirtyS = true; lastEdit = performance.now(); drop(V()) };
+    { const a = addM, r = remM, b = rebMesh, g = goFrame;
+      addM = function (...x) { touchS(); return a.apply(this, x) }; remM = function (...x) { touchS(); return r.apply(this, x) };
+      rebMesh = function (...x) { dirtyS = true; if (viaGo) urgent = true; else { lastEdit = performance.now(); dropAll() } return b.apply(this, x) };   // a frame switch keeps the cache; anything else may have changed any frame
+      goFrame = function (...x) { viaGo = true; try { return g.apply(this, x) } finally { viaGo = false } } }
 
     // the surface as plain arrays: positions, normals, colours (0–1, sRGB) and triangle indices
     function surface() {
@@ -55,13 +62,15 @@
       return { pos, nor: g.attributes.normal.array, col: Float32Array.from(C), idx: Uint32Array.from(I), geo: g };
     }
     function rebuild() {
-      if (built) { sG.remove(built.mesh); built.geo.dispose(); built = null }
-      const s = surface(); dirtyS = false; if (!s) return;
-      s.geo.setAttribute('color', new THREE.BufferAttribute(s.col, 3)); s.geo.computeBoundingSphere();
-      built = { ...s, mesh: new THREE.Mesh(s.geo, mat) }; sG.add(built.mesh);
+      if (built) { sG.remove(built.mesh); if (![...cache.values()].includes(built)) built.geo.dispose(); built = null }
+      dirtyS = false; urgent = false; const key = V();
+      let b = cache.get(key);
+      if (!b) { const s = surface(); if (!s) return; s.geo.setAttribute('color', new THREE.BufferAttribute(s.col, 3)); s.geo.computeBoundingSphere(); b = { ...s, mesh: new THREE.Mesh(s.geo, mat) };
+        cache.set(key, b); if (cache.size > 48) { const k0 = cache.keys().next().value; if (k0 !== key) drop(k0) } }
+      built = b; sG.add(built.mesh);
     }
     function apply() { vG.visible = !on; sG.visible = on; $('bSmooth').classList.toggle('on', on); $('bSmooth').setAttribute('aria-pressed', String(on)) }
-    { const r0 = ren.render.bind(ren); ren.render = (s, c) => { if (on && dirtyS && performance.now() - lastEdit > 140) rebuild(); r0(s, c) } }
+    { const r0 = ren.render.bind(ren); ren.render = (s, c) => { if (on && dirtyS && (urgent || performance.now() - lastEdit > 140)) rebuild(); r0(s, c) } }
     function setSmooth(v) { on = v; try { localStorage.setItem('vs_smooth', on ? '1' : '0') } catch (e) { } if (on) rebuild(); apply(); snd('click') }
 
     // turntable: the view turns slowly until the next drag
@@ -99,5 +108,7 @@
         dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, tl, true); dv.setUint32(12, jb.length, true); dv.setUint32(16, 0x4E4F534A, true); u8.set(jb, 20); const bo = 20 + jb.length; dv.setUint32(bo, off, true); dv.setUint32(bo + 4, 0x004E4942, true);
         let q = bo + 8; parts.forEach(a => { u8.set(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), q); q += a.byteLength }); dlF(exFn() + '.glb', glb, 'model/gltf-binary'); hideExp() };
     }
-    window.VoxoBSmooth = { get on() { return on }, set: setSmooth, surface, smoothExport };
+    // for compositing (e.g. a Shorts wipe): show one or the other without changing the setting
+    function show(smooth) { if (smooth && (dirtyS || !built || cache.get(V()) !== built)) rebuild(); vG.visible = !smooth; sG.visible = smooth }
+    window.VoxoBSmooth = { get on() { return on }, set: setSmooth, surface, smoothExport, show };
   })();

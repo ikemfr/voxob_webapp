@@ -269,6 +269,10 @@ const out = {};
     VoxoBSmooth.set(false); r.back = vG.visible; return r });
   ok(sm.out === 1 && sm.hidden && sm.back, `smooth view: ${sm.tot} triangles, all facing out; cubes hidden while on, back when off`);
   ok(sm.stlOk && sm.stlTris === sm.tot && sm.glb === 'glTF' && sm.objV > 100, `smooth exports: STL ${sm.stlTris} triangles, GLB, OBJ ${sm.objV} vertices`);
+  // smooth view follows an animation: every frame shows its own surface, right away
+  const sa = await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }, { v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); gen('sphere'); frames[1].v = {}; for (let x = 2; x < 6; x++) for (let y = 2; y < 6; y++) for (let z = 2; z < 6; z++) frames[1].v[vk(x, y, z)] = { c: '#ff0000', a: 255 };
+    VoxoBSmooth.set(true); ren.render(scn, cam); const n = () => VoxoBSmooth.surface().idx.length; const a = n(); goFrame(1); ren.render(scn, cam); const b = n(); goFrame(0); ren.render(scn, cam); const c = n(); VoxoBSmooth.set(false); return { a, b, c } });
+  ok(sa.a > 0 && sa.b > 0 && sa.a !== sa.b && sa.c === sa.a, `smooth view per animation frame: ${sa.a} → ${sa.b} → ${sa.c} indices`);
   // clear all: every frame, one undo step, redo clears again
   const ca = await p.evaluate(() => { frames = [{ v: {}, ws: false, cam: null }, { v: {}, ws: false, cam: null }]; curFrame = 0; rebMesh(); gen('house'); frames[1].v = { ...frames[0].v }; const n0 = Object.keys(frames[1].v).length;
     $('hClr').click(); const a = frames.map((f) => Object.keys(f.v).length).join(); undo(); const b = frames.map((f) => Object.keys(f.v).length).join(); redo(); const c = frames.map((f) => Object.keys(f.v).length).join(); undo();
