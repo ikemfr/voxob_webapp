@@ -293,7 +293,7 @@ const C = {
 };
 
 // short looping clips recorded by site/demos.mjs: [scene, section it belongs to, width, height, seconds]
-const DEMOS = [['draw', 'start', 760, 470, 15], ['generate', 'generators', 674, 606, 12], ['convert', 'convert', 674, 606, 9], ['next', 'next', 760, 660, 13], ['style', 'next', 674, 606, 15], ['animate', 'animation', 674, 672, 7], ['export', 'export', 760, 600, 3]];
+const DEMOS = [['draw', 'start', 760, 470, 15], ['generate', 'generators', 674, 606, 12], ['convert', 'convert', 674, 606, 11], ['next', 'next', 760, 660, 13], ['style', 'next', 674, 606, 15], ['animate', 'animation', 674, 672, 7], ['export', 'export', 760, 600, 3]];
 const CAP = {
   ja: { convert: '「変換」で文字「VoxoB」を入力し、街を選んで変換。組み上がる過程がそのままアニメーションになります。', draw: '塗り矩形で1段ずつ重ね、ペンで仕上げる。2D 断面で描いた分が右の 3D にすぐ出ます。', generate: '「作る」タブのボタンを押すだけで、城・五重塔・街・家ができあがります。', next: '「✨ 次の一手」を押すたびに、地面・木・陰影など今の形に合う工程がひとつ足されます。', style: '「スタイル変換」で和風・夜・パステル・秋へ。形はそのまま、色だけが一度に変わります。', animate: '「アニメ生成」で弾む動きを付けて再生。', export: '「エクスポート」から OBJ・STL・GLB・PNG・動画・JSON を選んで保存。' },
   en: { convert: 'In Convert, type “VoxoB”, pick City and convert: the build-up is kept as an animation.', draw: 'Stack filled rectangles one layer at a time, then finish with the pen. What you draw on the 2D slice appears in 3D right away.', generate: 'One click in the Make tab builds a castle, a pagoda, a city or a house.', next: 'Each press of ✨ Next move adds one step that fits the shape: ground, trees, shading and more.', style: 'Style switches to Japanese, night, pastel or autumn. The shape stays; only the colours change.', animate: 'An animation generator adds a bounce, then Play.', export: 'Export to OBJ, STL, GLB, PNG, video or JSON.' },
