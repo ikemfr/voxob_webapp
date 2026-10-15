@@ -296,6 +296,22 @@ const out = {};
   ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
   await ctx.close();
 }
+// ---------- 6b. phone: the smooth button really toggles, and tapping leaves no tip on screen ----------
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  await ctx.route('https://cdnjs.cloudflare.com/**', async (r) => r.fulfill({ body: process.env.THREE_JS ? fs.readFileSync(process.env.THREE_JS, 'utf8') : await (await r.fetch()).text(), contentType: 'text/javascript' }));
+  await ctx.addInitScript(() => { localStorage.setItem('vs_seen', '1') });
+  const p = await ctx.newPage(); const errs = []; p.on('pageerror', (e) => errs.push(e.message)); await p.goto('file://' + path.join(ROOT, 'index.html')); await p.waitForTimeout(800);
+  await p.locator('#bSmooth').tap(); await p.waitForTimeout(300);
+  const a = await p.evaluate(() => [VoxoBSmooth.on, vG.visible].join());
+  await p.locator('#hClr').tap(); await p.locator('#bSpin').tap(); await p.locator('#hU').tap(); await p.waitForTimeout(300);
+  const tip = await p.evaluate(() => { const t = document.getElementById('_tip'); return t ? t.style.display : 'none' });
+  await p.locator('#bSmooth').tap(); const b = await p.evaluate(() => [VoxoBSmooth.on, vG.visible].join());
+  ok(a === 'true,false' && b === 'false,true', `phone: smooth button toggles (${a} → ${b})`);
+  ok(tip !== 'block', 'phone: no tooltip left on screen after taps');
+  ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
+  await ctx.close();
+}
 // ---------- 7. languages load cleanly, with every Convert label filled ----------
 for (const l of ['en', 'ja', 'es', 'pt', 'zh']) {
   const { p, ctx, errs } = await open(l);
