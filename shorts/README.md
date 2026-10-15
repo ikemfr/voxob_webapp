@@ -44,6 +44,12 @@ Playwright（Chromium）と ffmpeg が必要です。フレームを1枚ずつ�
 
 このフォルダはサイトには公開されません（`.vercelignore` で除外）。
 
-## くるくる風車（ループ動画）
+## くるくる風車（ホラー・ループ動画）
 
-`node shorts/windmill.mjs` → `shorts/fx/windmill-loop.mp4`（サムネイル・説明文つき）。絵文字 👆👈😁👉👇 を組み合わせた風車がボクセル表示 → なめらか表示で回り、怒った 🫵🫨🫵 に変わって画面に突っ込み、白フラッシュで最初につながります。🫪 は Fluent Emoji に無いので 🫨 で代用しています。効果音は `shorts/synth.mjs` で合成（`fx.mjs` と共用）。
+`node shorts/windmill.mjs` → `shorts/fx/windmill-loop.mp4`（サムネイル・説明文つき、13秒）。
+
+- 絵文字はすべて VoxoB の「テキスト → 3D」（`VoxoBConvert.textCanvas` → 🐾 生き物）で立体化。👆 / 👈😁👉 / 👇 と 🫵 / 🫵🫪🫵 / 🫵。
+- 🫪（U+1FAEA）はコンテナのシステム絵文字フォントに無いので、Fontsource の Noto Color Emoji（COLR 版の `emoji-400.css`。範囲別サブセットは SVG 形式で Chrome が描けない）を読み込んでいます。
+- 文字は日本語書体のみ：Dela Gothic One・Shippori Mincho B1・DotGothic16（いずれも OFL、`shorts/fonts.mjs` が npm から `shorts/.fonts` に取得、コミットしない）。
+- 流れ：静止画ノイズから始まる（前のループの終わりとつながる）→ オルゴールで回る（ボクセル → なめらか）、逆回転のネガの影と1コマだけの顔 → 減速して停止・暗転・無音 → 絶叫と共に 🫪 に変身 → 突進・震え・ジグザグ・回転激突 → ノイズへ。
+- 効果音は `shorts/synth.mjs` で合成（オルゴール・ドローン・心音・絶叫・弦の不協和音・ノイズなど。`fx.mjs` と共用）。

@@ -234,12 +234,14 @@
     // ---------- sources ----------
     let src = null;          // { kind: 'image' | 'video' | 'text', el, name, text }
     let last = null;          // the last conversion: { srcCanvas, style, frames: [voxel maps], W, H, D }
-    function textCanvas(str) {
+    // the letters on a transparent ground, so the shape is exactly the letters: white inside them (an emoji's eyes and teeth, white text) is kept.
+    // ground = true paints a ground behind them, for "keep background"
+    function textCanvas(str, ground = false) {
       const lines = String(str).split(/\n/).map(s => s.trim()).filter(Boolean).slice(0, 4); if (!lines.length) return null;
-      const c = document.createElement('canvas'), x = c.getContext('2d'), fam = '"Noto Sans JP","Hiragino Sans","Yu Gothic","PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif';
+      const c = document.createElement('canvas'), x = c.getContext('2d'), fam = '"Noto Sans JP","Hiragino Sans","Yu Gothic","Meiryo","Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI",system-ui,sans-serif';
       x.font = `900 100px ${fam}`; const wd = Math.max(...lines.map(l => x.measureText(l).width)), lh = 118;
       c.width = Math.ceil(wd + 60); c.height = lines.length * lh + 40; const n = parseInt(color.slice(1), 16), light = lumOf(n >> 16, (n >> 8) & 255, n & 255) > .8;
-      x.fillStyle = light ? '#14161c' : '#ffffff'; x.fillRect(0, 0, c.width, c.height);   // a light text colour goes on a dark ground so it still stands out
+      if (ground) { x.fillStyle = light ? '#14161c' : '#ffffff'; x.fillRect(0, 0, c.width, c.height) }   // a light text colour goes on a dark ground so it still stands out
       x.font = `900 100px ${fam}`; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillStyle = color;
       lines.forEach((l, i) => x.fillText(l, c.width / 2, 20 + lh * (i + .5)));
       return c;
@@ -287,7 +289,7 @@
             commitFrames(dims, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('done'); return;
           }
         } else {
-          srcC = src.kind === 'text' ? textCanvas($('cvTx').value) : srcCanvasOf(src.el);
+          srcC = src.kind === 'text' ? textCanvas($('cvTx').value, $('cvBg').checked) : srcCanvasOf(src.el);
           if (!srcC) { busy(false, t('noSrc')); return }
           // text needs about 18 cells a character to stay readable
           const RR = src.kind === 'text' ? Math.min(MAXS, Math.max(R, 18 * Math.max(...$('cvTx').value.split(/\n/).map(l => Array.from(l.trim()).length)))) : R;
