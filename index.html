@@ -1578,8 +1578,8 @@
 
         <div class="ps">
           <div class="pt" id="ptSz">CANVAS SIZE</div>
-          <div class="sr"><label>W</label><input type="number" id="sW" value="16" min="4"><label>H</label><input
-              type="number" id="sH" value="16" min="4"><label>D</label><input type="number" id="sD" value="16" min="4">
+          <div class="sr"><label>W</label><input type="number" id="sW" value="16" min="4" max="256"><label>H</label><input
+              type="number" id="sH" value="16" min="4" max="256"><label>D</label><input type="number" id="sD" value="16" min="4" max="256">
           </div>
           <button class="btn" onclick="appSz()" id="bAp">Apply</button>
         </div>
@@ -2223,7 +2223,8 @@
       clearTimeout(memTm);
       memTm = setTimeout(() => $('memW').style.display = 'none', 4000);
     }
-    function checkMem() { if (Object.keys(V()).length > 50000 || frames.length > 32) showMem() }
+    const MAXS = 256;
+    function checkMem() { if (vCount() > 1000000 || frames.length > 32) showMem() }
     function setMode(m) { mode = m; document.body.dataset.mode = m; $('mDr').classList.toggle('on', m === 'draw'); $('mDl').classList.toggle('on', m === 'del'); $('mRc').classList.toggle('on', m === 'recolor'); snd('click') }
 
     // ===== COLOR =====
@@ -2253,7 +2254,7 @@
     // ===== VOXEL DATA =====
     function setV(x, y, z, c, a = alpha) { if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) return null; const k = vk(x, y, z), v = V(); if (v[k] && v[k].c === c && (v[k].a || 255) === a) return null; const p = v[k] ? { ...v[k] } : null; v[k] = { c, a }; addM(x, y, z, c, a); return { t: 's', x, y, z, p, n: { c, a } } }
     function delV(x, y, z) { const k = vk(x, y, z), v = V(); if (!v[k]) return null; const p = { ...v[k] }; delete v[k]; remM(x, y, z); return { t: 's', x, y, z, p, n: null } }
-    function recolV(x, y, z, c, a = alpha) { const k = vk(x, y, z), v = V(); if (!v[k]) return null; if (v[k].c === c && (v[k].a || 255) === a) return null; const p = { ...v[k] }; v[k] = { c, a }; if (mm[k]) { mm[k].material.color.set(c); mm[k].material.opacity = a / 255; mm[k].material.transparent = a < 255 } return { t: 's', x, y, z, p, n: { c, a } } }
+    function recolV(x, y, z, c, a = alpha) { const k = vk(x, y, z), v = V(); if (!v[k]) return null; if (v[k].c === c && (v[k].a || 255) === a) return null; const p = { ...v[k] }; v[k] = { c, a }; addM(x, y, z, c, a); return { t: 's', x, y, z, p, n: { c, a } } }
     function doV(x, y, z, c) { if (mode === 'del') return delV(x, y, z); if (mode === 'recolor') return recolV(x, y, z, c); return setV(x, y, z, c) }
     function aAct(a, r) {
       if (!a) return;
@@ -2293,7 +2294,7 @@
       undoSt.push({ t, idx, data: JSON.parse(JSON.stringify(data)), f: curFrame });
       if (undoSt.length > 150) undoSt.shift(); redoSt = []; checkMem();
     }
-    function uCnt() { $('stL').textContent = 'Voxels: ' + Object.keys(V()).length + (frames[curFrame].ws ? ' [WS]' : '') }
+    let cntRaf = 0; function uCnt() { if (cntRaf) return; cntRaf = requestAnimationFrame(() => { cntRaf = 0; $('stL').textContent = 'Voxels: ' + Object.keys(V()).length + (frames[curFrame].ws ? ' [WS]' : '') }) }
     function getMir(x, y, z, is2D = false) {
       const pts = [[x, y, z]];
       if ($('mirX').checked) { const cx = +$('scXx').value; const n = []; pts.forEach(p => n.push([Math.round(2 * cx - p[0] - 1), p[1], p[2]])); pts.push(...n) }
@@ -2320,19 +2321,99 @@
     // ===== THREE.js (abbreviated for size - same core as v8) =====
     const c3 = $('tc'), ren = new THREE.WebGLRenderer({ canvas: c3, antialias: true, preserveDrawingBuffer: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.setClearColor(0x08090d, 1);
     const scn = new THREE.Scene(), cam = new THREE.PerspectiveCamera(45, 1, .1, 500); scn.add(new THREE.AmbientLight(0xffffff, .55)); const dl1 = new THREE.DirectionalLight(0xffffff, .6); dl1.position.set(40, 60, 40); scn.add(dl1); scn.add(new THREE.DirectionalLight(0x6688ff, .2));
-    const vG = new THREE.Group(); scn.add(vG); let gG = null; const bxG = new THREE.BoxGeometry(.96, .96, .96); const mm = {};
+    const vG = new THREE.Group(); scn.add(vG); let gG = null; const bxG = new THREE.BoxGeometry(.96, .96, .96);
+    // ===== VOXEL MESH =====
+    // The model is split into 16³ chunks. Each chunk is one geometry per opacity holding only the faces that can be seen
+    // (a face between two solid voxels is skipped), coloured per vertex, with a thin darker edge so single voxels stay readable.
+    // Edits mark their chunk dirty; dirty chunks are rebuilt once, right before the next render.
+    const CS = 16, chunks = new Map(), dirty = new Set(), colC = new Map(), vMats = new Map();
+    let occ = new Uint8Array(0), occW = 0, occH = 0, occD = 0;          // 0 empty, 255 solid, 1–254 see-through (its alpha)
+    const ckOf = (x, y, z) => (x >> 4) + ',' + (y >> 4) + ',' + (z >> 4);
+    const inB = (x, y, z) => x >= 0 && y >= 0 && z >= 0 && x < occW && y < occH && z < occD;
+    const edgeTex = (() => { const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d'); x.fillStyle = '#a6a6a6'; x.fillRect(0, 0, 32, 32); x.fillStyle = '#fff'; x.fillRect(1, 1, 30, 30); const t = new THREE.CanvasTexture(c); t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; return t })();
+    function vMat(a) { let m = vMats.get(a); if (!m) { m = new THREE.MeshLambertMaterial({ vertexColors: true, map: edgeTex, wireframe: wire, transparent: a < 255, opacity: a / 255, depthWrite: a >= 255 }); vMats.set(a, m) } return m }
+    function rgbOf(c) { let r = colC.get(c); if (!r) { const n = parseInt(String(c).slice(1, 7), 16) || 0; r = [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]; colC.set(c, r) } return r }
+    function sizeOcc() { if (occW !== W || occH !== H || occD !== D) { occW = W; occH = H; occD = D; occ = new Uint8Array(W * H * D); return true } return false }
+    function chunkOf(x, y, z) { const k = ckOf(x, y, z); let c = chunks.get(k); if (!c) { c = { keys: new Set(), meshes: [] }; chunks.set(k, c) } return [k, c] }
+    // mark a voxel (and the chunks next to it, whose faces may now show or hide) for rebuilding
+    function touch(x, y, z) { dirty.add(ckOf(x, y, z)); const lx = x & 15, ly = y & 15, lz = z & 15; if (lx === 0) dirty.add(ckOf(x - 1, y, z)); if (lx === 15) dirty.add(ckOf(x + 1, y, z)); if (ly === 0) dirty.add(ckOf(x, y - 1, z)); if (ly === 15) dirty.add(ckOf(x, y + 1, z)); if (lz === 0) dirty.add(ckOf(x, y, z - 1)); if (lz === 15) dirty.add(ckOf(x, y, z + 1)) }
+    function addM(x, y, z, c, a = 255) { if (sizeOcc()) { rebMesh(); return } const k = vk(x, y, z); chunkOf(x, y, z)[1].keys.add(k); if (inB(x, y, z)) occ[x + occW * (y + occH * z)] = (a || 255) >= 255 ? 255 : Math.max(1, a); touch(x, y, z) }
+    function remM(x, y, z) { const c = chunks.get(ckOf(x, y, z)); if (!c) return; c.keys.delete(vk(x, y, z)); if (inB(x, y, z)) occ[x + occW * (y + occH * z)] = 0; touch(x, y, z) }
+    // [dx, dy, dz, the face's 4 corners]
+    const FACES = [[1, 0, 0, [[1, 0, 1], [1, 0, 0], [1, 1, 0], [1, 1, 1]]], [-1, 0, 0, [[0, 0, 0], [0, 0, 1], [0, 1, 1], [0, 1, 0]]], [0, 1, 0, [[0, 1, 1], [1, 1, 1], [1, 1, 0], [0, 1, 0]]], [0, -1, 0, [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]]], [0, 0, 1, [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]], [0, 0, -1, [[1, 0, 0], [0, 0, 0], [0, 1, 0], [1, 1, 0]]]];
+    const UVS = [0, 0, 1, 0, 1, 1, 0, 1];
+    function buildChunk(k) {
+      const c = chunks.get(k); if (!c) return;
+      c.meshes.forEach(m => { vG.remove(m); m.geometry.dispose() }); c.meshes = [];
+      if (!c.keys.size) { chunks.delete(k); return }
+      const v = V(), by = new Map();             // alpha → { p, n, col, uv, n4 }
+      for (const key of c.keys) {
+        const d = v[key]; if (!d) { c.keys.delete(key); continue }
+        const [x, y, z] = pv_(key), a = d.a || 255, solid = a >= 255, rgb = rgbOf(d.c);
+        let b = by.get(a); if (!b) { b = { p: [], n: [], col: [], uv: [], q: 0 }; by.set(a, b) }
+        for (const [dx, dy, dz, cs] of FACES) {
+          const nx = x + dx, ny = y + dy, nz = z + dz, o = inB(nx, ny, nz) ? occ[nx + occW * (ny + occH * nz)] : 0;
+          if (o === 255 || (!solid && o === a)) continue;   // hidden behind a solid voxel, or inside the same glass
+          for (const [cx, cy, cz] of cs) { b.p.push(x + cx, y + cy, z + cz); b.n.push(dx, dy, dz); b.col.push(rgb[0], rgb[1], rgb[2]) }
+          b.uv.push(...UVS); b.q++;
+        }
+      }
+      for (const [a, b] of by) {
+        if (!b.q) continue;
+        const g = new THREE.BufferGeometry(), nv = b.q * 4, idx = nv > 65535 ? new Uint32Array(b.q * 6) : new Uint16Array(b.q * 6);
+        for (let i = 0, o = 0; i < b.q; i++, o += 6) { const s = i * 4; idx[o] = s; idx[o + 1] = s + 1; idx[o + 2] = s + 2; idx[o + 3] = s; idx[o + 4] = s + 2; idx[o + 5] = s + 3 }
+        g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(b.p), 3)); g.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(b.n), 3));
+        g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(b.col), 3)); g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(b.uv), 2)); g.setIndex(new THREE.BufferAttribute(idx, 1));
+        g.computeBoundingSphere();
+        const m = new THREE.Mesh(g, vMat(a)); m.matrixAutoUpdate = false; if (a < 255) m.renderOrder = 1; vG.add(m); c.meshes.push(m);
+      }
+    }
+    function vCount() { let n = 0; chunks.forEach(c => n += c.keys.size); return n }
+    function flushMesh() { if (!dirty.size) return; for (const k of dirty) buildChunk(k); dirty.clear() }
+    { const r0 = ren.render.bind(ren); ren.render = (s, c) => { flushMesh(); r0(s, c) } }
+    function togWire() { wire = !wire; vMats.forEach(m => m.wireframe = wire) }
+    function rebMesh() {
+      chunks.forEach(c => c.meshes.forEach(m => { vG.remove(m); m.geometry.dispose() })); chunks.clear(); dirty.clear();
+      if (!sizeOcc()) occ.fill(0);
+      for (const [k, d] of Object.entries(V())) {
+        const [x, y, z] = pv_(k), [ck, c] = chunkOf(x, y, z); c.keys.add(k); dirty.add(ck);
+        if (inB(x, y, z)) { const a = d.a || 255; occ[x + occW * (y + occH * z)] = a >= 255 ? 255 : Math.max(1, a) }
+      }
+    }
     const ghostG = new THREE.Group(); scn.add(ghostG); let ghostMs = [];
-    function addM(x, y, z, c, a = 255) { const k = vk(x, y, z); const op = a / 255; if (mm[k]) { mm[k].material.color.set(c); mm[k].material.opacity = op; mm[k].material.transparent = op < 1; return } const mt = new THREE.MeshLambertMaterial({ color: c, wireframe: wire, transparent: op < 1, opacity: op }); const m = new THREE.Mesh(bxG, mt); m.position.set(x + .5, y + .5, z + .5); m.userData = { vx: x, vy: y, vz: z }; vG.add(m); mm[k] = m }
-    function remM(x, y, z) { const k = vk(x, y, z); if (!mm[k]) return; vG.remove(mm[k]); mm[k].material.dispose(); delete mm[k] }
-    function togWire() { wire = !wire; Object.values(mm).forEach(m => m.material.wireframe = wire) }
-    function rebMesh() { Object.keys(mm).forEach(k => { vG.remove(mm[k]); mm[k].material.dispose(); delete mm[k] }); Object.entries(V()).forEach(([k, v]) => { const [x, y, z] = pv_(k); addM(x, y, z, v.c, v.a || 255) }) }
-    function showGhost(pts, c) { clearGhost(); if (!pts.length) return; const mt = new THREE.MeshLambertMaterial({ color: c || color, transparent: true, opacity: .25 }); pts.forEach(([x, y, z]) => { if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) return; const m = new THREE.Mesh(bxG, mt); m.position.set(x + .5, y + .5, z + .5); ghostG.add(m); ghostMs.push(m) }) }
-    function clearGhost() { ghostMs.forEach(m => { ghostG.remove(m); m.material.dispose() }); ghostMs = [] }
+    // preview of what a tool will place: one instanced draw however many cells
+    function showGhost(pts, c) {
+      clearGhost(); const ps = pts.filter(([x, y, z]) => !(x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D)); if (!ps.length) return;
+      const m = new THREE.InstancedMesh(bxG, new THREE.MeshLambertMaterial({ color: c || color, transparent: true, opacity: .25 }), ps.length), t = new THREE.Matrix4();
+      ps.forEach(([x, y, z], i) => m.setMatrixAt(i, t.makeTranslation(x + .5, y + .5, z + .5))); ghostG.add(m); ghostMs.push(m)
+    }
+    function clearGhost() { ghostMs.forEach(m => { ghostG.remove(m); m.material.dispose(); if (m.dispose) m.dispose() }); ghostMs = [] }
+    // first voxel along a ray (grid walk), with the face it was entered through
+    function voxRay(ray) {
+      const o = [ray.origin.x, ray.origin.y, ray.origin.z], d = [ray.direction.x, ray.direction.y, ray.direction.z], S = [W, H, D], v = V();
+      let t0 = 0, t1 = Infinity, ax = -1;
+      for (let i = 0; i < 3; i++) {
+        if (Math.abs(d[i]) < 1e-12) { if (o[i] < 0 || o[i] > S[i]) return null; continue }
+        let a = -o[i] / d[i], b = (S[i] - o[i]) / d[i]; if (a > b) [a, b] = [b, a];
+        if (a > t0) { t0 = a; ax = i } if (b < t1) t1 = b; if (t0 > t1) return null;
+      }
+      const p = o.map((q, i) => q + d[i] * t0), c = p.map((q, i) => Math.min(S[i] - 1, Math.max(0, Math.floor(ax === i ? q + Math.sign(d[i]) * 1e-6 : q))));
+      const st = d.map(q => q > 0 ? 1 : q < 0 ? -1 : 0), td = d.map(q => q ? Math.abs(1 / q) : Infinity);
+      const tm = c.map((q, i) => st[i] > 0 ? t0 + (q + 1 - p[i]) / d[i] : st[i] < 0 ? t0 + (q - p[i]) / d[i] : Infinity);
+      const n = [0, 0, 0]; if (ax >= 0) n[ax] = -st[ax];
+      for (let guard = 0; guard < W + H + D + 3; guard++) {
+        if (v[vk(c[0], c[1], c[2])]) return { ex: { x: c[0], y: c[1], z: c[2] }, n };
+        const i = tm[0] < tm[1] ? (tm[0] < tm[2] ? 0 : 2) : (tm[1] < tm[2] ? 1 : 2);
+        if (tm[i] > t1) return null;
+        c[i] += st[i]; tm[i] += td[i]; n[0] = n[1] = n[2] = 0; n[i] = -st[i];
+        if (c[i] < 0 || c[i] >= S[i]) return null;
+      }
+      return null;
+    }
     function rebGrid() {
       if (gG) { scn.remove(gG); gG.traverse(c => { if (c.geometry) c.geometry.dispose(); if (c.material) c.material.dispose() }); gG = null }
       if (!g3d) return; gG = new THREE.Group(); const gm = new THREE.LineBasicMaterial({ color: 0x507090, transparent: true, opacity: 0.6 });
-      for (let i = 0; i <= W; i++)gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i, 0, 0), new THREE.Vector3(i, 0, D)]), gm));
-      for (let i = 0; i <= D; i++)gG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, i), new THREE.Vector3(W, 0, i)]), gm));
+      { const g = []; for (let i = 0; i <= W; i++) g.push(i, 0, 0, i, 0, D); for (let i = 0; i <= D; i++) g.push(0, 0, i, W, 0, i); const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(g, 3)); gG.add(new THREE.LineSegments(lg, gm)) }
       gG.add(new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)), new THREE.LineBasicMaterial({ color: 0x333a50, transparent: true, opacity: .6 })).translateX(W / 2).translateY(H / 2).translateZ(D / 2));
       // Slice plane
       const sw = sAx === 'x' ? D : W, sh = sAx === 'y' ? D : H; 
@@ -2522,7 +2603,7 @@
 
     // 3D Raycast
     const rc = new THREE.Raycaster(), mp_ = new THREE.Vector2();
-    function ray3D(e) { const r = c3.getBoundingClientRect(); mp_.x = ((e.clientX - r.left) / r.width) * 2 - 1; mp_.y = -((e.clientY - r.top) / r.height) * 2 + 1; rc.setFromCamera(mp_, cam); const hits = rc.intersectObjects(vG.children, false); if (hits.length) { const h = hits[0], o = h.object, n = h.face.normal; return { ex: { x: o.userData.vx, y: o.userData.vy, z: o.userData.vz }, adj: { x: o.userData.vx + Math.round(n.x), y: o.userData.vy + Math.round(n.y), z: o.userData.vz + Math.round(n.z) }, c: V()[vk(o.userData.vx, o.userData.vy, o.userData.vz)]?.c } } const pl = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), pt = new THREE.Vector3(); if (rc.ray.intersectPlane(pl, pt)) { const gx = Math.floor(pt.x), gz = Math.floor(pt.z); if (gx >= 0 && gx < W && gz >= 0 && gz < D) return { ex: null, adj: { x: gx, y: 0, z: gz } } } return null }
+    function ray3D(e) { const r = c3.getBoundingClientRect(); mp_.x = ((e.clientX - r.left) / r.width) * 2 - 1; mp_.y = -((e.clientY - r.top) / r.height) * 2 + 1; rc.setFromCamera(mp_, cam); const h = voxRay(rc.ray); if (h) { const { ex, n } = h; return { ex, adj: { x: ex.x + n[0], y: ex.y + n[1], z: ex.z + n[2] }, c: V()[vk(ex.x, ex.y, ex.z)]?.c } } const pl = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), pt = new THREE.Vector3(); if (rc.ray.intersectPlane(pl, pt)) { const gx = Math.floor(pt.x), gz = Math.floor(pt.z); if (gx >= 0 && gx < W && gz >= 0 && gz < D) return { ex: null, adj: { x: gx, y: 0, z: gz } } } return null }
 
     // 3D Click handler
     function h3C(e) {
@@ -3208,9 +3289,10 @@
 
     // ===== SIZE =====
     function appSz() {
-      // Remove maximum size validation
-      const nw = Math.max(4, +$('sW').value || 16), nh = Math.max(4, +$('sH').value || 16), nd = Math.max(4, +$('sD').value || 16);
-      if (nw * nh * nd > 100000 && !confirm(M('bigSize', 'サイズが大きいため動作が重くなる可能性があります。続行しますか？', 'Large size may cause lag. Continue?'))) return;
+      // each side 4–256 (256³ is 16.7M cells; the renderer keeps one byte per cell)
+      const cl = (v) => Math.max(4, Math.min(MAXS, Math.round(+v) || 16)), nw = cl($('sW').value), nh = cl($('sH').value), nd = cl($('sD').value);
+      $('sW').value = nw; $('sH').value = nh; $('sD').value = nd;
+      if (nw * nh * nd > 128 * 128 * 128 && !confirm(M('bigSize', 'サイズが大きいため動作が重くなる可能性があります。続行しますか？', 'Large size may cause lag. Continue?'))) return;
       if (nw === W && nh === H && nd === D) return; const o = { ...V() }; Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) });
       W = nw; H = nh; D = nd; sIdx = Math.min(sIdx, smx() - 1); $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2);
       Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); if (x < W && y < H && z < D) setV(x, y, z, v.c, v.a || 255) });
@@ -3503,8 +3585,31 @@
       r.readAsText(f);
     }
     // ===== PROJECT/SHARE/EXPORT (compact) =====
-    function autoSave() { try { localStorage.setItem('vs9', JSON.stringify({ W, H, D, frames })) } catch (e) { } }
-    function autoLoad() { try { const d = JSON.parse(localStorage.getItem('vs9')); if (d) { W = d.W || 16; H = d.H || 16; D = d.D || 16; frames = d.frames || [{ v: {}, ws: false, cam: null }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2); rebMesh(); return true } } catch (e) { } return false }
+    // localStorage holds about 5 MB, so a big project goes to IndexedDB instead, packed into typed arrays
+    const BIGSAVE = 120000;
+    function idb(mode, fn) { return new Promise((res, rej) => { const r = indexedDB.open('voxob', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onerror = () => rej(r.error); r.onsuccess = () => { const db = r.result, tx = db.transaction('kv', mode), q = fn(tx.objectStore('kv')); tx.oncomplete = () => { db.close(); res(q && q.result) }; tx.onerror = () => { db.close(); rej(tx.error) } } }) }
+    function packFrames(fr) {
+      return fr.map(f => { const ks = Object.keys(f.v), n = ks.length, xyz = new Uint16Array(n * 3), ci = new Uint32Array(n), al = new Uint8Array(n), pal = [], pi = new Map();
+        ks.forEach((k, i) => { const [x, y, z] = pv_(k), d = f.v[k]; xyz[i * 3] = x; xyz[i * 3 + 1] = y; xyz[i * 3 + 2] = z; let c = pi.get(d.c); if (c === undefined) { c = pal.length; pal.push(d.c); pi.set(d.c, c) } ci[i] = c; al[i] = d.a === undefined ? 255 : d.a });
+        return { ws: f.ws, cam: f.cam, xyz, ci, al, pal } });
+    }
+    function unpackFrames(pf) { return pf.map(f => { const v = {}; for (let i = 0; i < f.ci.length; i++) v[vk(f.xyz[i * 3], f.xyz[i * 3 + 1], f.xyz[i * 3 + 2])] = { c: f.pal[f.ci[i]], a: f.al[i] }; return { v, ws: f.ws, cam: f.cam } }) }
+    function totalVox() { return frames.reduce((n, f) => n + Object.keys(f.v).length, 0) }
+    function autoSave() {
+      const big = totalVox() > BIGSAVE;
+      if (!big) { try { localStorage.setItem('vs9', JSON.stringify({ W, H, D, frames })); localStorage.removeItem('vs9_big'); return } catch (e) { } }
+      try { const d = { W, H, D, frames: packFrames(frames) }; idb('readwrite', st => st.put(d, 'vs9')).then(() => { try { localStorage.setItem('vs9_big', '1'); localStorage.removeItem('vs9') } catch (e) { } }).catch(() => showMem()) } catch (e) { showMem() }
+    }
+    function applyProject(d) { W = d.W || 16; H = d.H || 16; D = d.D || 16; frames = d.frames && d.frames.length ? d.frames : [{ v: {}, ws: false, cam: null }]; curFrame = 0; $('sW').value = W; $('sH').value = H; $('sD').value = D; $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2); rebMesh() }
+    function autoLoad() {
+      try {
+        if (localStorage.getItem('vs9_big') === '1') {   // big project: restore it from IndexedDB once it has been read, unless editing has already started
+          idb('readonly', st => st.get('vs9')).then(d => { if (!d || undoSt.length) return; applyProject({ ...d, frames: unpackFrames(d.frames) }); rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt(); uFUI() }).catch(() => { });
+          return false;
+        }
+        const d = JSON.parse(localStorage.getItem('vs9')); if (d) { applyProject(d); return true }
+      } catch (e) { } return false
+    }
 
     function savePj() {
       const n = prompt(M('pjName', 'プロジェクト名を入力:', 'Project Name:'), 'P' + Date.now() % 10000);
@@ -3529,7 +3634,6 @@
       const p = JSON.parse(localStorage.getItem('vs9p') || '{}')[s.value];
       if (!p) return;
 
-      Object.keys(mm).forEach(k => { vG.remove(mm[k]); mm[k].material.dispose(); delete mm[k] });
       undoSt = []; redoSt = [];
 
       W = p.W; H = p.H; D = p.D;
@@ -3643,9 +3747,60 @@
     function exFn() { return $('exName').value || 'voxelart' }
     function dlF(n, c, m = 'text/plain') { const b = new Blob([c], { type: m }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u) }
     // Export functions (OBJ, STL, GLB, JSON, PNG, Video) - same compact implementations as v8
-    function xOBJ() { const fn = exFn(); let obj = '# VS\nmtllib ' + fn + '.mtl\n', mtl = '', cm = {}, ci = 0, vi = 1; Object.entries(V()).forEach(([k, v]) => { if (!cm[v.c]) { cm[v.c] = 'm' + ci; const c = new THREE.Color(v.c); mtl += `newmtl m${ci}\nKd ${c.r.toFixed(3)} ${c.g.toFixed(3)} ${c.b.toFixed(3)}\n\n`; ci++ } }); Object.entries(V()).forEach(([k, v]) => { const [x, y, z] = pv_(k);[[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]].forEach(([a, b, c]) => obj += `v ${x + a} ${y + b} ${z + c}\n`); obj += `usemtl ${cm[v.c]}\n`; const i = vi; obj += `f ${i} ${i + 1} ${i + 2} ${i + 3}\nf ${i + 4} ${i + 5} ${i + 6} ${i + 7}\nf ${i} ${i + 1} ${i + 5} ${i + 4}\nf ${i + 2} ${i + 3} ${i + 7} ${i + 6}\nf ${i} ${i + 3} ${i + 7} ${i + 4}\nf ${i + 1} ${i + 2} ${i + 6} ${i + 5}\n`; vi += 8 }); dlF(fn + '.obj', obj); dlF(fn + '.mtl', mtl); hideExp() }
-    function xSTL() { let stl = 'solid v\n'; Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k);[[[x, y, z], [x + 1, y, z], [x + 1, y + 1, z], [x, y + 1, z], '0 0 -1'], [[x, y, z + 1], [x + 1, y, z + 1], [x + 1, y + 1, z + 1], [x, y + 1, z + 1], '0 0 1'], [[x, y, z], [x + 1, y, z], [x + 1, y, z + 1], [x, y, z + 1], '0 -1 0'], [[x, y + 1, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x, y + 1, z + 1], '0 1 0'], [[x, y, z], [x, y + 1, z], [x, y + 1, z + 1], [x, y, z + 1], '-1 0 0'], [[x + 1, y, z], [x + 1, y + 1, z], [x + 1, y + 1, z + 1], [x + 1, y, z + 1], '1 0 0']].forEach(([a, b, c, d, n]) => { stl += `facet normal ${n}\n outer loop\n  vertex ${a.join(' ')}\n  vertex ${b.join(' ')}\n  vertex ${c.join(' ')}\n endloop\nendfacet\nfacet normal ${n}\n outer loop\n  vertex ${a.join(' ')}\n  vertex ${c.join(' ')}\n  vertex ${d.join(' ')}\n endloop\nendfacet\n` }) }); stl += 'endsolid v\n'; dlF(exFn() + '.stl', stl); hideExp() }
-    function xGLB() { const pos = [], cols = [], fv = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]], fi = [[0, 1, 2, 0, 2, 3], [4, 6, 5, 4, 7, 6], [0, 1, 5, 0, 5, 4], [2, 3, 7, 2, 7, 6], [0, 3, 7, 0, 7, 4], [1, 2, 6, 1, 6, 5]]; Object.entries(V()).forEach(([k, v]) => { const [x, y, z] = pv_(k); const tc = new THREE.Color(v.c); fi.forEach(f => f.forEach(i => { const vt = fv[i]; pos.push(x + vt[0], y + vt[1], z + vt[2]); cols.push(tc.r, tc.g, tc.b) })) }); const pa = new Float32Array(pos), ca = new Float32Array(cols); const g = { asset: { version: "2.0" }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }], meshes: [{ primitives: [{ attributes: { POSITION: 0, COLOR_0: 1 }, mode: 4 }] }], accessors: [{ bufferView: 0, componentType: 5126, count: pa.length / 3, type: "VEC3", max: [W, H, D], min: [0, 0, 0] }, { bufferView: 1, componentType: 5126, count: ca.length / 3, type: "VEC3" }], bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: pa.byteLength }, { buffer: 0, byteOffset: pa.byteLength, byteLength: ca.byteLength }], buffers: [{ byteLength: pa.byteLength + ca.byteLength }] }; const js = JSON.stringify(g), jp = js + ' '.repeat((4 - js.length % 4) % 4); const enc = new TextEncoder(), jb = enc.encode(jp); const bb = new Uint8Array(pa.byteLength + ca.byteLength); bb.set(new Uint8Array(pa.buffer), 0); bb.set(new Uint8Array(ca.buffer), pa.byteLength); const tl = 12 + 8 + jb.length + 8 + bb.length, glb = new ArrayBuffer(tl), dv = new DataView(glb), u8 = new Uint8Array(glb); dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, tl, true); dv.setUint32(12, jb.length, true); dv.setUint32(16, 0x4E4F534A, true); u8.set(jb, 20); const bo = 20 + jb.length; dv.setUint32(bo, bb.length, true); dv.setUint32(bo + 4, 0x004E4942, true); u8.set(bb, bo + 8); const bl = new Blob([glb], { type: 'model/gltf-binary' }), url = URL.createObjectURL(bl), a_ = document.createElement('a'); a_.href = url; a_.download = exFn() + '.glb'; a_.click(); URL.revokeObjectURL(url); hideExp() }
+    // ===== EXPORT: only the outer faces (a face touching another voxel is left out), wound outward =====
+    // returns { n: face count, f: Int32Array [x, y, z, face index] per face, c: colour per face }
+    function outerFaces() {
+      const v = V(), keys = Object.keys(v), f = [], c = [];
+      for (const k of keys) {
+        const [x, y, z] = pv_(k);
+        for (let i = 0; i < 6; i++) { const [dx, dy, dz] = FACES[i]; if (!v[vk(x + dx, y + dy, z + dz)]) { f.push(x, y, z, i); c.push(v[k].c) } }
+      }
+      return { n: c.length, f: Int32Array.from(f), c };
+    }
+    function xOBJ() {
+      const fn = exFn(), F = outerFaces(), mats = new Map(), byMat = new Map();
+      for (let i = 0; i < F.n; i++) { const col = F.c[i]; if (!mats.has(col)) { mats.set(col, 'm' + mats.size); byMat.set(col, []) } byMat.get(col).push(i) }
+      const out = ['# VoxoB\nmtllib ' + fn + '.mtl\n', FACES.map(([dx, dy, dz]) => `vn ${dx} ${dy} ${dz}\n`).join('')]; let vi = 1;
+      for (const [col, list] of byMat) {
+        out.push(`usemtl ${mats.get(col)}\n`); const part = [];
+        for (const i of list) { const x = F.f[i * 4], y = F.f[i * 4 + 1], z = F.f[i * 4 + 2], fi = F.f[i * 4 + 3], cs = FACES[fi][3]; for (const [a, b, c] of cs) part.push(`v ${x + a} ${y + b} ${z + c}\n`); part.push(`f ${vi}//${fi + 1} ${vi + 1}//${fi + 1} ${vi + 2}//${fi + 1} ${vi + 3}//${fi + 1}\n`); vi += 4 }
+        out.push(part.join(''));
+      }
+      const mtl = [...mats].map(([col, m]) => { const c = new THREE.Color(col); return `newmtl ${m}\nKd ${c.r.toFixed(3)} ${c.g.toFixed(3)} ${c.b.toFixed(3)}\n\n` }).join('');
+      dlF(fn + '.obj', new Blob(out)); dlF(fn + '.mtl', mtl); hideExp();
+    }
+    // binary STL: 50 bytes a triangle, about a fifth of the text format
+    function xSTL() {
+      const F = outerFaces(), buf = new ArrayBuffer(84 + F.n * 2 * 50), dv = new DataView(buf);
+      new Uint8Array(buf).set(new TextEncoder().encode('VoxoB binary STL'), 0); dv.setUint32(80, F.n * 2, true);
+      let o = 84;
+      for (let i = 0; i < F.n; i++) {
+        const x = F.f[i * 4], y = F.f[i * 4 + 1], z = F.f[i * 4 + 2], [dx, dy, dz, cs] = FACES[F.f[i * 4 + 3]];
+        for (const t of [[0, 1, 2], [0, 2, 3]]) { dv.setFloat32(o, dx, true); dv.setFloat32(o + 4, dy, true); dv.setFloat32(o + 8, dz, true); o += 12; for (const j of t) { dv.setFloat32(o, x + cs[j][0], true); dv.setFloat32(o + 4, y + cs[j][1], true); dv.setFloat32(o + 8, z + cs[j][2], true); o += 12 } dv.setUint16(o, 0, true); o += 2 }
+      }
+      dlF(exFn() + '.stl', buf, 'model/stl'); hideExp();
+    }
+    function xGLB() {
+      const F = outerFaces(), nv = F.n * 4, pa = new Float32Array(nv * 3), na = new Float32Array(nv * 3), ca = new Float32Array(nv * 3), ia = new Uint32Array(F.n * 6), lin = new Map();
+      const toLin = (col) => { let r = lin.get(col); if (!r) { const c = new THREE.Color(col); r = [c.r, c.g, c.b].map(u => u <= .04045 ? u / 12.92 : Math.pow((u + .055) / 1.055, 2.4)); lin.set(col, r) } return r };   // glTF vertex colours are linear
+      for (let i = 0; i < F.n; i++) {
+        const x = F.f[i * 4], y = F.f[i * 4 + 1], z = F.f[i * 4 + 2], [dx, dy, dz, cs] = FACES[F.f[i * 4 + 3]], rgb = toLin(F.c[i]);
+        for (let j = 0; j < 4; j++) { const q = (i * 4 + j) * 3; pa[q] = x + cs[j][0]; pa[q + 1] = y + cs[j][1]; pa[q + 2] = z + cs[j][2]; na[q] = dx; na[q + 1] = dy; na[q + 2] = dz; ca[q] = rgb[0]; ca[q + 1] = rgb[1]; ca[q + 2] = rgb[2] }
+        const b = i * 4; ia.set([b, b + 1, b + 2, b, b + 2, b + 3], i * 6);
+      }
+      const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity]; for (let q = 0; q < pa.length; q += 3) for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], pa[q + k]); mx[k] = Math.max(mx[k], pa[q + k]) }
+      if (!F.n) { mn.fill(0); mx.fill(0) }
+      const parts = [pa, na, ca, ia], views = []; let off = 0; parts.forEach(a => { views.push({ buffer: 0, byteOffset: off, byteLength: a.byteLength }); off += a.byteLength });
+      views[3].target = 34963; views.slice(0, 3).forEach(v => v.target = 34962);
+      const g = { asset: { version: '2.0', generator: 'VoxoB' }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }], meshes: [{ primitives: [{ attributes: { POSITION: 0, NORMAL: 1, COLOR_0: 2 }, indices: 3, mode: 4, material: 0 }] }], materials: [{ pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1], metallicFactor: 0, roughnessFactor: 1 } }],
+        accessors: [{ bufferView: 0, componentType: 5126, count: nv, type: 'VEC3', max: mx, min: mn }, { bufferView: 1, componentType: 5126, count: nv, type: 'VEC3' }, { bufferView: 2, componentType: 5126, count: nv, type: 'VEC3' }, { bufferView: 3, componentType: 5125, count: ia.length, type: 'SCALAR' }],
+        bufferViews: views, buffers: [{ byteLength: off }] };
+      const jb = new TextEncoder().encode((() => { const js = JSON.stringify(g); return js + ' '.repeat((4 - js.length % 4) % 4) })());
+      const tl = 12 + 8 + jb.length + 8 + off, glb = new ArrayBuffer(tl), dv = new DataView(glb), u8 = new Uint8Array(glb);
+      dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, tl, true); dv.setUint32(12, jb.length, true); dv.setUint32(16, 0x4E4F534A, true); u8.set(jb, 20);
+      const bo = 20 + jb.length; dv.setUint32(bo, off, true); dv.setUint32(bo + 4, 0x004E4942, true); let p = bo + 8; parts.forEach(a => { u8.set(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), p); p += a.byteLength });
+      dlF(exFn() + '.glb', glb, 'model/gltf-binary'); hideExp();
+    }
     function xJSON() { dlF(exFn() + '.json', JSON.stringify({ W, H, D, frames }), 'application/json'); hideExp() }
     function xPNG() { ren.render(scn, cam); const a = document.createElement('a'); a.download = exFn() + '.png'; a.href = c3.toDataURL('image/png'); a.click(); hideExp() }
     async function xVid(fmt) {
@@ -4007,7 +4162,7 @@
     matchMedia('(max-width: 900px)').addEventListener('change', () => { placeMobile(); compactHd() }); placeMobile();
 
     updCol(); buildTP(); buildGen(); buildAnimGen(); buildAct(); updPj();
-    const firstVisit = !localStorage.getItem('vs9') && !localStorage.getItem('vs_seen') && !(location.hash && location.hash.length > 1);
+    const firstVisit = !localStorage.getItem('vs9') && !localStorage.getItem('vs9_big') && !localStorage.getItem('vs_seen') && !(location.hash && location.hash.length > 1);
     if (!autoLoad()) { resetCam(); rebGrid() } else { rebGrid(); resetCam() }
     uFUI(); setLang(lang); compactHd(); initRH();
     setTimeout(() => { onR(); d2D(); loadURL() }, 80); anim();
@@ -4132,7 +4287,7 @@
       if (before.length) { if (undoSt.length > n0) undoSt[undoSt.length - 1].a = [...before, ...undoSt[undoSt.length - 1].a]; else pU(before) }
       nm.done.clear(); if (nm.once) nm.once.clear(); nm.anim = null; schedSave();
     };
-    let sT = 0; function schedSave() { clearTimeout(sT); sT = setTimeout(autoSave, 700) }
+    let sT = 0; function schedSave() { clearTimeout(sT); sT = setTimeout(autoSave, vCount() > BIGSAVE ? 3000 : 700) }   // big projects: save less often
     const _pU = pU; pU = function (a) { _pU(a); schedSave() };
     const _undo = undo; undo = function () { _undo(); schedSave() };
     const _redo = redo; redo = function () { _redo(); schedSave() };
