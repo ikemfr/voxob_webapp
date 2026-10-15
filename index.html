@@ -1397,7 +1397,7 @@
 /*</site:ui.css>*/
 /*<site:convert.css>*/
     /* ===== VoxoB Convert panel ===== */
-    .cvp .cvsrc, .cvp .cvgo { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px }
+    .cvp .cvsrc, .cvp .cvgo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-bottom: 8px }
     .cvp .cvgo { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 8px 0 4px }
     .cvp .cvst { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 4px }
     .cvp .cvst .at, .cvp .cvsrc .btn { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 5px 6px }
@@ -1411,6 +1411,7 @@
     .cvp .cvmsg { font-size: 12px; line-height: 1.5; color: var(--tx); min-height: 1.5em }
     .cvp .cvnote { font-size: 10.5px; line-height: 1.5; color: var(--t3); margin-top: 4px }
     .cvp select { background: var(--b1); color: var(--tx); border: 1px solid var(--bd); border-radius: 4px; padding: 2px 6px }
+    .cvp .cvst[hidden], .cvp [hidden] { display: none !important }
 /*</site:convert.css>*/
     /* /VoxoB+ */
   </style>
@@ -1470,6 +1471,7 @@
         BG</button>
       <button class="hb" style="color:var(--a2)" data-tip="Export: OBJ/STL/GLB/PNG/Video/JSON" onclick="showExp()"
         id="hEx">⬇ Export</button>
+      <button class="hb" id="hClr" data-tip="Clear all" onclick="clearAll()">🗑 Clear all</button>
       <button class="hb" data-tip="About VoxoB" onclick="document.getElementById('abtM').classList.add('on')"
         id="hAbt">ℹ️ About</button>
     </div>
@@ -1758,11 +1760,12 @@
   const LANG_NAMES = { en: 'English', ja: '日本語', es: 'Español', pt: 'Português', zh: '中文' };
   const I18N = {
     es: {
+      SM: ['Vista suave: muestra el modelo como una superficie suave (las exportaciones también)', 'Tocadiscos: gira la vista despacio'],
       CV: {
-        title: 'CONVERTIR', image: '🖼 Imagen', video: '🎞 Vídeo', text: '🔤 Texto', textPh: 'Escribe una palabra o un nombre…', go: '✨ Convertir', again: '↻ Convertir de nuevo',
-        styles: { city: '🏙 Ciudad', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relieve', flat: '▦ Plano', time: '⏳ Escultura del tiempo' },
-        tips: { city: 'La imagen se lee como el plano de una ciudad: lo oscuro o vivo crece en edificios altos, lo verde en parques y lo azul en agua. Desde arriba, los tejados forman la imagen.', creature: 'Se recorta la silueta y se infla en una figura 3D redondeada, más gruesa donde la forma es más ancha.', tower: 'La silueta gira alrededor de un eje vertical, como en un torno de alfarero: torres, jarrones, pagodas.', terrain: 'El brillo se convierte en altura: agua, arena, hierba, roca y nieve.', relief: 'Un panel tallado: el motivo sobresale del fondo.', flat: 'Un vóxel por píxel, como pixel art.', time: 'Solo vídeo: lo que se mueve se apila fotograma a fotograma en una estela sólida a través del tiempo.' },
-        detail: 'Detalle', process: 'Guardar el proceso de conversión como animación', note: 'Usa imágenes, vídeos y textos tuyos o sobre los que tengas derechos. Evita caras y obras de otras personas.',
+        title: 'CONVERTIR', image: '🖼 Imagen', video: '🎞 Vídeo', text: '🔤 Texto', model: '🧊 Modelo 3D', modelTip: 'OBJ (con su MTL y texturas), STL o glTF / GLB. Se rellena cada triángulo y también el interior; los colores salen de las texturas, los colores de vértice o los materiales. Elige el modelo junto con sus archivos MTL y de textura.', textPh: 'Escribe una palabra o un nombre…', go: '✨ Convertir', again: '↻ Convertir de nuevo',
+        styles: { real: '📐 Realista', city: '🏙 Ciudad', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relieve', flat: '▦ Plano', time: '⏳ Escultura del tiempo' },
+        tips: { real: 'La profundidad se calcula a partir de la propia imagen (sin modelo de IA y sin subir nada): una figura sobre fondo liso se vuelve una figura 3D que se puede rodear, con su sombreado como relieve fino; un paisaje se vuelve un diorama profundo según el cielo, la altura en la imagen, la neblina y el detalle.', city: 'La imagen se lee como el plano de una ciudad: lo oscuro o vivo crece en edificios altos, lo verde en parques y lo azul en agua. Desde arriba, los tejados forman la imagen.', creature: 'Se recorta la silueta y se infla en una figura 3D redondeada, más gruesa donde la forma es más ancha.', tower: 'La silueta gira alrededor de un eje vertical, como en un torno de alfarero: torres, jarrones, pagodas.', terrain: 'El brillo se convierte en altura: agua, arena, hierba, roca y nieve.', relief: 'Un panel tallado: el motivo sobresale del fondo.', flat: 'Un vóxel por píxel, como pixel art.', time: 'Solo vídeo: lo que se mueve se apila fotograma a fotograma en una estela sólida a través del tiempo.' },
+        detail: 'Detalle', keepBg: 'Conservar el fondo', process: 'Guardar el proceso de conversión como animación', note: 'Usa imágenes, vídeos y textos tuyos o sobre los que tengas derechos. Evita caras y obras de otras personas.',
         noSrc: 'Primero elige una imagen o un vídeo, o escribe un texto.', busy: 'Convirtiendo…', done: (n, f) => `Hecho: ${n.toLocaleString()} vóxeles${f > 1 ? `, ${f} fotogramas` : ''}. Ctrl+Z para deshacer.`, timeOnlyVideo: 'La escultura del tiempo necesita un vídeo.', empty: 'No se encontró nada que convertir en esta fuente.',
         shorts: '📱 Shorts (9:16)', shortsTip: 'Graba un vídeo vertical: la fuente, la conversión y una vuelta alrededor del resultado.', shortsNo: 'Primero convierte algo.', shortsBusy: 'Grabando…', before: 'ANTES', after: 'DESPUÉS',
       },
@@ -1793,11 +1796,11 @@
         exObj: 'Exportar OBJ + MTL', exStl: 'Exportar STL', exGlb: 'Exportar GLB', exPng: 'Exportar imagen PNG',
         exSave: 'Guardar proyecto JSON', exGIF: 'Exportar vídeo WebM', exMP4: 'Exportar vídeo MP4', exLoad: 'Abrir proyecto JSON',
         abtDesc: 'Un editor y generador de vóxeles ligero que funciona en el navegador.',
-        abtSupp: 'Invítame a un café', abtGuide: '📖 Cómo usar VoxoB',
+        abtSupp: 'Invítame a un café', abtGuide: '📖 Cómo usar VoxoB', clearAll: '🗑 Borrar todo', tipClear: 'Borra todos los vóxeles de todos los fotogramas (Ctrl+Z los recupera)', cleared: 'Todo borrado', clearedS: 'Ctrl+Z (Deshacer) lo recupera.',
         abtCrd: 'CRÉDITOS Y LICENCIAS',
       },
       GN: { sphere: 'Esfera', torus: 'Toro', cylinder: 'Cilindro', cone: 'Cono', pyramid: 'Pirámide', octahedron: 'Octaedro', diamond: 'Diamante', cross: 'Cruz', star: 'Estrella', spiral: 'Espiral', helix: 'Hélice', mobius: 'Möbius', knot: 'Nudo', rings: 'Anillos', ripple: 'Ondas', grid: 'Cuadrícula', checkerP: 'Ajedrez', honeycomb: 'Panal', voronoi: 'Voronoi', fractal: 'Fractal', maze: 'Laberinto', steps: 'Escalera', gears: 'Engranajes', dna: 'ADN', heart: 'Corazón', random: 'Aleatorio', terrain: 'Terreno', mountain: 'Montaña', island: 'Isla', cave: 'Cueva', wave: 'Ola', crystal: 'Cristal', forest: 'Bosque', mushroom: 'Seta', castle: 'Castillo', city: 'Ciudad', temple: 'Templo', bridge: 'Puente', galaxy: 'Galaxia' },
-      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Voltear X', flipY: '⇅Voltear Y', flipZ: '⇄Voltear Z', shiftUp: '▲Arriba', shiftDn: '▼Abajo', shiftL: '◀Izq.', shiftR: '▶Der.', hollow: '◻Vaciar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erosionar', clrSlice: '✕Corte', clrAll: '🗑Todo' },
+      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Voltear X', flipY: '⇅Voltear Y', flipZ: '⇄Voltear Z', shiftUp: '▲Arriba', shiftDn: '▼Abajo', shiftL: '◀Izq.', shiftR: '▶Der.', hollow: '◻Vaciar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erosionar', gravity: '⬇Caer', clrSlice: '✕Corte', clrAll: '🗑Todo' },
       AG: { spinY: 'Giro Y', spinX: 'Giro X', spinZ: 'Giro Z', twistY: 'Torcer Y', swing: 'Péndulo', orbit: 'Órbita', bounce: 'Rebote', shake: 'Temblor', slideX: 'Deslizar X', slideY: 'Deslizar Y', slideZ: 'Deslizar Z', grow: 'Crecer', breathe: 'Respirar', pulse: 'Pulso', heartbeat: 'Latido', rippleA: 'Expandir', waveA: 'Ondular', rain: 'Lluvia', fire: 'Fuego', buildUp: 'Construir', dissolve: 'Disolver', explodeA: 'Explotar', implode: 'Encoger', fadeIn: 'Aparecer', colorCycle: 'Color', glitch: 'Glitch' },
       MSG: {
         memW: '⚠ Aviso de memoria', overlap: 'Hay vóxeles superpuestos. Aceptar = pegar encima, Cancelar = conservar los existentes', placeHint: 'Haz clic para colocar → confirmar',
@@ -1852,11 +1855,12 @@
       UI: { make: 'Crear', color: 'Color', anim: 'Movimiento', edit: 'Editar', file: 'Archivo', tools: 'Herramientas', menu: 'Ajustes', close: 'Cerrar', view: 'Vista' },
     },
     pt: {
+      SM: ['Visual suave: mostra o modelo como uma superfície suave (as exportações também)', 'Toca-discos: gira a vista devagar'],
       CV: {
-        title: 'CONVERTER', image: '🖼 Imagem', video: '🎞 Vídeo', text: '🔤 Texto', textPh: 'Digite uma palavra ou um nome…', go: '✨ Converter', again: '↻ Converter de novo',
-        styles: { city: '🏙 Cidade', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relevo', flat: '▦ Plano', time: '⏳ Escultura do tempo' },
-        tips: { city: 'A imagem vira o mapa de uma cidade: partes escuras ou vivas crescem em prédios altos, o verde vira parque e o azul, água. Vistos de cima, os telhados formam a imagem.', creature: 'O contorno é recortado e inflado em uma figura 3D arredondada, mais grossa onde a forma é mais larga.', tower: 'O contorno gira em torno de um eixo vertical, como num torno de oleiro: torres, vasos, pagodes.', terrain: 'O brilho vira altura: água, areia, grama, rocha e neve.', relief: 'Um painel entalhado: o tema se destaca do fundo.', flat: 'Um voxel por pixel, como pixel art.', time: 'Só vídeo: o que se move é empilhado quadro a quadro em um rastro sólido através do tempo.' },
-        detail: 'Detalhe', process: 'Guardar o processo de conversão como animação', note: 'Use imagens, vídeos e textos feitos por você ou sobre os quais você tenha direitos. Evite rostos e obras de outras pessoas.',
+        title: 'CONVERTER', image: '🖼 Imagem', video: '🎞 Vídeo', text: '🔤 Texto', model: '🧊 Modelo 3D', modelTip: 'OBJ (com MTL e texturas), STL ou glTF / GLB. Cada triângulo é preenchido, o interior também, e as cores vêm das texturas, das cores de vértice ou dos materiais. Escolha o modelo junto com os arquivos MTL e de textura.', textPh: 'Digite uma palavra ou um nome…', go: '✨ Converter', again: '↻ Converter de novo',
+        styles: { real: '📐 Realista', city: '🏙 Cidade', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relevo', flat: '▦ Plano', time: '⏳ Escultura do tempo' },
+        tips: { real: 'A profundidade é calculada a partir da própria imagem (sem modelo de IA e sem enviar nada): uma figura sobre fundo liso vira uma figura 3D que dá para rodear, com o sombreamento como relevo fino; uma paisagem vira um diorama profundo pelo céu, pela altura na imagem, pela névoa e pelos detalhes.', city: 'A imagem vira o mapa de uma cidade: partes escuras ou vivas crescem em prédios altos, o verde vira parque e o azul, água. Vistos de cima, os telhados formam a imagem.', creature: 'O contorno é recortado e inflado em uma figura 3D arredondada, mais grossa onde a forma é mais larga.', tower: 'O contorno gira em torno de um eixo vertical, como num torno de oleiro: torres, vasos, pagodes.', terrain: 'O brilho vira altura: água, areia, grama, rocha e neve.', relief: 'Um painel entalhado: o tema se destaca do fundo.', flat: 'Um voxel por pixel, como pixel art.', time: 'Só vídeo: o que se move é empilhado quadro a quadro em um rastro sólido através do tempo.' },
+        detail: 'Detalhe', keepBg: 'Manter o fundo', process: 'Guardar o processo de conversão como animação', note: 'Use imagens, vídeos e textos feitos por você ou sobre os quais você tenha direitos. Evite rostos e obras de outras pessoas.',
         noSrc: 'Primeiro escolha uma imagem ou um vídeo, ou digite um texto.', busy: 'Convertendo…', done: (n, f) => `Pronto: ${n.toLocaleString()} voxels${f > 1 ? `, ${f} quadros` : ''}. Ctrl+Z para desfazer.`, timeOnlyVideo: 'A escultura do tempo precisa de um vídeo.', empty: 'Nada para converter foi encontrado nesta fonte.',
         shorts: '📱 Shorts (9:16)', shortsTip: 'Grava um vídeo vertical: a fonte, a conversão e uma volta em torno do resultado.', shortsNo: 'Converta algo primeiro.', shortsBusy: 'Gravando…', before: 'ANTES', after: 'DEPOIS',
       },
@@ -1887,11 +1891,11 @@
         exObj: 'Exportar OBJ + MTL', exStl: 'Exportar STL', exGlb: 'Exportar GLB', exPng: 'Exportar imagem PNG',
         exSave: 'Salvar projeto JSON', exGIF: 'Exportar vídeo WebM', exMP4: 'Exportar vídeo MP4', exLoad: 'Abrir projeto JSON',
         abtDesc: 'Um editor e gerador de voxels leve que roda no navegador.',
-        abtSupp: 'Me pague um café', abtGuide: '📖 Como usar o VoxoB',
+        abtSupp: 'Me pague um café', abtGuide: '📖 Como usar o VoxoB', clearAll: '🗑 Apagar tudo', tipClear: 'Apaga todos os voxels de todos os quadros (Ctrl+Z traz de volta)', cleared: 'Tudo apagado', clearedS: 'Ctrl+Z (Desfazer) traz de volta.',
         abtCrd: 'CRÉDITOS E LICENÇAS',
       },
       GN: { sphere: 'Esfera', torus: 'Toro', cylinder: 'Cilindro', cone: 'Cone', pyramid: 'Pirâmide', octahedron: 'Octaedro', diamond: 'Diamante', cross: 'Cruz', star: 'Estrela', spiral: 'Espiral', helix: 'Hélice', mobius: 'Möbius', knot: 'Nó', rings: 'Anéis', ripple: 'Ondas', grid: 'Grade', checkerP: 'Xadrez', honeycomb: 'Colmeia', voronoi: 'Voronoi', fractal: 'Fractal', maze: 'Labirinto', steps: 'Escada', gears: 'Engrenagens', dna: 'DNA', heart: 'Coração', random: 'Aleatório', terrain: 'Terreno', mountain: 'Montanha', island: 'Ilha', cave: 'Caverna', wave: 'Onda', crystal: 'Cristal', forest: 'Floresta', mushroom: 'Cogumelo', castle: 'Castelo', city: 'Cidade', temple: 'Templo', bridge: 'Ponte', galaxy: 'Galáxia' },
-      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Espelhar X', flipY: '⇅Espelhar Y', flipZ: '⇄Espelhar Z', shiftUp: '▲Cima', shiftDn: '▼Baixo', shiftL: '◀Esq.', shiftR: '▶Dir.', hollow: '◻Esvaziar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erodir', clrSlice: '✕Corte', clrAll: '🗑Tudo' },
+      AN: { rotY: '↻Girar Y', rotX: '↻Girar X', rotZ: '↻Girar Z', flipX: '⇄Espelhar X', flipY: '⇅Espelhar Y', flipZ: '⇄Espelhar Z', shiftUp: '▲Cima', shiftDn: '▼Baixo', shiftL: '◀Esq.', shiftR: '▶Dir.', hollow: '◻Esvaziar', outline: '▣Contorno', dilate: '⊕Dilatar', erode: '⊖Erodir', gravity: '⬇Cair', clrSlice: '✕Corte', clrAll: '🗑Tudo' },
       AG: { spinY: 'Giro Y', spinX: 'Giro X', spinZ: 'Giro Z', twistY: 'Torcer Y', swing: 'Pêndulo', orbit: 'Órbita', bounce: 'Quicar', shake: 'Tremer', slideX: 'Deslizar X', slideY: 'Deslizar Y', slideZ: 'Deslizar Z', grow: 'Crescer', breathe: 'Respirar', pulse: 'Pulso', heartbeat: 'Batimento', rippleA: 'Espalhar', waveA: 'Ondular', rain: 'Chuva', fire: 'Fogo', buildUp: 'Construir', dissolve: 'Dissolver', explodeA: 'Explodir', implode: 'Encolher', fadeIn: 'Surgir', colorCycle: 'Cor', glitch: 'Glitch' },
       MSG: {
         memW: '⚠ Aviso de memória', overlap: 'Há voxels sobrepostos. OK = colar por cima, Cancelar = manter os existentes', placeHint: 'Clique para posicionar → confirmar',
@@ -1946,11 +1950,12 @@
       UI: { make: 'Criar', color: 'Cor', anim: 'Movimento', edit: 'Editar', file: 'Arquivo', tools: 'Ferramentas', menu: 'Ajustes', close: 'Fechar', view: 'Visualizar' },
     },
     zh: {
+      SM: ['平滑显示：把体素显示为平滑曲面（导出也会变平滑）', '转台：让视图慢慢旋转'],
       CV: {
-        title: '转换', image: '🖼 图片', video: '🎞 视频', text: '🔤 文字', textPh: '输入一个词或名字…', go: '✨ 转换', again: '↻ 再次转换',
-        styles: { city: '🏙 城市', creature: '🐾 生物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 浮雕', flat: '▦ 平面', time: '⏳ 时间雕塑' },
-        tips: { city: '把图片当作城市地图：深色或鲜艳的部分长成高楼，绿色变成公园，蓝色变成水面。从正上方看，屋顶会拼出原图。', creature: '抠出轮廓，越宽的地方鼓得越厚，变成圆润的立体造型。', tower: '像陶艺转盘一样，把轮廓绕竖轴旋转：塔、花瓶、五重塔。', terrain: '亮度变成高度，并分成水、沙、草、岩石和雪。', relief: '雕刻面板：主体从背景中凸出来。', flat: '一像素一体素，就像像素画。', time: '仅限视频：把运动的物体逐帧向深处堆叠，变成穿越时间的立体轨迹。' },
-        detail: '精细度', process: '把转换过程保存为动画', note: '请使用自己拍摄、绘制、书写的素材，或你有权使用的素材。避免使用他人的面孔和作品。',
+        title: '转换', image: '🖼 图片', video: '🎞 视频', text: '🔤 文字', model: '🧊 3D 模型', modelTip: '支持 OBJ（可带 MTL 和贴图）、STL、glTF / GLB。会把每个三角面填满，内部也会填实，颜色取自贴图、顶点色或材质。请把 MTL 和贴图文件一起选上。', textPh: '输入一个词或名字…', go: '✨ 转换', again: '↻ 再次转换',
+        styles: { real: '📐 写实', city: '🏙 城市', creature: '🐾 生物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 浮雕', flat: '▦ 平面', time: '⏳ 时间雕塑' },
+        tips: { real: '直接从图片本身推算深度（不使用 AI 模型，也不上传任何内容）：纯色背景上的人物或角色会变成可以绕着看的立体造型，明暗变成细微的起伏；风景会根据天空、画面中的高度、雾气和细节变成有纵深的立体模型。', city: '把图片当作城市地图：深色或鲜艳的部分长成高楼，绿色变成公园，蓝色变成水面。从正上方看，屋顶会拼出原图。', creature: '抠出轮廓，越宽的地方鼓得越厚，变成圆润的立体造型。', tower: '像陶艺转盘一样，把轮廓绕竖轴旋转：塔、花瓶、五重塔。', terrain: '亮度变成高度，并分成水、沙、草、岩石和雪。', relief: '雕刻面板：主体从背景中凸出来。', flat: '一像素一体素，就像像素画。', time: '仅限视频：把运动的物体逐帧向深处堆叠，变成穿越时间的立体轨迹。' },
+        detail: '精细度', keepBg: '保留背景', process: '把转换过程保存为动画', note: '请使用自己拍摄、绘制、书写的素材，或你有权使用的素材。避免使用他人的面孔和作品。',
         noSrc: '请先选择图片或视频，或输入文字。', busy: '转换中…', done: (n, f) => `完成：${n.toLocaleString()} 个体素${f > 1 ? `，${f} 帧` : ''}。Ctrl+Z 可撤销。`, timeOnlyVideo: '时间雕塑需要视频。', empty: '在这个素材中没有找到可以转换的形状。',
         shorts: '📱 短视频 (9:16)', shortsTip: '录制竖屏视频：原素材 → 转换过程 → 绕成品转一圈。', shortsNo: '请先转换点什么。', shortsBusy: '录制中…', before: 'BEFORE', after: 'AFTER',
       },
@@ -1981,11 +1986,11 @@
         exObj: '导出 OBJ + MTL', exStl: '导出 STL', exGlb: '导出 GLB', exPng: '导出 PNG 图片',
         exSave: '保存 JSON 项目', exGIF: '导出 WebM 视频', exMP4: '导出 MP4 视频', exLoad: '读取 JSON 项目',
         abtDesc: '在浏览器中运行的轻量体素编辑器与生成器。',
-        abtSupp: '请我喝杯咖啡（支持）', abtGuide: '📖 使用指南',
+        abtSupp: '请我喝杯咖啡（支持）', abtGuide: '📖 使用指南', clearAll: '🗑 全部清除', tipClear: '清除所有帧中的全部体素（Ctrl+Z 可恢复）', cleared: '已全部清除', clearedS: '按 Ctrl+Z（撤销）即可恢复。',
         abtCrd: '致谢与许可',
       },
       GN: { sphere: '球体', torus: '圆环', cylinder: '圆柱', cone: '圆锥', pyramid: '金字塔', octahedron: '八面体', diamond: '钻石', cross: '十字', star: '星星', spiral: '螺旋', helix: '双螺旋', mobius: '莫比乌斯', knot: '绳结', rings: '双环', ripple: '波纹', grid: '网格', checkerP: '棋盘格', honeycomb: '蜂巢', voronoi: '泰森多边形', fractal: '分形', maze: '迷宫', steps: '阶梯', gears: '齿轮', dna: 'DNA', heart: '爱心', random: '随机', terrain: '地形', mountain: '山', island: '岛', cave: '洞穴', wave: '波浪', crystal: '水晶', forest: '森林', mushroom: '蘑菇', castle: '城堡', city: '城市', temple: '神殿', bridge: '桥', galaxy: '银河' },
-      AN: { rotY: '↻Y旋转', rotX: '↻X旋转', rotZ: '↻Z旋转', flipX: '⇄X翻转', flipY: '⇅Y翻转', flipZ: '⇄Z翻转', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻挖空', outline: '▣外形', dilate: '⊕膨胀', erode: '⊖侵蚀', clrSlice: '✕清除截面', clrAll: '🗑全部清除' },
+      AN: { rotY: '↻Y旋转', rotX: '↻X旋转', rotZ: '↻Z旋转', flipX: '⇄X翻转', flipY: '⇅Y翻转', flipZ: '⇄Z翻转', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻挖空', outline: '▣外形', dilate: '⊕膨胀', erode: '⊖侵蚀', gravity: '⬇下落', clrSlice: '✕清除截面', clrAll: '🗑全部清除' },
       AG: { spinY: 'Y旋转', spinX: 'X旋转', spinZ: 'Z旋转', twistY: 'Y扭转', swing: '摆动', orbit: '公转', bounce: '弹跳', shake: '震动', slideX: 'X滑动', slideY: 'Y滑动', slideZ: 'Z滑动', grow: '生长', breathe: '呼吸', pulse: '脉动', heartbeat: '心跳', rippleA: '扩散', waveA: '波动', rain: '下雨', fire: '火焰', buildUp: '搭建', dissolve: '溶解', explodeA: '爆炸', implode: '收缩', fadeIn: '淡入', colorCycle: '变色', glitch: '故障' },
       MSG: {
         memW: '⚠ 内存警告', overlap: '有重叠的体素。确定 = 覆盖（粘贴优先），取消 = 保留现有', placeHint: '点击定位 → 确定',
@@ -2126,7 +2131,7 @@
         exMP4: 'Export MP4 Video',
         exLoad: 'Load JSON Project',
         abtDesc: 'A lightweight, browser-based voxel editor and generator.',
-        abtSupp: 'Buy Me a Coffee', abtGuide: '📖 How to use VoxoB',
+        abtSupp: 'Buy Me a Coffee', abtGuide: '📖 How to use VoxoB', clearAll: '🗑 Clear all', tipClear: 'Clear every voxel in every frame (Ctrl+Z brings it back)', cleared: 'Cleared everything', clearedS: 'Ctrl+Z (Undo) brings it back.',
         abtCrd: 'CREDITS & LICENSES',
       },
       ja: {
@@ -2162,7 +2167,7 @@
         exMP4: 'MP4 動画エクスポート',
         exLoad: 'JSON プロジェクト読込',
         abtDesc: 'ブラウザで動く軽量なボクセルエディタ＆ジェネレーター',
-        abtSupp: 'コーヒーを奢る（支援）', abtGuide: '📖 使い方ガイド',
+        abtSupp: 'コーヒーを奢る（支援）', abtGuide: '📖 使い方ガイド', clearAll: '🗑 全消去', tipClear: '全フレームのボクセルをすべて消します（Ctrl+Z で戻せます）', cleared: 'すべて消去しました', clearedS: 'Ctrl+Z（戻す）で元に戻せます。',
         abtCrd: 'クレジット & ライセンス',
       }
     };
@@ -2176,7 +2181,7 @@
 
     function setLang(l) {
       lang = l; document.documentElement.lang = htmlLang(l);
-      document.querySelectorAll('#hU,#hR,#hEx').forEach(b => delete b.dataset.full);
+      document.querySelectorAll('#hU,#hR,#hClr,#hEx').forEach(b => delete b.dataset.full);
       if (document.getElementById('lnSel')) document.getElementById('lnSel').value = l;
       try { localStorage.setItem('vs_lang', l); } catch (e) { }
 
@@ -2200,7 +2205,7 @@
         'lbBgTp': 'bgType', 'opSol': 'bgSolid', 'opGra': 'bgGrad', 'opChk': 'bgCheck', 'lbBgIm': 'bgImg', 'bBgClr': 'bgClear',
         'lbExFn': 'exFilename', 'exObj': 'exObj', 'exStl': 'exStl', 'exGlb': 'exGlb', 'exPng': 'exPng',
         'bFPrev': 'prev', 'bFNext': 'next', 'bFAdd': 'add', 'bFDup': 'dup', 'bFDel': 'del', 'bFCpy': 'fcopy', 'bFPst': 'fpaste', 'bFWork': 'work',
-        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd', 'abtGuide': 'abtGuide'
+        'hMT': 'mTools', 'hMS': 'mSet', 'bCnc': 'cancelBtn', 'bCamRes': 'resetCam', 'abtDesc': 'abtDesc', 'abtSupp': 'abtSupp', 'abtCrd': 'abtCrd', 'abtGuide': 'abtGuide', 'hClr': 'clearAll'
       };
       // the About dialog is declared after this script, so on the first call label it once the page has loaded
       const labelAbout = () => { ['abtDesc', 'abtSupp', 'abtCrd', 'abtGuide'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = T(id) }); const g = document.getElementById('abtGuide'); if (g) g.href = '/' + lang + '/' };
@@ -2217,7 +2222,7 @@
         'hU': 'tipUndo', 'hR': 'tipRedo', 'hW': 'tipWire', 'hSh': 'tipShare', 'hBG': 'tipBg', 'hEx': 'tipExp',
         'bSv': 'tipSavePj', 'bSl': 'tipSelR', 'bCR': 'tipCR', 'bCC': 'tipCC', 'bPst': 'tipPst', 'bIm': 'tipImp', 'ptAG': 'tipAnimG',
         'bCamSv': 'tipCam', 'bFPrev': 'tipPrev', 'plB': 'tipPlay', 'bFNext': 'tipNext', 'bFAdd': 'tipAddF', 'bFDup': 'tipDupF',
-        'bFDel': 'tipDelF', 'bFCpy': 'tipCopyF', 'bFPst': 'tipPasteF', 'bFWork': 'tipWorkF'
+        'bFDel': 'tipDelF', 'bFCpy': 'tipCopyF', 'bFPst': 'tipPasteF', 'bFWork': 'tipWorkF', 'hClr': 'tipClear'
       };
       Object.entries(tips).forEach(([id, k]) => {
         const el = document.getElementById(id);
@@ -2312,7 +2317,16 @@
     // whole-project snapshots, for changes that replace the canvas size and every frame at once (e.g. a conversion)
     function takeSnap() { return JSON.stringify({ W, H, D, frames, curFrame }) }
     function restoreSnap(js) { const d = JSON.parse(js); if (playing) togPlay(); W = d.W; H = d.H; D = d.D; frames = d.frames; curFrame = Math.min(d.curFrame || 0, frames.length - 1); $('sW').value = W; $('sH').value = H; $('sD').value = D; sIdx = Math.min(sIdx, smx() - 1); rebMesh(); rebGrid(); uSL(); rs2(); uFUI() }
-    function pUSnap(before) { undoSt.push({ t: 'snap', before, after: takeSnap(), f: curFrame }); if (undoSt.length > 150) undoSt.shift(); redoSt = []; checkMem() }
+    function pUSnap(before) {
+      undoSt.push({ t: 'snap', before, after: takeSnap(), f: curFrame }); if (undoSt.length > 150) undoSt.shift(); redoSt = [];
+      let n = 0; for (let i = undoSt.length - 1; i >= 0; i--) if (undoSt[i].t === 'snap' && ++n > 6) { undoSt.splice(0, i + 1); break }   // undo cannot reach past a dropped snapshot, so drop everything older too
+      checkMem();
+    }
+    function clearAll() {
+      if (!frames.some(f => Object.keys(f.v).length)) { snd('click'); return }
+      const before = takeSnap(); if (playing) togPlay(); frames.forEach(f => f.v = {}); rebMesh(); d2D(); uCnt(); pUSnap(before); snd('clear');
+      if (window.vxToast) vxToast(T('cleared'), T('clearedS')); if (typeof autoSave === 'function') setTimeout(autoSave, 60);
+    }
     function pU(a) { if (!a || !a.length) return; undoSt.push({ t: 'b', a, f: curFrame }); if (undoSt.length > 150) undoSt.shift(); redoSt = []; checkMem() }
     function undo() {
       const a = undoSt.pop(); if (!a) return; redoSt.push(a);
@@ -2325,7 +2339,7 @@
         if (a.f !== curFrame) goFrame(a.f);
         aAct(a, true);
       }
-      d2D(); uCnt(); snd('click');
+      d2D(); uCnt(); snd('undo');
     }
     function redo() {
       const a = redoSt.pop(); if (!a) return; undoSt.push(a);
@@ -2338,7 +2352,7 @@
         if (a.f !== curFrame) goFrame(a.f);
         aAct(a, false);
       }
-      d2D(); uCnt(); snd('click');
+      d2D(); uCnt(); snd('redo');
     }
     function pUF(t, idx, data) {
       undoSt.push({ t, idx, data: JSON.parse(JSON.stringify(data)), f: curFrame });
@@ -2798,7 +2812,7 @@
 
       // Ensure at least 1px to prevent bug when clientWidth is 0
       const mw = Math.max(1, wr.clientWidth - 6), mh = Math.max(1, wr.clientHeight - 6);
-      cs_ = Math.max(3, Math.min(Math.floor(mw / s.w), Math.floor(mh / s.h), 40));
+      cs_ = Math.max(1, Math.min(Math.floor(mw / s.w), Math.floor(mh / s.h), 40));   // down to 1 px a cell, so a big slice still fits whole (the panel does not scroll)
 
       c2.width = s.w * cs_; c2.height = s.h * cs_;
       pC_.width = c2.width; pC_.height = c2.height;
@@ -2867,7 +2881,7 @@
       // ==========================================
       // 3. Draw 2D grid and guidelines
       // ==========================================
-      if (g2d) {
+      if (g2d && cs_ >= 4) {   // grid lines only while cells are big enough to see between them
         // Basic grid lines
         cx_.strokeStyle = 'rgba(100,120,160,.15)';
         cx_.lineWidth = 1;
@@ -3313,16 +3327,28 @@
     let animLast = null; // the shape an animation was made from, so trying another animation starts from it again
 
     // ===== ACTIONS =====
-    const ACTS = ['rotY', 'rotX', 'rotZ', 'flipX', 'flipY', 'flipZ', 'shiftUp', 'shiftDn', 'shiftL', 'shiftR', 'hollow', 'outline', 'dilate', 'erode', 'clrSlice', 'clrAll'];
+    const ACTS = ['rotY', 'rotX', 'rotZ', 'flipX', 'flipY', 'flipZ', 'shiftUp', 'shiftDn', 'shiftL', 'shiftR', 'hollow', 'outline', 'dilate', 'erode', 'gravity', 'clrSlice', 'clrAll'];
     const AN = {
-      en: { rotY: '↻RotY', rotX: '↻RotX', rotZ: '↻RotZ', flipX: '⇄FlipX', flipY: '⇅FlipY', flipZ: '⇄FlipZ', shiftUp: '▲Up', shiftDn: '▼Down', shiftL: '◀Left', shiftR: '▶Right', hollow: '◻Hollow', outline: '▣Outline', dilate: '⊕Dilate', erode: '⊖Erode', clrSlice: '✕Slice', clrAll: '🗑All' },
-      ja: { rotY: '↻Y回転', rotX: '↻X回転', rotZ: '↻Z回転', flipX: '⇄X反転', flipY: '⇅Y反転', flipZ: '⇄Z反転', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻中空化', outline: '▣外形', dilate: '⊕膨張', erode: '⊖侵食', clrSlice: '✕断面消去', clrAll: '🗑全消去' }
+      en: { rotY: '↻RotY', rotX: '↻RotX', rotZ: '↻RotZ', flipX: '⇄FlipX', flipY: '⇅FlipY', flipZ: '⇄FlipZ', shiftUp: '▲Up', shiftDn: '▼Down', shiftL: '◀Left', shiftR: '▶Right', hollow: '◻Hollow', outline: '▣Outline', dilate: '⊕Dilate', erode: '⊖Erode', gravity: '⬇Drop', clrSlice: '✕Slice', clrAll: '🗑All' },
+      ja: { rotY: '↻Y回転', rotX: '↻X回転', rotZ: '↻Z回転', flipX: '⇄X反転', flipY: '⇅Y反転', flipZ: '⇄Z反転', shiftUp: '▲上', shiftDn: '▼下', shiftL: '◀左', shiftR: '▶右', hollow: '◻中空化', outline: '▣外形', dilate: '⊕膨張', erode: '⊖侵食', gravity: '⬇落下', clrSlice: '✕断面消去', clrAll: '🗑全消去' }
     };
     Object.keys(I18N).forEach(l => AN[l] = I18N[l].AN);
     function buildAct() { $('acG').innerHTML = ''; ACTS.forEach(id => { const b = document.createElement('button'); b.className = 'at' + (id.startsWith('clr') ? ' w' : ''); b.textContent = (AN[lang] || AN.en)[id]; b.onclick = () => { doAct(id); snd('click') }; $('acG').appendChild(b) }) }
     function doAct(id) {
       const o = { ...V() }, acts = []; const clr = () => Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); const a = delV(x, y, z); if (a) acts.push(a) }); const put = (k, v) => { const [x, y, z] = pv_(k); if (x >= 0 && y >= 0 && z >= 0 && x < W && y < H && z < D) { const a = setV(x, y, z, v.c, v.a || 255); if (a) acts.push(a) } };
-      if (id === 'clrSlice') { const s = sdm(); for (let sx = 0; sx < s.w; sx++)for (let sy = 0; sy < s.h; sy++) { const w = s2w(sx, sy); const a = delV(w.x, w.y, w.z); if (a) acts.push(a) } }
+      // turning a canvas that is not a cube: swap its sides and turn every frame, so nothing falls outside (one undo step)
+      const ROT = { rotY: ([x, y, z]) => [D - 1 - z, y, x], rotX: ([x, y, z]) => [x, D - 1 - z, y], rotZ: ([x, y, z]) => [H - 1 - y, x, z] }, DIM = { rotY: () => [D, H, W], rotX: () => [W, D, H], rotZ: () => [H, W, D] };
+      if (ROT[id] && DIM[id]().join() !== [W, H, D].join()) {
+        const before = takeSnap(), f = ROT[id], [nw, nh, nd] = DIM[id]();
+        frames.forEach(fr => { const nv = {}; for (const [k, v] of Object.entries(fr.v)) nv[vk(...f(pv_(k)))] = v; fr.v = nv });
+        W = nw; H = nh; D = nd; $('sW').value = W; $('sH').value = H; $('sD').value = D; sIdx = Math.min(sIdx, smx() - 1);
+        rebMesh(); rebGrid(); uSL(); rs2(); d2D(); uCnt(); pUSnap(before); return;
+      }
+      if (id === 'gravity') {   // everything falls straight down until it lands on something
+        const cols = new Map(); for (const [k, v] of Object.entries(o)) { const [x, y, z] = pv_(k), c = x + ',' + z; if (!cols.has(c)) cols.set(c, []); cols.get(c).push([y, v]) }
+        clr(); cols.forEach((list, c) => { const [x, z] = c.split(',').map(Number); list.sort((a, b) => a[0] - b[0]).forEach(([, v], i) => put(vk(x, i, z), v)) });
+      }
+      else if (id === 'clrSlice') { const s = sdm(); for (let sx = 0; sx < s.w; sx++)for (let sy = 0; sy < s.h; sy++) { const w = s2w(sx, sy); const a = delV(w.x, w.y, w.z); if (a) acts.push(a) } }
       else if (id === 'clrAll') { if (!confirm(T('clrAllConf'))) return; clr() }
       else if (id === 'rotY') { clr(); Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); put(vk(D - 1 - z, y, x), v) }) }
       else if (id === 'rotX') { clr(); Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); put(vk(x, D - 1 - z, y), v) }) }
@@ -3347,6 +3373,7 @@
       if (nw === W && nh === H && nd === D) return; const o = { ...V() }; Object.keys(V()).forEach(k => { const [x, y, z] = pv_(k); delV(x, y, z) });
       W = nw; H = nh; D = nd; sIdx = Math.min(sIdx, smx() - 1); $('scXx').value = $('scPx').value = Math.floor(W / 2); $('scYy').value = $('scPy').value = Math.floor(H / 2); $('scZz').value = $('scPz').value = Math.floor(D / 2);
       Object.entries(o).forEach(([k, v]) => { const [x, y, z] = pv_(k); if (x < W && y < H && z < D) setV(x, y, z, v.c, v.a || 255) });
+      frames.forEach((f, i) => { if (i !== curFrame) for (const k of Object.keys(f.v)) { const [x, y, z] = pv_(k); if (x >= W || y >= H || z >= D) delete f.v[k] } });   // the other frames are cut to the new size too
       undoSt = []; redoSt = []; rebGrid(); resetCam(); uSL(); rs2(); d2D(); uCnt()
     }
     // ===== MEDIA IMPORT (with MTL color support) =====
@@ -3796,7 +3823,7 @@
     }
     function showExp() { $('exM').classList.add('on') } function hideExp() { $('exM').classList.remove('on') }
     function exFn() { return $('exName').value || 'voxelart' }
-    function dlF(n, c, m = 'text/plain') { const b = new Blob([c], { type: m }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); URL.revokeObjectURL(u) }
+    function dlF(n, c, m = 'text/plain') { const b = new Blob([c], { type: m }), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = n; a.click(); setTimeout(() => URL.revokeObjectURL(u), 10000) }   // revoking at once can cancel the download
     // Export functions (OBJ, STL, GLB, JSON, PNG, Video) - same compact implementations as v8
     // ===== EXPORT: only the outer faces (a face touching another voxel is left out), wound outward =====
     // returns { n: face count, f: Int32Array [x, y, z, face index] per face, c: colour per face }
@@ -3904,8 +3931,9 @@
       const cvx = cv.getContext('2d');
       
       let mimeType = 'video/webm';
-      if (fmt === 'mp4' && MediaRecorder.isTypeSupported('video/mp4')) {
-        mimeType = 'video/mp4';
+      const h264 = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.42E01F'].find(m => MediaRecorder.isTypeSupported(m));   // a bare 'video/mp4' may hold VP9
+      if (fmt === 'mp4' && h264) {
+        mimeType = h264;
       } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9')) {
         mimeType = 'video/webm;codecs=vp9';
       } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8')) {
@@ -3928,7 +3956,7 @@
         const url = URL.createObjectURL(blob); 
         const a = document.createElement('a'); 
         a.href = url; a.download = exFn() + '.' + ext; a.click(); 
-        URL.revokeObjectURL(url); 
+        setTimeout(() => URL.revokeObjectURL(url), 10000); 
         hideProg(); 
         goFrame(oldF);
       };
@@ -3975,7 +4003,8 @@
 
     // ===== KEYBOARD =====
     document.addEventListener('keydown', e => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return; const k = e.key.toLowerCase();
+      if (/^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName) || e.target.isContentEditable) return; const k = e.key.toLowerCase();
+      if (k === ' ' && e.target.tagName === 'BUTTON') return;   // Space presses the focused button; it should not also play the animation
       if (e.ctrlKey || e.metaKey) { if (k === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo() } if (k === 'y') { e.preventDefault(); redo() } if (k === 'v') { e.preventDefault(); startPaste() } if (k === 's') { e.preventDefault(); autoSave(); snd('copy') } return }
       switch (k) {
         case 'b': setTool('pen'); break; case 'e': case 'delete': setMode(mode === 'del' ? 'draw' : 'del'); break; case 'i': setTool('eyedrop'); break; case 'l': setTool('line'); break; case 'r': setTool(e.shiftKey ? 'frect' : 'rect'); break; case 'c': setTool(e.shiftKey ? 'fcircle' : 'circle'); break; case 'q': setTool('ellipse'); break; case 'g': setTool('fill'); break; case 'f': setTool('fillSl'); break; case 's': setTool('sel'); break;
@@ -4208,7 +4237,7 @@
     }
     function compactHd() {
       const m = matchMedia('(max-width: 900px)').matches;
-      ['hU', 'hR', 'hEx'].forEach(id => { const b = $(id); if (!b) return; const full = b.dataset.full || b.textContent; if (!m) { b.textContent = full; b.removeAttribute('aria-label'); return } b.dataset.full = full; b.textContent = full.trim().split(/\s+/)[0]; b.setAttribute('aria-label', full.replace(/^\S+\s*/, '')) });
+      ['hU', 'hR', 'hClr', 'hEx'].forEach(id => { const b = $(id); if (!b) return; const full = b.dataset.full || b.textContent; if (!m) { b.textContent = full; b.removeAttribute('aria-label'); return } b.dataset.full = full; b.textContent = full.trim().split(/\s+/)[0]; b.setAttribute('aria-label', full.replace(/^\S+\s*/, '')) });
     }
     matchMedia('(max-width: 900px)').addEventListener('change', () => { placeMobile(); compactHd() }); placeMobile();
 
@@ -4322,6 +4351,7 @@
     function bbox() { let b = null; for (const k of keys()) { const [x, y, z] = pv_(k); if (!b) b = { x0: x, x1: x, y0: y, y1: y, z0: z, z1: z }; else { b.x0 = Math.min(b.x0, x); b.x1 = Math.max(b.x1, x); b.y0 = Math.min(b.y0, y); b.y1 = Math.max(b.y1, y); b.z0 = Math.min(b.z0, z); b.z1 = Math.max(b.z1, z) } } return b }
     function commit(acts, msg) { acts = acts.filter(Boolean); if (!acts.length) return 0; pU(acts); rebMesh(); d2D(); uCnt(); if (msg) toast(msg); return acts.length }
     let tT = 0;
+    window.vxToast = (m, sub) => toast(m, sub);   // for the other modules
     function toast(m, sub) {
       let el = $('vxToast'); if (!el) { el = document.createElement('div'); el.id = 'vxToast'; document.body.appendChild(el) }
       el.innerHTML = ''; const b = document.createElement('b'); b.textContent = m; el.appendChild(b); if (sub) { const s = document.createElement('span'); s.textContent = sub; el.appendChild(s) }
@@ -4649,6 +4679,308 @@
     relabel();
   })();
 /*</site:plus.js>*/
+/*<site:sound.js>*/
+  // ===== VoxoB Sound: soft, short sounds made in the browser (no recordings, nothing to license) =====
+  // Everything goes through one gentle chain (low-pass → light compression), sounds are kept short and quiet, a burst of the
+  // same sound is thinned out, and a run of placements walks up a pentatonic scale, so painting a row sounds like a tune.
+  (() => {
+    let ctx = null, out = null, verb = null, noiseBuf = null;
+    const last = {}, PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21];
+    let run = 0, runT = 0;
+    function init() {
+      if (ctx) return ctx; const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+      ctx = new C(); const lp = ctx.createBiquadFilter(), cmp = ctx.createDynamicsCompressor(); lp.type = 'lowpass'; lp.frequency.value = 7000; cmp.threshold.value = -20; cmp.ratio.value = 3;
+      out = ctx.createGain(); out.connect(lp); lp.connect(cmp); cmp.connect(ctx.destination);
+      // a short airy tail: two quiet, damped echoes
+      verb = ctx.createGain(); verb.gain.value = .16; const dl = ctx.createDelay(.3), fb = ctx.createGain(), dlp = ctx.createBiquadFilter(); dl.delayTime.value = .085; fb.gain.value = .32; dlp.type = 'lowpass'; dlp.frequency.value = 2400;
+      verb.connect(dl); dl.connect(dlp); dlp.connect(fb); fb.connect(dl); dlp.connect(out);
+      noiseBuf = ctx.createBuffer(1, ctx.sampleRate * .5, ctx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      return ctx;
+    }
+    function tone(f, t, dur, gain, type = 'sine', bend = 1, wet = true) {
+      const o = ctx.createOscillator(), g = ctx.createGain(); o.type = type; o.frequency.setValueAtTime(f, t); if (bend !== 1) o.frequency.exponentialRampToValueAtTime(f * bend, t + dur * .7);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + .004); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g); g.connect(out); if (wet) g.connect(verb); o.start(t); o.stop(t + dur + .02);
+    }
+    function noise(t, dur, gain, f0, f1, q = 1.2) {
+      const s = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain(); s.buffer = noiseBuf; bp.type = 'bandpass'; bp.Q.value = q; bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gain, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + dur); s.connect(bp); bp.connect(g); g.connect(out); s.start(t); s.stop(t + dur + .02);
+    }
+    const GAP = { place: .045, erase: .05, paint: .05, click: .03, copy: .08, gen: .2, undo: .06, redo: .06, clear: .3, done: .3 };
+    snd = function (type) {
+      if (!(vol > 0)) return; if (!init()) return; if (ctx.state === 'suspended') ctx.resume();
+      if (type === 'place' && mode === 'del') type = 'erase'; else if (type === 'place' && mode === 'recolor') type = 'paint';
+      const now = ctx.currentTime, v = Math.min(1, vol) * .9; if (now - (last[type] || -1) < (GAP[type] || .03)) return; last[type] = now;
+      const jit = 1 + (Math.random() - .5) * .03;
+      switch (type) {
+        case 'place': {   // a soft wooden "tok" that climbs a pentatonic scale while you keep placing
+          if (now - runT > .45) run = 0; runT = now; const f = 392 * Math.pow(2, PENTA[run % PENTA.length] / 12) * jit; run++;
+          tone(f, now, .09, .11 * v, 'sine', .62); tone(f * 2.01, now, .04, .03 * v, 'triangle', .7, false); noise(now, .02, .05 * v, 3200, 1800, 2); break }
+        case 'erase': noise(now, .09, .12 * v, 1600 * jit, 380, .9); tone(220 * jit, now, .07, .04 * v, 'sine', .7, false); break;   // a soft puff
+        case 'paint': noise(now, .07, .07 * v, 5200 * jit, 2400, 1.6); tone(660 * jit, now, .06, .03 * v, 'sine', 1.06); break;   // a brush stroke
+        case 'click': tone(1500 * jit, now, .025, .035 * v, 'triangle', .9, false); break;
+        case 'copy': tone(740, now, .06, .06 * v, 'sine', 1.02); tone(988, now + .055, .08, .06 * v, 'sine', 1.02); break;
+        case 'undo': tone(587, now, .07, .06 * v, 'sine', .82); noise(now, .05, .03 * v, 2600, 900); break;
+        case 'redo': tone(494, now, .07, .06 * v, 'sine', 1.2); noise(now, .05, .03 * v, 900, 2600); break;
+        case 'clear': noise(now, .35, .1 * v, 4200, 260, .7); tone(330, now + .05, .3, .05 * v, 'sine', .5); break;   // a whoosh down
+        case 'done': [0, 4, 7, 12].forEach((s, i) => tone(523.25 * Math.pow(2, s / 12), now + i * .06, .5, .05 * v)); break;
+        case 'gen': [0, 7, 12].forEach((s, i) => tone(523.25 * Math.pow(2, s / 12) * jit, now + i * .05, .38, .055 * v, 'sine', 1.002)); noise(now + .1, .25, .02 * v, 7000, 9000, 3); break;   // a little chime
+        default: tone(880, now, .03, .03 * v, 'triangle', 1, false);
+      }
+    };
+  })();
+/*</site:sound.js>*/
+/*<site:model.js>*/
+  // ===== VoxoB Model: 3D files → voxels (OBJ + MTL + textures, STL text / binary, glTF / GLB) =====
+  // Every triangle is filled (not just its corners), the inside of closed shapes is filled too, and colours come from
+  // textures, vertex colours or materials. Parsed here, in the browser; nothing is uploaded.
+  (() => {
+    const lin2srgb = (u) => u <= .0031308 ? u * 12.92 : 1.055 * Math.pow(u, 1 / 2.4) - .055;
+    const toHex = (r, g, b) => '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+    async function imgData(blobOrUrl) {
+      const url = typeof blobOrUrl === 'string' ? blobOrUrl : URL.createObjectURL(blobOrUrl), im = new Image(); im.src = url;
+      try { await im.decode() } catch (e) { return null } finally { if (typeof blobOrUrl !== 'string') setTimeout(() => URL.revokeObjectURL(url), 1000) }
+      const c = document.createElement('canvas'); c.width = Math.min(1024, im.naturalWidth); c.height = Math.min(1024, im.naturalHeight);
+      const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0, c.width, c.height); return { w: c.width, h: c.height, d: x.getImageData(0, 0, c.width, c.height).data };
+    }
+    const sampleTex = (t, u, v) => { u -= Math.floor(u); v -= Math.floor(v); const x = Math.min(t.w - 1, Math.floor(u * t.w)), y = Math.min(t.h - 1, Math.floor(v * t.h)), i = (y * t.w + x) * 4; return [t.d[i], t.d[i + 1], t.d[i + 2], t.d[i + 3]] };
+
+    const corner = [];   // OBJ: the vertex index of each triangle corner (for per-vertex colours)
+    // a mesh here: { pos: Float32Array (xyz per corner, 3 corners per triangle), col: (corner) => [r,g,b] 0–255 | null }
+    // ---------- OBJ (+ MTL, + textures picked together) ----------
+    async function parseOBJ(text, files) {
+      const mtl = {}, byName = new Map(files.map(f => [f.name.toLowerCase(), f]));
+      for (const f of files) if (/\.mtl$/i.test(f.name)) { let cur = null; for (const l of (await f.text()).split(/\r?\n/)) { const p = l.trim().split(/\s+/); if (p[0] === 'newmtl') { cur = p.slice(1).join(' '); mtl[cur] = {} } else if (cur && p[0] === 'Kd') mtl[cur].kd = [+p[1] * 255, +p[2] * 255, +p[3] * 255]; else if (cur && p[0] === 'map_Kd') mtl[cur].map = p[p.length - 1].split(/[\\/]/).pop().toLowerCase() } }
+      for (const m of Object.values(mtl)) if (m.map && byName.has(m.map)) m.tex = await imgData(byName.get(m.map));
+      const V = [], T = [], C = [], pos = [], uv = [], mat = [];
+      let cur = null;
+      for (const l of text.split(/\r?\n/)) {
+        const p = l.trim().split(/\s+/);
+        if (p[0] === 'v') { V.push([+p[1], +p[2], +p[3]]); C.push(p.length >= 7 ? [+p[4] * 255, +p[5] * 255, +p[6] * 255] : null) }
+        else if (p[0] === 'vt') T.push([+p[1], +(p[2] || 0)]);
+        else if (p[0] === 'usemtl') cur = p.slice(1).join(' ');
+        else if (p[0] === 'f') {
+          const idx = p.slice(1).map(q => { const [a, b] = q.split('/'); const vi = +a, ti = +b; return [vi < 0 ? V.length + vi : vi - 1, b ? (ti < 0 ? T.length + ti : ti - 1) : -1] });
+          for (let k = 1; k + 1 < idx.length; k++) for (const [vi, ti] of [idx[0], idx[k], idx[k + 1]]) { const v = V[vi] || [0, 0, 0]; pos.push(v[0], v[1], v[2]); uv.push(ti >= 0 && T[ti] ? T[ti] : null); mat.push(cur); corner.push(vi) }
+        }
+      }
+      return { pos: Float32Array.from(pos), col: (i) => { const m = mtl[mat[i]]; if (C[corner[i]]) return C[corner[i]]; return m && m.kd ? m.kd : null },
+        tex: (t) => { const m = mtl[mat[t * 3]], a = uv[t * 3], b = uv[t * 3 + 1], c = uv[t * 3 + 2]; return m && m.tex && a && b && c ? { img: m.tex, uv: [a[0], 1 - a[1], b[0], 1 - b[1], c[0], 1 - c[1]], f: [1, 1, 1] } : null } };
+    }
+    // ---------- STL, text or binary ----------
+    function parseSTL(buf) {
+      const dv = new DataView(buf), n = buf.byteLength >= 84 ? dv.getUint32(80, true) : 0;
+      if (buf.byteLength === 84 + n * 50 && n > 0) {   // binary
+        const pos = new Float32Array(n * 9); for (let t = 0; t < n; t++) for (let k = 0; k < 9; k++) pos[t * 9 + k] = dv.getFloat32(84 + t * 50 + 12 + k * 4, true);
+        return { pos, col: () => null, tex: () => null };
+      }
+      const pos = []; for (const m of new TextDecoder().decode(buf).matchAll(/vertex\s+([-+\d.eE]+)\s+([-+\d.eE]+)\s+([-+\d.eE]+)/g)) pos.push(+m[1], +m[2], +m[3]);
+      return { pos: Float32Array.from(pos), col: () => null, tex: () => null };
+    }
+    // ---------- glTF 2.0 (.glb, or .gltf with embedded or picked buffers) ----------
+    async function parseGLTF(buf, files, isGlb) {
+      let json, bin = null;
+      if (isGlb) { const dv = new DataView(buf); let o = 12; while (o < buf.byteLength) { const len = dv.getUint32(o, true), type = dv.getUint32(o + 4, true); if (type === 0x4E4F534A) json = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, o + 8, len))); else if (type === 0x004E4942) bin = buf.slice(o + 8, o + 8 + len); o += 8 + len } }
+      else json = JSON.parse(new TextDecoder().decode(buf));
+      const byName = new Map(files.map(f => [f.name.toLowerCase(), f]));
+      const buffers = await Promise.all((json.buffers || []).map(async (b, i) => {
+        if (!b.uri) return bin; if (b.uri.startsWith('data:')) return (await fetch(b.uri)).arrayBuffer();
+        const f = byName.get(decodeURIComponent(b.uri).split('/').pop().toLowerCase()); return f ? f.arrayBuffer() : null }));
+      const N = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4, MAT4: 16 };
+      const acc = (i) => { const a = json.accessors[i], bv = json.bufferViews[a.bufferView], b = buffers[bv.buffer]; if (!b) throw new Error('missing buffer');
+        const comp = N[a.type], T = { 5120: Int8Array, 5121: Uint8Array, 5122: Int16Array, 5123: Uint16Array, 5125: Uint32Array, 5126: Float32Array }[a.componentType], bs = T.BYTES_PER_ELEMENT, stride = bv.byteStride || comp * bs, out = new Float32Array(a.count * comp), dv = new DataView(b, (bv.byteOffset || 0) + (a.byteOffset || 0));
+        const get = { 5120: 'getInt8', 5121: 'getUint8', 5122: 'getInt16', 5123: 'getUint16', 5125: 'getUint32', 5126: 'getFloat32' }[a.componentType], div = a.normalized ? { 5120: 127, 5121: 255, 5122: 32767, 5123: 65535 }[a.componentType] || 1 : 1;
+        for (let k = 0; k < a.count; k++) for (let c = 0; c < comp; c++) out[k * comp + c] = dv[get](k * stride + c * bs, true) / div;
+        return { out, comp } };
+      const texCache = new Map(); async function tex(ti) { if (texCache.has(ti)) return texCache.get(ti); const im = json.images[json.textures[ti].source]; let data = null;
+        if (im.bufferView !== undefined) { const bv = json.bufferViews[im.bufferView]; data = await imgData(new Blob([new Uint8Array(buffers[bv.buffer], bv.byteOffset || 0, bv.byteLength)], { type: im.mimeType })) }
+        else if (im.uri) { const f = im.uri.startsWith('data:') ? im.uri : byName.get(decodeURIComponent(im.uri).split('/').pop().toLowerCase()); if (f) data = await imgData(f) }
+        texCache.set(ti, data); return data }
+      const pos = [], cols = [], texs = [];
+      const mul = (m, v) => [m[0] * v[0] + m[4] * v[1] + m[8] * v[2] + m[12], m[1] * v[0] + m[5] * v[1] + m[9] * v[2] + m[13], m[2] * v[0] + m[6] * v[1] + m[10] * v[2] + m[14]];
+      const mm = (a, b) => { const o = new Array(16).fill(0); for (let r = 0; r < 4; r++) for (let c = 0; c < 4; c++) for (let k = 0; k < 4; k++) o[c * 4 + r] += a[k * 4 + r] * b[c * 4 + k]; return o };
+      const local = (nd) => { if (nd.matrix) return nd.matrix; const [x, y, z, w] = nd.rotation || [0, 0, 0, 1], [sx, sy, sz] = nd.scale || [1, 1, 1], [tx, ty, tz] = nd.translation || [0, 0, 0];
+        return [(1 - 2 * (y * y + z * z)) * sx, (2 * (x * y + z * w)) * sx, (2 * (x * z - y * w)) * sx, 0, (2 * (x * y - z * w)) * sy, (1 - 2 * (x * x + z * z)) * sy, (2 * (y * z + x * w)) * sy, 0, (2 * (x * z + y * w)) * sz, (2 * (y * z - x * w)) * sz, (1 - 2 * (x * x + y * y)) * sz, 0, tx, ty, tz, 1] };
+      async function visit(ni, M) {
+        const nd = json.nodes[ni], W = mm(M, local(nd));
+        if (nd.mesh !== undefined) for (const pr of json.meshes[nd.mesh].primitives) {
+          if ((pr.mode ?? 4) !== 4 || pr.attributes.POSITION === undefined) continue;
+          const P = acc(pr.attributes.POSITION).out, C0 = pr.attributes.COLOR_0 !== undefined ? acc(pr.attributes.COLOR_0) : null, UV = pr.attributes.TEXCOORD_0 !== undefined ? acc(pr.attributes.TEXCOORD_0).out : null;
+          const I = pr.indices !== undefined ? acc(pr.indices).out : Float32Array.from({ length: P.length / 3 }, (_, k) => k);
+          const mat = pr.material !== undefined ? json.materials[pr.material] : null, pbr = mat && mat.pbrMetallicRoughness || {}, f = pbr.baseColorFactor || [1, 1, 1, 1];
+          const tx = pbr.baseColorTexture && UV ? await tex(pbr.baseColorTexture.index) : null;
+          for (let q = 0; q + 2 < I.length; q += 3) {
+            for (const k of [I[q], I[q + 1], I[q + 2]]) {
+              const p = mul(W, [P[k * 3], P[k * 3 + 1], P[k * 3 + 2]]); pos.push(p[0], p[1], p[2]);
+              let c = [f[0], f[1], f[2]].map(v => lin2srgb(v) * 255);
+              if (C0) { const o = k * C0.comp; c = [C0.out[o], C0.out[o + 1], C0.out[o + 2]].map((v, j) => lin2srgb(v * f[j]) * 255) }
+              cols.push(mat || C0 ? c : null);
+            }
+            texs.push(tx ? { img: tx, uv: [UV[I[q] * 2], UV[I[q] * 2 + 1], UV[I[q + 1] * 2], UV[I[q + 1] * 2 + 1], UV[I[q + 2] * 2], UV[I[q + 2] * 2 + 1]], f: [f[0], f[1], f[2]] } : null);
+          }
+        }
+        for (const ch of nd.children || []) await visit(ch, W);
+      }
+      const I4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], sc = json.scenes ? json.scenes[json.scene || 0] : { nodes: json.nodes.map((_, i) => i) };
+      for (const ni of sc.nodes) await visit(ni, I4);
+      return { pos: Float32Array.from(pos), col: (i) => cols[i], tex: (t) => texs[t] };
+    }
+    async function parse(files) {
+      files = [...files]; const main = files.find(f => /\.(glb|gltf|obj|stl)$/i.test(f.name)); if (!main) return null;
+      const ext = main.name.toLowerCase().split('.').pop(), buf = await main.arrayBuffer();
+      if (ext === 'stl') return parseSTL(buf);
+      if (ext === 'obj') { corner.length = 0; return parseOBJ(new TextDecoder().decode(buf), files) }
+      return parseGLTF(buf, files, ext === 'glb');
+    }
+
+    // ---------- triangles → voxels ----------
+    // the longest side becomes R cells; Y is up (glTF, most OBJ); surfaces are sampled at under half a cell, then the inside is filled
+    function voxelize(mesh, R, fallback) {
+      const P = mesh.pos, nt = P.length / 9; if (!nt) return null;
+      const mn = [Infinity, Infinity, Infinity], mx = [-Infinity, -Infinity, -Infinity];
+      for (let i = 0; i < P.length; i += 3) for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], P[i + k]); mx[k] = Math.max(mx[k], P[i + k]) }
+      const span = Math.max(mx[0] - mn[0], mx[1] - mn[1], mx[2] - mn[2]) || 1, k = (R - 1) / span;
+      const W = Math.max(1, Math.ceil((mx[0] - mn[0]) * k) + 1), H = Math.max(1, Math.ceil((mx[1] - mn[1]) * k) + 1), D = Math.max(1, Math.ceil((mx[2] - mn[2]) * k) + 1);
+      const cell = new Map(), key = (x, y, z) => (x * H + y) * D + z, fb = fallback.match(/\w\w/g).map(h => parseInt(h, 16));
+      for (let t = 0; t < nt; t++) {
+        const a = [(P[t * 9] - mn[0]) * k, (P[t * 9 + 1] - mn[1]) * k, (P[t * 9 + 2] - mn[2]) * k], b = [(P[t * 9 + 3] - mn[0]) * k, (P[t * 9 + 4] - mn[1]) * k, (P[t * 9 + 5] - mn[2]) * k], c = [(P[t * 9 + 6] - mn[0]) * k, (P[t * 9 + 7] - mn[1]) * k, (P[t * 9 + 8] - mn[2]) * k];
+        const ca = mesh.col(t * 3) || fb, cb = mesh.col(t * 3 + 1) || fb, cc = mesh.col(t * 3 + 2) || fb, tx = mesh.tex(t);   // a texture is sampled at every point, not just the corners
+        const L = Math.max(Math.hypot(b[0] - a[0], b[1] - a[1], b[2] - a[2]), Math.hypot(c[0] - a[0], c[1] - a[1], c[2] - a[2]), Math.hypot(c[0] - b[0], c[1] - b[1], c[2] - b[2])), s = Math.max(1, Math.ceil(L * 2.2));
+        for (let i = 0; i <= s; i++) for (let j = 0; j <= s - i; j++) {
+          const u = i / s, v = j / s, w = 1 - u - v, x = Math.min(W - 1, Math.round(a[0] * w + b[0] * u + c[0] * v)), y = Math.min(H - 1, Math.round(a[1] * w + b[1] * u + c[1] * v)), z = Math.min(D - 1, Math.round(a[2] * w + b[2] * u + c[2] * v));
+          const q = key(x, y, z); let e = cell.get(q); if (!e) { e = [0, 0, 0, 0]; cell.set(q, e) }
+          if (tx) { const uv = tx.uv, s2 = sampleTex(tx.img, uv[0] * w + uv[2] * u + uv[4] * v, uv[1] * w + uv[3] * u + uv[5] * v); if (s2[3] < 40) continue; e[0] += s2[0] * tx.f[0]; e[1] += s2[1] * tx.f[1]; e[2] += s2[2] * tx.f[2]; e[3]++; continue }
+          e[0] += ca[0] * w + cb[0] * u + cc[0] * v; e[1] += ca[1] * w + cb[1] * u + cc[1] * v; e[2] += ca[2] * w + cb[2] * u + cc[2] * v; e[3]++;
+        }
+      }
+      // fill the inside: everything the outside air cannot reach
+      const n = W * H * D, solid = n <= 8e6, air = solid ? new Uint8Array(n) : null;
+      if (solid) { const st = []; const push = (x, y, z) => { if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) return; const q = key(x, y, z); if (air[q] || cell.has(q)) return; air[q] = 1; st.push(q) };
+        for (let x = 0; x < W; x++) for (let y = 0; y < H; y++) { push(x, y, 0); push(x, y, D - 1) } for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) { push(x, 0, z); push(x, H - 1, z) } for (let y = 0; y < H; y++) for (let z = 0; z < D; z++) { push(0, y, z); push(W - 1, y, z) }
+        while (st.length) { const q = st.pop(), z = q % D, y = ((q - z) / D) % H, x = (q - z - y * D) / D / H; push(x + 1, y, z); push(x - 1, y, z); push(x, y + 1, z); push(x, y - 1, z); push(x, y, z + 1); push(x, y, z - 1) } }
+      const vox = [], avg = (e) => e[3] ? toHex(e[0] / e[3], e[1] / e[3], e[2] / e[3]) : toHex(...fb);
+      cell.forEach((e, q) => { const z = q % D, y = ((q - z) / D) % H, x = (q - z - y * D) / D / H; vox.push([x, y, z, avg(e), y / H]) });
+      if (solid) { let inside = 0; for (let q = 0; q < n; q++) if (!air[q] && !cell.has(q)) inside++;
+        if (inside && inside + vox.length < 1.5e6) for (let q = 0; q < n; q++) if (!air[q] && !cell.has(q)) { const z = q % D, y = ((q - z) / D) % H, x = (q - z - y * D) / D / H; vox.push([x, y, z, '#5a5550', y / H]) } }
+      return { W, H, D, vox, triangles: nt };
+    }
+    // a picture of the model as loaded (for "before" in Shorts): its own small renderer, thrown away afterwards
+    function snapshot(mesh, size = 640) {
+      const g = new THREE.BufferGeometry(), n = mesh.pos.length / 3, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { const c = mesh.col(i) || [190, 190, 196]; col[i * 3] = c[0] / 255; col[i * 3 + 1] = c[1] / 255; col[i * 3 + 2] = c[2] / 255 }
+      g.setAttribute('position', new THREE.BufferAttribute(mesh.pos, 3)); g.setAttribute('color', new THREE.BufferAttribute(col, 3)); g.computeVertexNormals(); g.computeBoundingSphere();
+      const sc = new THREE.Scene(); sc.add(new THREE.AmbientLight(0xffffff, .6)); const dl = new THREE.DirectionalLight(0xffffff, .7); dl.position.set(1, 2, 1.5); sc.add(dl);
+      sc.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide })));
+      const bs = g.boundingSphere, cm = new THREE.PerspectiveCamera(35, 1, bs.radius * .05, bs.radius * 20); cm.position.copy(bs.center).add(new THREE.Vector3(1, .6, 1.4).normalize().multiplyScalar(bs.radius * 3.2)); cm.lookAt(bs.center);
+      const cv = document.createElement('canvas'); cv.width = cv.height = size; const r = new THREE.WebGLRenderer({ canvas: cv, antialias: true, preserveDrawingBuffer: true }); r.setClearColor(0xf2f3f5, 1); r.render(sc, cm);
+      const out = document.createElement('canvas'); out.width = out.height = size; out.getContext('2d').drawImage(cv, 0, 0); g.dispose(); r.dispose(); r.forceContextLoss(); return out;
+    }
+    window.VoxoBModel = { parse, voxelize, parseSTL, snapshot };
+  })();
+/*</site:model.js>*/
+/*<site:smooth.js>*/
+  // ===== VoxoB Smooth: show (and export) the model as a smooth surface instead of cubes =====
+  // Surface nets over a softened copy of the voxels: one vertex per cell the surface passes through, quads between them,
+  // a few rounds of relaxing, colours from the voxels around each vertex. The voxels stay the model; this is only a view of it,
+  // rebuilt shortly after each change. Picking, tools and saving keep working on the voxels.
+  (() => {
+    let on = false, built = null, dirtyS = true, lastEdit = 0;
+    const sG = new THREE.Group(); scn.add(sG);
+    const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .62, metalness: .04 });
+    try { on = localStorage.getItem('vs_smooth') === '1' } catch (e) { }
+    const touchS = () => { dirtyS = true; lastEdit = performance.now() };
+    { const a = addM, r = remM, b = rebMesh; addM = function (...x) { touchS(); return a.apply(this, x) }; remM = function (...x) { touchS(); return r.apply(this, x) }; rebMesh = function (...x) { touchS(); return b.apply(this, x) } }
+
+    // the surface as plain arrays: positions, normals, colours (0–1, sRGB) and triangle indices
+    function surface() {
+      const v = V(), keys = Object.keys(v); if (!keys.length) return null;
+      const PW = W + 2, PH = H + 2, PD = D + 2, N = PW * PH * PD, at = (x, y, z) => (x + 1) + PW * ((y + 1) + PH * (z + 1));
+      const occ = new Float32Array(N), col = new Map();
+      for (const k of keys) { const [x, y, z] = pv_(k); if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= D) continue; const i = at(x, y, z); occ[i] = 1; col.set(i, v[k].c) }
+      // soften: a light 1-6-1 blur along each axis, with the surface at 0.4 — a lone voxel (0.42) and a one-voxel wall (0.75) still show
+      let F = occ;
+      if (N <= 4.5e6) { const tmp = new Float32Array(N), out = new Float32Array(N), step = [1, PW, PW * PH]; let src = occ;
+        for (let ax = 0; ax < 3; ax++) { const s = step[ax], dst = ax === 1 ? out : tmp; for (let i = 0; i < N; i++) dst[i] = (src[i] * 6 + (i >= s ? src[i - s] : 0) + (i + s < N ? src[i + s] : 0)) / 8; src = dst }
+        F = tmp }
+      const iso = N <= 4.5e6 ? .4 : .5, idxOf = new Map(), P = [], C = [];
+      const cornerOff = [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 0, 1], [1, 0, 1], [0, 1, 1], [1, 1, 1]];
+      const edges = [[0, 1], [2, 3], [4, 5], [6, 7], [0, 2], [1, 3], [4, 6], [5, 7], [0, 4], [1, 5], [2, 6], [3, 7]];
+      // cells are between voxel centres; cell (x,y,z) spans centres x..x+1 (x from -1 to W-1)
+      const cellVert = (x, y, z) => {
+        const ck = (x + 1) + PW * ((y + 1) + PH * (z + 1)); if (idxOf.has(ck)) return idxOf.get(ck);
+        const f = cornerOff.map(([a, b, c]) => F[at(x + a, y + b, z + c)]); let inside = 0; for (const q of f) if (q > iso) inside++;
+        if (!inside || inside === 8) { idxOf.set(ck, -1); return -1 }
+        let sx = 0, sy = 0, sz = 0, n = 0; for (const [a, b] of edges) { const fa = f[a], fb = f[b]; if ((fa > iso) === (fb > iso)) continue; const tt = (iso - fa) / (fb - fa), A = cornerOff[a], B = cornerOff[b]; sx += A[0] + (B[0] - A[0]) * tt; sy += A[1] + (B[1] - A[1]) * tt; sz += A[2] + (B[2] - A[2]) * tt; n++ }
+        let r = 0, g = 0, bl = 0, m = 0; for (const [a, b, c] of cornerOff) { const h = col.get(at(x + a, y + b, z + c)); if (h) { const q = parseInt(h.slice(1, 7), 16); r += (q >> 16) & 255; g += (q >> 8) & 255; bl += q & 255; m++ } }
+        const id = P.length / 3; P.push(x + .5 + sx / n, y + .5 + sy / n, z + .5 + sz / n); C.push(m ? r / m / 255 : .7, m ? g / m / 255 : .7, m ? bl / m / 255 : .7); idxOf.set(ck, id); return id;
+      };
+      const I = [];
+      // every voxel-centre edge the surface crosses gets a quad from the four cells around it
+      const seen = new Set();
+      for (const k of keys) { const [x0, y0, z0] = pv_(k);
+        for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) { const x = x0 + dx, y = y0 + dy, z = z0 + dz; if (x < -1 || y < -1 || z < -1 || x > W || y > H || z > D) continue;
+          const pk = at(x, y, z); if (seen.has(pk)) continue; seen.add(pk); const f0 = F[pk];
+          for (const [ax, ox, oy, oz] of [[0, 1, 0, 0], [1, 0, 1, 0], [2, 0, 0, 1]]) {
+            if (x + ox > W || y + oy > H || z + oz > D) continue; const f1 = F[at(x + ox, y + oy, z + oz)]; if ((f0 > iso) === (f1 > iso)) continue;
+            const q = ax === 0 ? [[x, y - 1, z - 1], [x, y, z - 1], [x, y, z], [x, y - 1, z]] : ax === 1 ? [[x - 1, y, z - 1], [x - 1, y, z], [x, y, z], [x, y, z - 1]] : [[x - 1, y - 1, z], [x, y - 1, z], [x, y, z], [x - 1, y, z]];
+            const vs = q.map(([a, b, c]) => cellVert(a, b, c)); if (vs.some(i => i < 0)) continue;
+            if (f0 > iso) I.push(vs[0], vs[1], vs[2], vs[0], vs[2], vs[3]); else I.push(vs[0], vs[2], vs[1], vs[0], vs[3], vs[2]);
+          } } }
+      if (!I.length) return null;
+      // relax: pull each vertex a little toward its neighbours
+      const nb = Array.from({ length: P.length / 3 }, () => new Set()); for (let i = 0; i < I.length; i += 3) { const [a, b, c] = [I[i], I[i + 1], I[i + 2]]; nb[a].add(b).add(c); nb[b].add(a).add(c); nb[c].add(a).add(b) }
+      let pos = Float32Array.from(P);
+      for (let it = 0; it < 3; it++) { const o = new Float32Array(pos.length); for (let i = 0; i < nb.length; i++) { let sx = 0, sy = 0, sz = 0; for (const j of nb[i]) { sx += pos[j * 3]; sy += pos[j * 3 + 1]; sz += pos[j * 3 + 2] } const n = nb[i].size || 1; o[i * 3] = pos[i * 3] * .5 + sx / n * .5; o[i * 3 + 1] = pos[i * 3 + 1] * .5 + sy / n * .5; o[i * 3 + 2] = pos[i * 3 + 2] * .5 + sz / n * .5 } pos = o }
+      const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(I); g.computeVertexNormals();
+      return { pos, nor: g.attributes.normal.array, col: Float32Array.from(C), idx: Uint32Array.from(I), geo: g };
+    }
+    function rebuild() {
+      if (built) { sG.remove(built.mesh); built.geo.dispose(); built = null }
+      const s = surface(); dirtyS = false; if (!s) return;
+      s.geo.setAttribute('color', new THREE.BufferAttribute(s.col, 3)); s.geo.computeBoundingSphere();
+      built = { ...s, mesh: new THREE.Mesh(s.geo, mat) }; sG.add(built.mesh);
+    }
+    function apply() { vG.visible = !on; sG.visible = on; $('bSmooth').classList.toggle('on', on); $('bSmooth').setAttribute('aria-pressed', String(on)) }
+    { const r0 = ren.render.bind(ren); ren.render = (s, c) => { if (on && dirtyS && performance.now() - lastEdit > 140) rebuild(); r0(s, c) } }
+    function setSmooth(v) { on = v; try { localStorage.setItem('vs_smooth', on ? '1' : '0') } catch (e) { } if (on) rebuild(); apply(); snd('click') }
+
+    // turntable: the view turns slowly until the next drag
+    let spin = false; const spinBtn = document.createElement('button'), smBtn = document.createElement('button');
+    smBtn.className = 'wb'; smBtn.id = 'bSmooth'; smBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.8a6.2 6.2 0 0 1 0 12.4z" fill="currentColor"/></svg>';   // an icon, since ◐ is missing from some fonts smBtn.onclick = () => setSmooth(!on);
+    spinBtn.className = 'wb'; spinBtn.id = 'bSpin'; spinBtn.textContent = '⟳'; spinBtn.onclick = () => { spin = !spin; spinBtn.classList.toggle('on', spin); spinBtn.setAttribute('aria-pressed', String(spin)); snd('click') };
+    $('v3top').insertBefore(smBtn, $('bCamSv')); $('v3top').insertBefore(spinBtn, $('bCamSv'));
+    let lt = performance.now(); (function tick(t) { requestAnimationFrame(tick); const dt = Math.min(.1, (t - lt) / 1000); lt = t; if (spin && !document.hidden) { cT += dt * .5; uCam() } })(lt);
+    c3.addEventListener('pointerdown', () => { if (spin) { spin = false; spinBtn.classList.remove('on'); spinBtn.setAttribute('aria-pressed', 'false') } });
+    const tips = { en: ['Smooth view: show the model as a smooth surface (exports follow)', 'Turntable: turn the view slowly'], ja: ['なめらか表示：ボクセルを滑らかな面で表示（書き出しも滑らかに）', 'ターンテーブル：ゆっくり回して眺める'] };
+    Object.keys(I18N).forEach(l => { if (I18N[l].SM) tips[l] = I18N[l].SM });
+    function relabel() { const tt = tips[lang] || tips.en; smBtn.dataset.tip = tt[0]; smBtn.setAttribute('aria-label', tt[0]); spinBtn.dataset.tip = tt[1]; spinBtn.setAttribute('aria-label', tt[1]) }
+    const _sl = setLang; setLang = function (l) { _sl(l); relabel() }; relabel(); apply();
+
+    // exports follow the view: with smooth on, OBJ / STL / GLB carry the smooth surface
+    function smoothExport() { if (!on) return null; if (dirtyS || !built) rebuild(); return built }
+    const lin = (u) => u <= .04045 ? u / 12.92 : Math.pow((u + .055) / 1.055, 2.4);
+    { const o0 = xOBJ, s0 = xSTL, g0 = xGLB;
+      xOBJ = function () { const s = smoothExport(); if (!s) return o0(); const fn = exFn(), out = ['# VoxoB smooth surface (vertex colours)\n'], n = s.pos.length / 3;
+        for (let i = 0; i < n; i++) out.push(`v ${s.pos[i * 3].toFixed(4)} ${s.pos[i * 3 + 1].toFixed(4)} ${s.pos[i * 3 + 2].toFixed(4)} ${s.col[i * 3].toFixed(3)} ${s.col[i * 3 + 1].toFixed(3)} ${s.col[i * 3 + 2].toFixed(3)}\n`);
+        for (let i = 0; i < n; i++) out.push(`vn ${s.nor[i * 3].toFixed(4)} ${s.nor[i * 3 + 1].toFixed(4)} ${s.nor[i * 3 + 2].toFixed(4)}\n`);
+        for (let i = 0; i < s.idx.length; i += 3) { const a = s.idx[i] + 1, b = s.idx[i + 1] + 1, c = s.idx[i + 2] + 1; out.push(`f ${a}//${a} ${b}//${b} ${c}//${c}\n`) }
+        dlF(fn + '.obj', new Blob(out)); hideExp() };
+      xSTL = function () { const s = smoothExport(); if (!s) return s0(); const nt = s.idx.length / 3, buf = new ArrayBuffer(84 + nt * 50), dv = new DataView(buf); new Uint8Array(buf).set(new TextEncoder().encode('VoxoB smooth STL'), 0); dv.setUint32(80, nt, true);
+        for (let t = 0, o = 84; t < nt; t++) { const v = [0, 1, 2].map(j => s.idx[t * 3 + j] * 3), p = (q, k) => s.pos[q + k], ux = p(v[1], 0) - p(v[0], 0), uy = p(v[1], 1) - p(v[0], 1), uz = p(v[1], 2) - p(v[0], 2), wx = p(v[2], 0) - p(v[0], 0), wy = p(v[2], 1) - p(v[0], 1), wz = p(v[2], 2) - p(v[0], 2);
+          let nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx; const l = Math.hypot(nx, ny, nz) || 1; [nx / l, ny / l, nz / l].forEach((q, k) => dv.setFloat32(o + k * 4, q, true)); o += 12;
+          for (const q of v) { for (let k = 0; k < 3; k++) dv.setFloat32(o + k * 4, s.pos[q + k], true); o += 12 } dv.setUint16(o, 0, true); o += 2 }
+        dlF(exFn() + '.stl', buf, 'model/stl'); hideExp() };
+      xGLB = function () { const s = smoothExport(); if (!s) return g0(); const n = s.pos.length / 3, ca = s.col.map(lin), mn = [0, 1, 2].map(k => { let m = Infinity; for (let i = k; i < s.pos.length; i += 3) m = Math.min(m, s.pos[i]); return m }), mx = [0, 1, 2].map(k => { let m = -Infinity; for (let i = k; i < s.pos.length; i += 3) m = Math.max(m, s.pos[i]); return m });
+        const parts = [Float32Array.from(s.pos), Float32Array.from(s.nor), Float32Array.from(ca), Uint32Array.from(s.idx)], views = []; let off = 0; parts.forEach((a, i) => { views.push({ buffer: 0, byteOffset: off, byteLength: a.byteLength, target: i === 3 ? 34963 : 34962 }); off += a.byteLength });
+        const g = { asset: { version: '2.0', generator: 'VoxoB smooth' }, scene: 0, scenes: [{ nodes: [0] }], nodes: [{ mesh: 0 }], meshes: [{ primitives: [{ attributes: { POSITION: 0, NORMAL: 1, COLOR_0: 2 }, indices: 3, mode: 4, material: 0 }] }], materials: [{ pbrMetallicRoughness: { baseColorFactor: [1, 1, 1, 1], metallicFactor: 0, roughnessFactor: .7 } }],
+          accessors: [{ bufferView: 0, componentType: 5126, count: n, type: 'VEC3', min: mn, max: mx }, { bufferView: 1, componentType: 5126, count: n, type: 'VEC3' }, { bufferView: 2, componentType: 5126, count: n, type: 'VEC3' }, { bufferView: 3, componentType: 5125, count: s.idx.length, type: 'SCALAR' }], bufferViews: views, buffers: [{ byteLength: off }] };
+        const jb = new TextEncoder().encode((() => { const js = JSON.stringify(g); return js + ' '.repeat((4 - js.length % 4) % 4) })()), tl = 28 + jb.length + off, glb = new ArrayBuffer(tl), dv = new DataView(glb), u8 = new Uint8Array(glb);
+        dv.setUint32(0, 0x46546C67, true); dv.setUint32(4, 2, true); dv.setUint32(8, tl, true); dv.setUint32(12, jb.length, true); dv.setUint32(16, 0x4E4F534A, true); u8.set(jb, 20); const bo = 20 + jb.length; dv.setUint32(bo, off, true); dv.setUint32(bo + 4, 0x004E4942, true);
+        let q = bo + 8; parts.forEach(a => { u8.set(new Uint8Array(a.buffer, a.byteOffset, a.byteLength), q); q += a.byteLength }); dlF(exFn() + '.glb', glb, 'model/gltf-binary'); hideExp() };
+    }
+    window.VoxoBSmooth = { get on() { return on }, set: setSmooth, surface, smoothExport };
+  })();
+/*</site:smooth.js>*/
 /*<site:convert.js>*/
   // ===== VoxoB Convert: image / video / text → city, creature, tower, terrain, relief, flat, time sculpture =====
   // Everything runs in the browser; nothing is uploaded. Each voxel carries the moment it appears in the build (o, 0–1),
@@ -4657,18 +4989,18 @@
   (() => {
     const CVL = {
       en: {
-        title: 'CONVERT', image: '🖼 Image', video: '🎞 Video', text: '🔤 Text', textPh: 'Type a word or a name…', go: '✨ Convert', again: '↻ Convert again',
-        styles: { city: '🏙 City', creature: '🐾 Creature', tower: '🏯 Tower', terrain: '⛰ Terrain', relief: '🗿 Relief', flat: '▦ Flat', time: '⏳ Time sculpture' },
-        tips: { city: 'The picture becomes a city map: dark or vivid parts grow into tall buildings, green into parks, blue into water. From straight above, the roofs show the picture.', creature: 'The outline is cut out and puffed up into a round 3D figure, thick where the shape is wide.', tower: 'The outline is turned around a vertical axis like a potter’s wheel: towers, vases, pagodas.', terrain: 'Brightness becomes height: water, sand, grass, rock and snow.', relief: 'A carved panel: the subject stands out from the background.', flat: 'One voxel per pixel, like pixel art.', time: 'Video only: moving things are stacked frame by frame into a solid trail through time.' },
-        detail: 'Detail', process: 'Keep the conversion process as animation', note: 'Use pictures, videos and text you made yourself or have the rights to. Avoid other people’s faces and works.',
+        title: 'CONVERT', image: '🖼 Image', video: '🎞 Video', text: '🔤 Text', model: '🧊 3D model', modelTip: 'OBJ (with its MTL and textures), STL or glTF / GLB. Every triangle is filled, the inside too, and colours come from textures, vertex colours or materials. Pick the model together with its MTL and texture files.', textPh: 'Type a word or a name…', go: '✨ Convert', again: '↻ Convert again',
+        styles: { real: '📐 Realistic', city: '🏙 City', creature: '🐾 Creature', tower: '🏯 Tower', terrain: '⛰ Terrain', relief: '🗿 Relief', flat: '▦ Flat', time: '⏳ Time sculpture' },
+        tips: { real: 'Depth is worked out from the picture itself (no AI model, nothing uploaded): a figure on a plain background becomes a 3D figure you can walk around, with its shading as fine relief; a landscape becomes a deep diorama, using the sky, height in the picture, haze and detail.', city: 'The picture becomes a city map: dark or vivid parts grow into tall buildings, green into parks, blue into water. From straight above, the roofs show the picture.', creature: 'The outline is cut out and puffed up into a round 3D figure, thick where the shape is wide.', tower: 'The outline is turned around a vertical axis like a potter’s wheel: towers, vases, pagodas.', terrain: 'Brightness becomes height: water, sand, grass, rock and snow.', relief: 'A carved panel: the subject stands out from the background.', flat: 'One voxel per pixel, like pixel art.', time: 'Video only: moving things are stacked frame by frame into a solid trail through time.' },
+        detail: 'Detail', keepBg: 'Keep the background', process: 'Keep the conversion process as animation', note: 'Use pictures, videos and text you made yourself or have the rights to. Avoid other people’s faces and works.',
         noSrc: 'Pick an image, a video or type some text first.', busy: 'Converting…', done: (n, f) => `Done: ${n.toLocaleString()} voxels${f > 1 ? `, ${f} frames` : ''}. Ctrl+Z to undo.`, timeOnlyVideo: 'Time sculpture needs a video.', empty: 'Nothing to convert was found in this source.',
         shorts: '📱 Shorts (9:16)', shortsTip: 'Record a vertical video: the source, the conversion, then a turn around the result.', shortsNo: 'Convert something first.', shortsBusy: 'Recording…', before: 'BEFORE', after: 'AFTER',
       },
       ja: {
-        title: '変換', image: '🖼 画像', video: '🎞 動画', text: '🔤 文字', textPh: '言葉や名前を入力…', go: '✨ 変換', again: '↻ もう一度変換',
-        styles: { city: '🏙 街', creature: '🐾 生き物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 レリーフ', flat: '▦ 平面', time: '⏳ 時間の彫刻' },
-        tips: { city: '絵を街の地図として読みます。濃い色・鮮やかな色は高いビル、緑は公園、青は水辺に。真上から見ると屋根が元の絵になります。', creature: '輪郭を切り抜き、幅の広いところほど厚く膨らませて丸い立体にします。', tower: '輪郭をろくろのように縦軸で回して、塔・器・五重塔のような形にします。', terrain: '明るさを高さにして、水・砂・草・岩・雪に塗り分けます。', relief: '背景から主題が浮き出る彫刻パネルにします。', flat: '1ピクセルを1ボクセルにした平面（ドット絵）です。', time: '動画専用：動いているものをフレームごとに奥へ積み、時間の軌跡を立体にします。' },
-        detail: '細かさ', process: '変換の過程をアニメーションとして残す', note: '自分で撮った・描いた・書いた素材か、使う権利のある素材を使ってください。他人の顔や作品は避けましょう。',
+        title: '変換', image: '🖼 画像', video: '🎞 動画', text: '🔤 文字', model: '🧊 3Dモデル', modelTip: 'OBJ（MTL・テクスチャ付きも可）、STL、glTF / GLB を読み込みます。三角形を面ごと埋め、中身も詰め、色はテクスチャ・頂点カラー・マテリアルから取ります。MTL やテクスチャの画像は一緒に選んでください。', textPh: '言葉や名前を入力…', go: '✨ 変換', again: '↻ もう一度変換',
+        styles: { real: '📐 リアル', city: '🏙 街', creature: '🐾 生き物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 レリーフ', flat: '▦ 平面', time: '⏳ 時間の彫刻' },
+        tips: { real: '絵そのものから奥行きを推定します（AIモデルは使わず、外にも送りません）。無地の背景の人物やキャラクターは、陰影を細かな凹凸にした回り込める立体に。風景は空・画面内の高さ・かすみ・細かさから奥行きを読んだ立体ジオラマにします。', city: '絵を街の地図として読みます。濃い色・鮮やかな色は高いビル、緑は公園、青は水辺に。真上から見ると屋根が元の絵になります。', creature: '輪郭を切り抜き、幅の広いところほど厚く膨らませて丸い立体にします。', tower: '輪郭をろくろのように縦軸で回して、塔・器・五重塔のような形にします。', terrain: '明るさを高さにして、水・砂・草・岩・雪に塗り分けます。', relief: '背景から主題が浮き出る彫刻パネルにします。', flat: '1ピクセルを1ボクセルにした平面（ドット絵）です。', time: '動画専用：動いているものをフレームごとに奥へ積み、時間の軌跡を立体にします。' },
+        detail: '細かさ', keepBg: '背景も残す', process: '変換の過程をアニメーションとして残す', note: '自分で撮った・描いた・書いた素材か、使う権利のある素材を使ってください。他人の顔や作品は避けましょう。',
         noSrc: '先に画像・動画を選ぶか、文字を入力してください。', busy: '変換中…', done: (n, f) => `完成：${n.toLocaleString()} ボクセル${f > 1 ? `・${f} フレーム` : ''}。Ctrl+Z で戻せます。`, timeOnlyVideo: '時間の彫刻は動画のときだけ使えます。', empty: 'この素材からは変換できる形が見つかりませんでした。',
         shorts: '📱 ショート動画 (9:16)', shortsTip: '縦長の動画を書き出します：元の素材 → 変換の過程 → 完成品をぐるっと一周。', shortsNo: '先に何か変換してください。', shortsBusy: '録画中…', before: 'BEFORE', after: 'AFTER',
       },
@@ -4693,7 +5025,7 @@
     function fgMask(g) {
       const { w, h, d } = g, n = w * h, m = new Uint8Array(n);
       let tr = 0; for (let i = 0; i < n; i++) if (d[i * 4 + 3] < 128) tr++;
-      if (tr > n * .02) { for (let i = 0; i < n; i++) m[i] = d[i * 4 + 3] >= 128 ? 1 : 0; return m }
+      if (tr > n * .02) { for (let i = 0; i < n; i++) m[i] = d[i * 4 + 3] >= 128 ? 1 : 0; m.how = 'alpha'; return m }
       const cnt = new Map(), border = []; for (let x = 0; x < w; x++) border.push(x, (h - 1) * w + x); for (let y = 0; y < h; y++) border.push(y * w, y * w + w - 1);
       for (const i of border) { const q = (d[i * 4] >> 4) << 8 | (d[i * 4 + 1] >> 4) << 4 | d[i * 4 + 2] >> 4; cnt.set(q, (cnt.get(q) || 0) + 1) }
       let bq = 0, bc = -1; cnt.forEach((c, q) => { if (c > bc) { bc = c; bq = q } });
@@ -4702,19 +5034,86 @@
       const bgm = new Uint8Array(n), st = []; for (const i of border) if (near(i) && !bgm[i]) { bgm[i] = 1; st.push(i) }
       while (st.length) { const i = st.pop(), x = i % w, y = (i / w) | 0; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && !bgm[j] && near(j)) { bgm[j] = 1; st.push(j) } }
       let fg = 0; for (let i = 0; i < n; i++) { m[i] = bgm[i] ? 0 : 1; fg += m[i] }
-      if (fg > n * .03 && fg < n * .97) return m;
+      if (fg > n * .03 && fg < n * .97) { m.how = 'border'; m.bgShare = bc / border.length; return m }
       // no clear background: split by brightness (Otsu) and keep the smaller side
       const hist = new Array(64).fill(0), L = new Float32Array(n); for (let i = 0; i < n; i++) { L[i] = lumOf(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]); hist[Math.min(63, (L[i] * 64) | 0)]++ }
       let best = 32, bv = -1, sum = 0; for (let i = 0; i < 64; i++) sum += i * hist[i]; let w0 = 0, s0 = 0;
       for (let i = 0; i < 64; i++) { w0 += hist[i]; if (!w0 || w0 === n) continue; s0 += i * hist[i]; const m0 = s0 / w0, m1 = (sum - s0) / (n - w0), v = w0 * (n - w0) * (m0 - m1) ** 2; if (v > bv) { bv = v; best = i } }
       let dark = 0; for (let i = 0; i < n; i++) if (L[i] * 64 <= best) dark++;
       const keepDark = dark <= n / 2; for (let i = 0; i < n; i++) m[i] = (L[i] * 64 <= best) === keepDark ? 1 : 0;
-      return m;
+      m.how = 'otsu'; return m;
     }
     function bgLum(g, m) { let s = 0, c = 0; for (let i = 0; i < g.w * g.h; i++) if (!m[i]) { s += lumOf(g.d[i * 4], g.d[i * 4 + 1], g.d[i * 4 + 2]); c++ } return c ? s / c : 1 }
 
+    // Poisson inflation (∇²u = −1 inside the mask, 0 outside): returns the half-thickness per pixel; a disk becomes a half-sphere
+    function inflate(m, w, h) {
+      const u = new Float32Array(w * h);
+      for (let it = 0, N = Math.max(200, Math.max(w, h) * 6); it < N; it++) for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; if (!m[i]) continue; const nu = (u[i - 1] + u[i + 1] + u[i - w] + u[i + w] + 1) / 4; u[i] += 1.85 * (nu - u[i]) }
+      const hh = new Float32Array(w * h); let hm = 0; for (let i = 0; i < w * h; i++) if (m[i]) { hh[i] = Math.sqrt(Math.max(0, u[i])) * 2; hm = Math.max(hm, hh[i]) }
+      return { hh, hm };
+    }
+    const boxBlur = (a, w, h, r) => { const o = new Float32Array(w * h); for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { let s = 0, c = 0; for (let j = -r; j <= r; j++) for (let k = -r; k <= r; k++) { const yy = y + j, xx = x + k; if (yy >= 0 && yy < h && xx >= 0 && xx < w) { s += a[yy * w + xx]; c++ } } o[y * w + x] = s / c } return o };
+    // depth from one picture, without any learned model (see docs/research-conversion-shorts.md):
+    // a subject on a plain ground is puffed up front and back, with its own shading as fine relief (dark lines sink in);
+    // a scene is laid out by sky, height in the picture, haze (aerial perspective) and detail, smoothed along colour edges
+    function realDepth(g) {
+      const { w, h, d } = g, n = w * h, m = fgMask(g), L = new Float32Array(n);
+      for (let i = 0; i < n; i++) L[i] = lumOf(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]);
+      let fg = 0; for (let i = 0; i < n; i++) fg += m[i];
+      const subject = (m.how === 'alpha' || (m.how === 'border' && m.bgShare > .55)) && fg > n * .04 && fg < n * .88;
+      if (subject) {
+        const { hh, hm } = inflate(m, w, h), mean = boxBlur(L, w, h, 2), det = new Float32Array(n);
+        for (let i = 0; i < n; i++) det[i] = m[i] ? Math.max(-.5, Math.min(.5, (L[i] - mean[i]) * 2.2)) : 0;
+        return { subject: true, m, hh, hm, det };
+      }
+      // scene: sky from the top edge, then near/far cues
+      const sky = new Uint8Array(n), G = new Float32Array(n);
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) { const i = y * w + x; G[i] = Math.hypot(L[i + 1] - L[i - 1], L[i + w] - L[i - w]) }
+      const isSky = (i) => { const r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], [s] = satHue(r, gg, b); return G[i] < .09 && ((b >= r && b >= gg * .92 && L[i] > .3) || (s < .14 && L[i] > .62)) };
+      const st = []; for (let x = 0; x < w; x++) if (isSky(x)) { sky[x] = 1; st.push(x) }
+      while (st.length) { const i = st.pop(), x = i % w; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w]) if (j >= 0 && j < n && !sky[j] && isSky(j)) { sky[j] = 1; st.push(j) } }
+      // clouds, the sun, birds: anything not joined to the ground from the bottom edge belongs to the sky
+      { const gr = new Uint8Array(n), q = []; for (let x = 0; x < w; x++) { const i = (h - 1) * w + x; if (!sky[i]) { gr[i] = 1; q.push(i) } }
+        while (q.length) { const i = q.pop(), x = i % w; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, i - w, i + w]) if (j >= 0 && j < n && !gr[j] && !sky[j]) { gr[j] = 1; q.push(j) } }
+        for (let i = 0; i < n; i++) if (!gr[i]) sky[i] = 1 }
+      let hz = 0, hc = 0; for (let x = 0; x < w; x++) { let y = 0; while (y < h && sky[y * w + x]) y++; hz += y; hc++ } hz = hc ? hz / hc : 0;   // average horizon row
+      const T = boxBlur(G, w, h, 2); let tmx = 1e-6; { const s2 = [...T].sort((a, b) => a - b); tmx = s2[Math.floor(n * .95)] || 1e-6 }
+      let near = new Float32Array(n);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (sky[i]) continue;
+        const v = Math.max(0, Math.min(1, (y - hz) / Math.max(1, h - 1 - hz))), [s] = satHue(d[i * 4], d[i * 4 + 1], d[i * 4 + 2]), haze = (1 - s) * L[i] * (d[i * 4 + 2] >= d[i * 4] ? 1 : .6);
+        near[i] = .62 * v + .23 * Math.min(1, T[i] / tmx) + .15 * (1 - haze) }
+      // joint bilateral smoothing: pixels of a similar colour nearby end up at a similar depth
+      for (let it = 0; it < 6; it++) { const o = new Float32Array(n);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x; if (sky[i]) continue; let s = 0, ws = 0;
+          for (let j = -2; j <= 2; j++) for (let k = -2; k <= 2; k++) { const yy = y + j, xx = x + k; if (yy < 0 || yy >= h || xx < 0 || xx >= w) continue; const q = yy * w + xx; if (sky[q]) continue;
+            const dr = d[i * 4] - d[q * 4], dg = d[i * 4 + 1] - d[q * 4 + 1], db = d[i * 4 + 2] - d[q * 4 + 2], wt = Math.exp(-(dr * dr + dg * dg + db * db) / 1250 - (j * j + k * k) / 8); s += near[q] * wt; ws += wt }
+          o[i] = s / ws }
+        near = o }
+      return { subject: false, sky, near };
+    }
+
     // ---------- styles: each returns { W, H, D, vox: [[x, y, z, colour, order]] } ----------
     const ST = {
+      // the most life-like: a figure you can walk around (subject) or a deep diorama (scene); opt.bg keeps the background
+      real(g, opt = {}) {
+        const { w, h, d } = g, R = realDepth(g), vox = [], keepBg = opt.bg !== false;
+        if (R.subject) {
+          const { m, hh, hm, det } = R, F = .95, B = .55, DD = Math.max(8, Math.min(MAXS, Math.ceil(hm * (F + B)) + (keepBg ? 6 : 4))), cz = Math.round(hm * B) + 2;
+          for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], wy = h - 1 - y;
+            if (!m[i]) { if (keepBg && d[i * 4 + 3] >= 128) vox.push([x, wy, 0, shade(r, gg, b, .9), 0]); continue }
+            const zf = Math.min(DD - 1, Math.round(cz + hh[i] * F + det[i] * Math.min(2.5, hm * .12))), zb = Math.max(keepBg ? 1 : 0, Math.round(cz - hh[i] * B));
+            for (let z = zb; z <= zf; z++) vox.push([x, wy, z, z === zf ? hex(r, gg, b) : z === zb ? shade(r, gg, b, .72) : shade(r, gg, b, .86), Math.abs(z - cz) / (hm * F || 1)]) }
+          return { W: w, H: h, D: DD, vox };
+        }
+        const { sky, near } = R, DD = Math.max(8, Math.min(MAXS, Math.round(Math.max(w, h) * .45))), Z = new Int16Array(w * h);
+        for (let i = 0; i < w * h; i++) Z[i] = sky[i] ? -1 : 1 + Math.round(near[i] * (DD - 2));
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const i = y * w + x, r = d[i * 4], gg = d[i * 4 + 1], b = d[i * 4 + 2], wy = h - 1 - y;
+          if (Z[i] < 0) { if (keepBg) vox.push([x, wy, 0, hex(r, gg, b), 0]); continue }
+          // from the nearest surface back to the furthest neighbour, so steps in depth become walls rather than gaps
+          let lo = Z[i]; for (const j of [x > 0 ? i - 1 : -1, x < w - 1 ? i + 1 : -1, y > 0 ? i - w : -1, y < h - 1 ? i + w : -1]) if (j >= 0 && Z[j] >= 0) lo = Math.min(lo, Z[j] + 1);
+          if (!keepBg) lo = Math.min(lo, Z[i]); for (let z = Math.max(1, lo); z <= Z[i]; z++) vox.push([x, wy, z, z === Z[i] ? hex(r, gg, b) : shade(r, gg, b, .82), near[i] * .9 + .1]) }
+        return { W: w, H: h, D: DD, vox };
+      },
       // Poisson inflation (∇²u = −1 inside the outline, 0 on it): a disk becomes a half-sphere, a thin limb a thin tube
       creature(g) {
         const { w, h, d } = g, m = fgMask(g), u = new Float32Array(w * h);
@@ -4855,30 +5254,33 @@
     async function convert() {
       const style = $('cvSt').value, R = Math.max(16, Math.min(MAXS, +$('cvR').value || 64)), proc = $('cvPr').checked;
       if (!src || (src.kind === 'text' && !$('cvTx').value.trim())) { busy(false, t('noSrc')); return }
-      if (style === 'time' && src.kind !== 'video') { busy(false, t('timeOnlyVideo')); return }
+      if (style === 'time' && src.kind !== 'video' && src.kind !== 'model') { busy(false, t('timeOnlyVideo')); return }
       busy(true, t('busy')); await new Promise(r => setTimeout(r, 30));
       try {
         let res, srcC, maps = [];
-        if (src.kind === 'video') {
+        if (src.kind === 'model') {
+          const mesh = await VoxoBModel.parse(src.files); if (!mesh || !mesh.pos.length) { busy(false, t('empty')); return }
+          res = VoxoBModel.voxelize(mesh, R, color); if (!res) { busy(false, t('empty')); return } fitSize(res); srcC = VoxoBModel.snapshot(mesh);
+        } else if (src.kind === 'video') {
           const v = src.el;
           if (style === 'time') { const N = Math.min(64, Math.max(12, Math.round(R * .6))), gs = await videoFrames(v, R, N); res = fitSize(timeSculpture(gs)); await seek(v, v.duration * .5); srcC = srcCanvasOf(v) }
           else {   // one conversion per sampled frame → an animation
-            const N = Math.min(24, Math.max(6, Math.round(v.duration * 4))), gs = await videoFrames(v, R, N), all = gs.map(g => ST[style](g)), dims = fitSize({ W: Math.max(...all.map(r => r.W)), H: Math.max(...all.map(r => r.H)), D: Math.max(...all.map(r => r.D)) });
+            const N = Math.min(24, Math.max(6, Math.round(v.duration * 4))), gs = await videoFrames(v, R, N), all = gs.map(g => ST[style](g, { bg: $('cvBg').checked })), dims = fitSize({ W: Math.max(...all.map(r => r.W)), H: Math.max(...all.map(r => r.H)), D: Math.max(...all.map(r => r.D)) });
             await seek(v, 0); srcC = srcCanvasOf(v);
             all.forEach(r => maps.push(toMap({ ...r, ...dims }, 1, Math.floor((dims.W - r.W) / 2), Math.floor((dims.D - r.D) / 2))));   // frames of different sizes share one centre last = { srcCanvas: srcC, style, frames: maps, dims, process: false };
-            commitFrames(dims, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('gen'); return;
+            commitFrames(dims, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('done'); return;
           }
         } else {
           srcC = src.kind === 'text' ? textCanvas($('cvTx').value) : srcCanvasOf(src.el);
           if (!srcC) { busy(false, t('noSrc')); return }
           // text needs about 18 cells a character to stay readable
           const RR = src.kind === 'text' ? Math.min(MAXS, Math.max(R, 18 * Math.max(...$('cvTx').value.split(/\n/).map(l => Array.from(l.trim()).length)))) : R;
-          res = fitSize(ST[style](grid(srcC, RR)));
+          res = fitSize(ST[style](grid(srcC, RR), { bg: $('cvBg').checked }));
         }
         if (!res.vox.length) { busy(false, t('empty')); return }
         if (proc) { const K = 12; for (let i = 1; i <= K; i++) maps.push(toMap(res, i === K ? 1 : Math.pow(i / K, 1.2))) } else maps.push(toMap(res, 1));
-        last = { srcCanvas: srcC, style, frames: maps, dims: { W: res.W, H: res.H, D: res.D }, process: proc };
-        commitFrames(res, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('gen');
+        last = { srcCanvas: srcC, style: src.kind === 'model' ? 'model' : style, frames: maps, dims: { W: res.W, H: res.H, D: res.D }, process: proc };
+        commitFrames(res, maps); busy(false, t('done')(Object.keys(maps[maps.length - 1]).length, maps.length)); snd('done');
       } catch (e) { console.error(e); busy(false, String(e && e.message || e)) }
     }
 
@@ -4908,7 +5310,7 @@
         const split = s < T_SRC + T_PROC ? 760 : Math.max(0, 760 - (s - T_SRC - T_PROC) * 900);
         if (split > 140) { ox.save(); ox.beginPath(); ox.rect(40, 120, OW - 80, split - 140); ox.clip(); drawSrc(40, 120, OW - 80, split - 140); ox.restore(); if (split > 420) label(t('before'), 220) }
         ren.render(scn, cam); ox.drawImage(c3, 0, Math.max(split, split + (OH - split - 1080) / 2), 1080, 1080);
-        if (s >= T_SRC && s < T_SRC + T_PROC) label(t('styles')[last.style] + '  ' + Math.round(Math.min(1, (s - T_SRC) / T_PROC) * 100) + '%', split + 90);
+        if (s >= T_SRC && s < T_SRC + T_PROC) label((t('styles')[last.style] || t('model')) + '  ' + Math.round(Math.min(1, (s - T_SRC) / T_PROC) * 100) + '%', split + 90);
         if (s >= T_SRC + T_PROC) label(t('after'), OH - 260);
         ox.font = '700 44px system-ui, sans-serif'; ox.textAlign = 'center'; ox.fillStyle = 'rgba(255,255,255,.85)'; ox.fillText(s > total - T_END ? 'VoxoB — voxob.vercel.app' : 'VoxoB', OW / 2, OH - 90);
       };
@@ -4931,30 +5333,34 @@
     // ---------- panel (Make tab, above Generate) ----------
     const box = document.createElement('div'); box.className = 'ps cvp';
     box.innerHTML = `<div class="pt" id="ptCv"></div>
-      <div class="cvsrc"><button class="btn" id="cvIm"></button><button class="btn" id="cvVi"></button><button class="btn" id="cvTe"></button></div>
-      <input type="file" id="cvFile" accept="image/*,video/*" style="display:none">
+      <div class="cvsrc"><button class="btn" id="cvIm"></button><button class="btn" id="cvVi"></button><button class="btn" id="cvTe"></button><button class="btn" id="cvMo"></button></div>
+      <input type="file" id="cvFile" accept="image/*,video/*" style="display:none"><input type="file" id="cvMoF" accept=".obj,.mtl,.stl,.glb,.gltf,.bin,image/*" multiple style="display:none">
       <div class="cvname" id="cvName"></div>
       <textarea id="cvTx" rows="2" maxlength="60" style="display:none"></textarea>
       <div class="cvst" id="cvSts" role="radiogroup"></div><input type="hidden" id="cvSt" value="city">
       <div class="cvtip" id="cvTip"></div>
       <div class="sr"><label id="cvRl" for="cvR"></label><select id="cvR"><option>32</option><option>48</option><option selected>64</option><option>96</option><option>128</option></select></div>
+      <label class="ck" id="cvBgL"><input type="checkbox" id="cvBg" checked><span id="cvBgl"></span></label>
       <label class="ck"><input type="checkbox" id="cvPr" checked><span id="cvPrl"></span></label>
       <div class="cvgo"><button class="btn pri" id="cvGo"></button><button class="btn" id="cvSh"></button></div>
       <div class="cvmsg" id="cvMsg" role="status" aria-live="polite"></div>
       <div class="cvnote" id="cvNote"></div>`;
     const gnPs = $('ptGn').closest('.ps'); gnPs.parentNode.insertBefore(box, gnPs);
-    const STY = ['city', 'creature', 'tower', 'terrain', 'relief', 'flat', 'time'];
-    function setSt(id) { $('cvSt').value = id; box.querySelectorAll('.cvst button').forEach(b => { const on = b.dataset.st === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)) }); $('cvTip').textContent = t('tips')[id] }
-    function showSrc() { $('cvTx').style.display = src && src.kind === 'text' ? 'block' : 'none'; $('cvName').textContent = src && src.kind !== 'text' ? src.name : ''; [['cvIm', 'image'], ['cvVi', 'video'], ['cvTe', 'text']].forEach(([id, k]) => $(id).classList.toggle('on', !!src && src.kind === k)); box.querySelector('[data-st=time]').hidden = !(src && src.kind === 'video'); if ($('cvSt').value === 'time' && !(src && src.kind === 'video')) setSt('city') }
+    const STY = ['real', 'city', 'creature', 'tower', 'terrain', 'relief', 'flat', 'time'];
+    function setSt(id) { $('cvSt').value = id; box.querySelectorAll('.cvst button').forEach(b => { const on = b.dataset.st === id; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)) }); $('cvTip').textContent = t('tips')[id]; $('cvBgL').hidden = id !== 'real' }
+    function showSrc() { $('cvTx').style.display = src && src.kind === 'text' ? 'block' : 'none'; $('cvName').textContent = src && src.kind !== 'text' ? src.name : ''; [['cvIm', 'image'], ['cvVi', 'video'], ['cvTe', 'text'], ['cvMo', 'model']].forEach(([id, k]) => $(id).classList.toggle('on', !!src && src.kind === k)); box.querySelector('[data-st=time]').hidden = !(src && src.kind === 'video');
+      const mdl = !!src && src.kind === 'model'; $('cvSts').hidden = mdl; $('cvBgL').hidden = mdl || $('cvSt').value !== 'real'; $('cvTip').textContent = mdl ? t('modelTip') : t('tips')[$('cvSt').value]; if ($('cvSt').value === 'time' && !(src && src.kind === 'video')) setSt('city') }
     function relabel() {
-      $('ptCv').textContent = t('title'); $('cvIm').textContent = t('image'); $('cvVi').textContent = t('video'); $('cvTe').textContent = t('text'); $('cvTx').placeholder = t('textPh');
-      $('cvRl').textContent = t('detail'); $('cvPrl').textContent = t('process'); $('cvGo').textContent = last ? t('again') : t('go'); $('cvSh').textContent = t('shorts'); $('cvSh').dataset.tip = t('shortsTip'); $('cvNote').textContent = t('note');
+      $('ptCv').textContent = t('title'); $('cvIm').textContent = t('image'); $('cvVi').textContent = t('video'); $('cvTe').textContent = t('text'); $('cvMo').textContent = t('model'); $('cvTx').placeholder = t('textPh');
+      $('cvRl').textContent = t('detail'); $('cvBgl').textContent = t('keepBg'); $('cvPrl').textContent = t('process'); $('cvGo').textContent = last ? t('again') : t('go'); $('cvSh').textContent = t('shorts'); $('cvSh').dataset.tip = t('shortsTip'); $('cvNote').textContent = t('note');
       const g = $('cvSts'); g.innerHTML = ''; STY.forEach(id => { const b = document.createElement('button'); b.className = 'at'; b.dataset.st = id; b.setAttribute('role', 'radio'); b.textContent = t('styles')[id]; b.onclick = () => { setSt(id); snd('click') }; g.appendChild(b) });
       setSt($('cvSt').value); showSrc();
     }
     $('cvIm').onclick = () => { $('cvFile').accept = 'image/*'; $('cvFile').click() };
     $('cvVi').onclick = () => { $('cvFile').accept = 'video/*'; $('cvFile').click() };
     $('cvTe').onclick = () => { src = { kind: 'text' }; showSrc(); $('cvTx').focus() };
+    $('cvMo').onclick = () => $('cvMoF').click();
+    $('cvMoF').onchange = (e) => { const fs = [...e.target.files]; e.target.value = ''; const main = fs.find(f => /\.(obj|stl|glb|gltf)$/i.test(f.name)); if (!main) return; src = { kind: 'model', files: fs, name: fs.map(f => f.name).join(', ') }; showSrc() };
     $('cvFile').onchange = (e) => {
       const f = e.target.files[0]; e.target.value = ''; if (!f) return; const url = URL.createObjectURL(f);
       if (f.type.startsWith('video')) { const v = document.createElement('video'); v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = url; v.onloadeddata = async () => { if (!isFinite(v.duration)) { v.currentTime = 1e9; await new Promise(r => v.ondurationchange = r); v.currentTime = 0 } src = { kind: 'video', el: v, name: f.name }; showSrc(); setSt('time') }; v.onerror = () => { $('cvMsg').textContent = M('vidFmt', 'この動画形式はお使いのブラウザでサポートされていません。', 'This video format is not supported by your browser.') } }
@@ -4965,6 +5371,21 @@
     $('cvTx').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); convert().then(() => relabel()) } e.stopPropagation() });
     const _sl = setLang; setLang = function (l) { _sl(l); relabel() };
     relabel();
+    // the File tab's import used to place only the corners of each triangle; send 3D files through the voxelizer instead
+    { const _lm = loadMedia;
+      loadMedia = async function (e) {
+        const fs = [...(e.target.files || [])], main = fs.find(f => /\.(obj|stl|glb|gltf)$/i.test(f.name));
+        if (!main) return _lm(e);
+        e.target.value = '';
+        try {
+          const mesh = await VoxoBModel.parse(fs); if (!mesh || !mesh.pos.length) return;
+          const sz = Math.max(4, Math.min(MAXS, +$('iSz').value || 16)), r = VoxoBModel.voxelize(mesh, Math.min(sz, Math.max(W, H, D)), color); if (!r) return;
+          const ox = Math.floor((W - r.W) / 2), oz = Math.floor((D - r.D) / 2), acts = [];
+          for (const [x, y, z, c] of r.vox) { const a = setV(x + ox, y, z + oz, c, 255); if (a) acts.push(a) }
+          pU(acts); d2D(); uCnt(); snd('gen');
+        } catch (err) { console.error(err); alert(String(err && err.message || err)) }
+      };
+    }
     // for tests and the demo recorder
     window.VoxoBConvert = { ST, grid, fgMask, timeSculpture, textCanvas, setSource: (s) => { src = s; showSrc() }, convert, shorts, get last() { return last } };
   })();
@@ -4996,7 +5417,7 @@
     $('mExtra').remove();
     document.body.appendChild(menu);
     [$('hU'), $('hR'), $('hNx')].forEach(b => hd.appendChild(b));
-    hd.appendChild(sp); hd.appendChild($('hTog2D')); hd.appendChild($('hEx')); hd.appendChild(gear);
+    hd.appendChild(sp); hd.appendChild($('hTog2D')); hd.appendChild($('hClr')); hd.appendChild($('hEx')); hd.appendChild(gear);
     hd.querySelectorAll('.hs').forEach(e => e.remove());
     $('hEx').classList.add('pri'); $('hNx').classList.add('acc');
     const placeMenu = () => { const r = gear.getBoundingClientRect(); menu.style.top = (r.bottom + 6) + 'px'; menu.style.right = Math.max(8, innerWidth - r.right) + 'px' };

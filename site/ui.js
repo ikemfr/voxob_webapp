@@ -24,7 +24,7 @@
     $('mExtra').remove();
     document.body.appendChild(menu);
     [$('hU'), $('hR'), $('hNx')].forEach(b => hd.appendChild(b));
-    hd.appendChild(sp); hd.appendChild($('hTog2D')); hd.appendChild($('hEx')); hd.appendChild(gear);
+    hd.appendChild(sp); hd.appendChild($('hTog2D')); hd.appendChild($('hClr')); hd.appendChild($('hEx')); hd.appendChild(gear);
     hd.querySelectorAll('.hs').forEach(e => e.remove());
     $('hEx').classList.add('pri'); $('hNx').classList.add('acc');
     const placeMenu = () => { const r = gear.getBoundingClientRect(); menu.style.top = (r.bottom + 6) + 'px'; menu.style.right = Math.max(8, innerWidth - r.right) + 'px' };

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 440" width="720" height="880">
+  <!-- An original portrait (an imaginary person) made for VoxoB (CC0), shaded so depth can be read from light and dark. -->
+  <defs>
+    <radialGradient id="skin" cx="45%" cy="40%" r="60%"><stop offset="0" stop-color="#f4d2b5"/><stop offset=".7" stop-color="#e0b08c"/><stop offset="1" stop-color="#b98564"/></radialGradient>
+    <radialGradient id="hair" cx="40%" cy="30%" r="70%"><stop offset="0" stop-color="#6b4a32"/><stop offset="1" stop-color="#2e1d12"/></radialGradient>
+    <linearGradient id="shirt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3f7fb8"/><stop offset="1" stop-color="#244f78"/></linearGradient>
+  </defs>
+  <rect width="360" height="440" fill="#ece9e4"/>
+  <path d="M40 440 Q50 330 180 315 Q310 330 320 440Z" fill="url(#shirt)"/>
+  <rect x="150" y="270" width="60" height="60" rx="20" fill="#d9a684"/>
+  <path d="M95 175 Q90 60 180 55 Q275 60 268 175 Q270 120 230 105 Q190 125 120 110 Q95 130 95 175Z" fill="url(#hair)"/>
+  <ellipse cx="180" cy="190" rx="78" ry="98" fill="url(#skin)"/>
+  <path d="M102 150 Q110 85 180 80 Q255 85 260 150 Q240 110 180 112 Q125 110 102 150Z" fill="url(#hair)"/>
+  <ellipse cx="102" cy="198" rx="12" ry="22" fill="#d9a684"/><ellipse cx="258" cy="198" rx="12" ry="22" fill="#d9a684"/>
+  <path d="M130 165 Q150 155 166 166" stroke="#4a3020" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M194 166 Q210 155 230 165" stroke="#4a3020" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="149" cy="186" rx="14" ry="8" fill="#ffffff"/><circle cx="150" cy="186" r="6" fill="#3b2a1e"/>
+  <ellipse cx="211" cy="186" rx="14" ry="8" fill="#ffffff"/><circle cx="210" cy="186" r="6" fill="#3b2a1e"/>
+  <path d="M180 192 Q174 220 168 230 Q180 238 192 230" stroke="#b07a58" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M155 254 Q180 268 205 254" stroke="#a5484a" stroke-width="7" fill="none" stroke-linecap="round"/>
+  <ellipse cx="135" cy="225" rx="16" ry="9" fill="#e79c8a" opacity=".45"/><ellipse cx="225" cy="225" rx="16" ry="9" fill="#e79c8a" opacity=".45"/>
+</svg>
