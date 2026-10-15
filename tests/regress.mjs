@@ -168,10 +168,79 @@ const out = {};
   ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
   await ctx.close();
 }
-// ---------- 5. languages load cleanly ----------
-for (const l of ['en', 'ja', 'es', 'pt', 'zh']) { const { ctx, errs } = await open(l); ok(errs.length === 0, `loads in ${l}`); await ctx.close() }
+// ---------- 5. conversion: every style, text, video, undo, Shorts ----------
+{
+  console.log('convert');
+  const { p, ctx, errs } = await open();
+  await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 200; c.height = 200; const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, 200, 200); x.fillStyle = '#e67e22'; x.beginPath(); x.arc(100, 110, 70, 0, 7); x.fill(); x.fillStyle = '#4caf50'; x.fillRect(10, 10, 50, 40); x.fillStyle = '#3d7fd6'; x.fillRect(140, 10, 50, 40); window.PIC = c });
+  for (const st of ['city', 'creature', 'tower', 'terrain', 'relief', 'flat']) {
+    const r = await p.evaluate(async (st) => { VoxoBConvert.setSource({ kind: 'image', el: PIC, name: 'pic' }); $('cvSt').value = st; $('cvR').value = '48'; $('cvPr').checked = true; await VoxoBConvert.convert();
+      const vs = Object.keys(V()).map(pv_), inside = vs.every(([x, y, z]) => x >= 0 && y >= 0 && z >= 0 && x < W && y < H && z < D);
+      const grow = frames.every((f, i) => i === 0 || Object.keys(f.v).length >= Object.keys(frames[i - 1].v).length);
+      return { n: vs.length, inside, frames: frames.length, grow, cur: curFrame, dims: [W, H, D].join('×') } }, st);
+    ok(r.n > 50 && r.inside && r.frames === 12 && r.grow && r.cur === 11, `${st}: ${r.n} voxels in ${r.dims}, 12 growing process frames`);
+  }
+  // terrain on a sharp step: any voxel left out of a solid column is boxed in on all six sides (no see-through holes)
+  const cliff = await p.evaluate(() => { const c = document.createElement('canvas'); c.width = 40; c.height = 40; const x = c.getContext('2d'); x.fillStyle = '#000'; x.fillRect(0, 0, 40, 40); x.fillStyle = '#fff'; x.fillRect(20, 0, 20, 40); x.fillStyle = '#888'; x.fillRect(5, 5, 8, 8);
+    const r = VoxoBConvert.ST.terrain(VoxoBConvert.grid(c, 40)), has = new Set(r.vox.map((v) => v.slice(0, 3).join())), top = new Map();
+    r.vox.forEach((v) => { const k = v[0] + ',' + v[2]; top.set(k, Math.max(top.get(k) ?? -1, v[1])) });
+    let holes = 0, left = 0; const solid = (x, y, z) => y >= 0 && y <= (top.get(x + ',' + z) ?? -1);
+    top.forEach((t, k) => { const [x, z] = k.split(',').map(Number); for (let y = 0; y <= t; y++) { if (has.has([x, y, z].join())) continue; left++; for (const [a, b, d] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]) if (!solid(x + a, y + b, z + d)) holes++ } });
+    return { left, holes } });
+  ok(cliff.holes === 0 && cliff.left > 0, `terrain: ${cliff.left} hidden voxels left out, ${cliff.holes} open to the air`);
+  // creature: the last process frame holds every voxel
+  const all = await p.evaluate(async () => { VoxoBConvert.setSource({ kind: 'image', el: PIC, name: 'pic' }); $('cvSt').value = 'creature'; $('cvPr').checked = true; await VoxoBConvert.convert(); const a = Object.keys(V()).length; $('cvPr').checked = false; await VoxoBConvert.convert(); return [a, Object.keys(V()).length] });
+  ok(all[0] === all[1], `process animation ends with the full model (${all[0]} = ${all[1]})`);
+  const single = await p.evaluate(async () => { $('cvPr').checked = false; $('cvSt').value = 'creature'; await VoxoBConvert.convert(); return frames.length });
+  ok(single === 1, 'without the process option a conversion is one frame');
+  // undo / redo of a conversion swaps the whole project back and forth
+  const before = await p.evaluate(() => { gen('house'); return [W, H, D, frames.length, Object.keys(V()).length].join() });
+  await p.evaluate(async () => { $('cvPr').checked = true; $('cvSt').value = 'terrain'; await VoxoBConvert.convert() });
+  const conv = await p.evaluate(() => [W, H, D, frames.length, Object.keys(V()).length].join());
+  await p.evaluate(() => undo()); const un = await p.evaluate(() => [W, H, D, frames.length, Object.keys(V()).length].join());
+  await p.evaluate(() => redo()); const re = await p.evaluate(() => [W, H, D, frames.length, Object.keys(V()).length].join());
+  ok(un === before && re === conv, `undo / redo a conversion (${before} ⇄ ${conv})`);
+  // text: wide enough to read, and not empty
+  const tx = await p.evaluate(async () => { $('cvTx').value = 'こんにちは'; VoxoBConvert.setSource({ kind: 'text' }); $('cvSt').value = 'relief'; $('cvR').value = '32'; await VoxoBConvert.convert(); return { W, n: Object.keys(V()).length } });
+  ok(tx.W >= 80 && tx.n > 200, `text "こんにちは" relief: ${tx.W} wide, ${tx.n} voxels`);
+  const noSrc = await p.evaluate(async () => { $('cvTx').value = '  '; await VoxoBConvert.convert(); return $('cvMsg').textContent });
+  ok(/text|文字/i.test(noSrc), 'empty text is refused with a message: ' + noSrc);
+  // time sculpture needs a video; with a video it stacks frames in depth
+  const tv = await p.evaluate(async () => { VoxoBConvert.setSource({ kind: 'image', el: PIC, name: 'pic' }); $('cvSt').value = 'time'; await VoxoBConvert.convert(); return $('cvMsg').textContent });
+  ok(/video|動画/i.test(tv), 'time sculpture without a video is refused: ' + tv);
+  const ts = await p.evaluate(() => { const g = (k) => { const c = document.createElement('canvas'); c.width = 32; c.height = 32; const x = c.getContext('2d'); x.fillStyle = '#eee'; x.fillRect(0, 0, 32, 32); x.fillStyle = '#f00'; x.fillRect(k * 2, 10, 6, 6); return VoxoBConvert.grid(c, 32) }; const r = VoxoBConvert.timeSculpture([0, 1, 2, 3, 4, 5, 6, 7].map(g)); const zs = new Set(r.vox.map((v) => v[2])); return { n: r.vox.length, layers: zs.size, D: r.D } });
+  ok(ts.layers === 8 && ts.n >= 8 * 30, `time sculpture: moving square → ${ts.layers} layers, ${ts.n} voxels`);
+  // video, one conversion per frame: a growing disk puffs up a little more each frame, every frame on the same centre
+  const vid = await p.evaluate(async () => {
+    const c = document.createElement('canvas'); c.width = 160; c.height = 160; const x = c.getContext('2d'), rec = new MediaRecorder(c.captureStream(30), { mimeType: 'video/webm' }), ch = []; rec.ondataavailable = (e) => ch.push(e.data); rec.start(); const t0 = performance.now();
+    await new Promise((res) => { const f = () => { const s = (performance.now() - t0) / 2000; x.fillStyle = '#fff'; x.fillRect(0, 0, 160, 160); x.fillStyle = '#2a9d8f'; x.beginPath(); x.arc(80, 80, 20 + 50 * Math.min(1, s), 0, 7); x.fill(); if (s < 1) requestAnimationFrame(f); else res() }; f() });
+    rec.stop(); await new Promise((r) => rec.onstop = r);
+    const v = document.createElement('video'); v.muted = true; v.src = URL.createObjectURL(new Blob(ch, { type: 'video/webm' })); await new Promise((r) => v.onloadeddata = r);
+    if (!isFinite(v.duration)) { v.currentTime = 1e9; await new Promise((r) => v.ondurationchange = r); v.currentTime = 0 }
+    VoxoBConvert.setSource({ kind: 'video', el: v, name: 'disk.webm' }); $('cvSt').value = 'creature'; $('cvR').value = '32'; await VoxoBConvert.convert();
+    const cz = frames.map((f) => { const zs = Object.keys(f.v).map((k) => pv_(k)[2]); return (Math.min(...zs) + Math.max(...zs) + 1) / 2 });
+    return { n: frames.length, D, cz, grow: Object.keys(frames[frames.length - 1].v).length > Object.keys(frames[0].v).length };
+  });
+  ok(vid.n >= 6 && vid.grow && vid.cz.every((z) => Math.abs(z - vid.D / 2) <= 1), `video → ${vid.n} creature frames, centred in depth (${vid.cz.map((z) => z.toFixed(1)).join(' ')} / ${vid.D})`);
+  // Shorts, frame by frame: right size and length, and the editor is put back as it was
+  const sh = await p.evaluate(async () => { $('cvPr').checked = true; $('cvSt').value = 'creature'; $('cvR').value = '32'; VoxoBConvert.setSource({ kind: 'image', el: PIC, name: 'pic' }); await VoxoBConvert.convert(); goFrame(3);
+    const was = [c3.width, c3.height, cam.aspect.toFixed(3), curFrame, gG ? gG.visible : null].join(); let n = 0, size = '';
+    const r = await VoxoBConvert.shorts({ fps: 6, onFrame: (cv) => { n++; size = cv.width + 'x' + cv.height } });
+    return { was, now: [c3.width, c3.height, cam.aspect.toFixed(3), curFrame, gG ? gG.visible : null].join(), n, size, r } });
+  ok(sh.size === '1080x1920' && sh.n === sh.r.frames && sh.n > 60, `Shorts: ${sh.n} frames of ${sh.size}`);
+  ok(sh.was === sh.now, `editor restored after Shorts (${sh.was})`);
+  ok(errs.length === 0, 'no page errors (' + errs.join(' | ') + ')');
+  await ctx.close();
+}
+// ---------- 6. languages load cleanly, with every Convert label filled ----------
+for (const l of ['en', 'ja', 'es', 'pt', 'zh']) {
+  const { p, ctx, errs } = await open(l);
+  const bad = await p.evaluate(() => [...document.querySelectorAll('.cvp button, .cvp .pt, .cvp label span, .cvp .cvtip, .cvp .cvnote')].map((e) => e.textContent).filter((t) => !t.trim() || /undefined/.test(t)));
+  ok(errs.length === 0 && bad.length === 0, `loads in ${l}` + (bad.length ? ' — empty labels: ' + bad.length : ''));
+  await ctx.close();
+}
 
-// ---------- 6. performance on a big canvas ----------
+// ---------- 7. performance on a big canvas ----------
 if (BENCH) {
   console.log('bench');
   for (const N of [64, 128]) {

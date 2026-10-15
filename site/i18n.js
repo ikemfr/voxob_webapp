@@ -5,6 +5,14 @@
   const LANG_NAMES = { en: 'English', ja: '日本語', es: 'Español', pt: 'Português', zh: '中文' };
   const I18N = {
     es: {
+      CV: {
+        title: 'CONVERTIR', image: '🖼 Imagen', video: '🎞 Vídeo', text: '🔤 Texto', textPh: 'Escribe una palabra o un nombre…', go: '✨ Convertir', again: '↻ Convertir de nuevo',
+        styles: { city: '🏙 Ciudad', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relieve', flat: '▦ Plano', time: '⏳ Escultura del tiempo' },
+        tips: { city: 'La imagen se lee como el plano de una ciudad: lo oscuro o vivo crece en edificios altos, lo verde en parques y lo azul en agua. Desde arriba, los tejados forman la imagen.', creature: 'Se recorta la silueta y se infla en una figura 3D redondeada, más gruesa donde la forma es más ancha.', tower: 'La silueta gira alrededor de un eje vertical, como en un torno de alfarero: torres, jarrones, pagodas.', terrain: 'El brillo se convierte en altura: agua, arena, hierba, roca y nieve.', relief: 'Un panel tallado: el motivo sobresale del fondo.', flat: 'Un vóxel por píxel, como pixel art.', time: 'Solo vídeo: lo que se mueve se apila fotograma a fotograma en una estela sólida a través del tiempo.' },
+        detail: 'Detalle', process: 'Guardar el proceso de conversión como animación', note: 'Usa imágenes, vídeos y textos tuyos o sobre los que tengas derechos. Evita caras y obras de otras personas.',
+        noSrc: 'Primero elige una imagen o un vídeo, o escribe un texto.', busy: 'Convirtiendo…', done: (n, f) => `Hecho: ${n.toLocaleString()} vóxeles${f > 1 ? `, ${f} fotogramas` : ''}. Ctrl+Z para deshacer.`, timeOnlyVideo: 'La escultura del tiempo necesita un vídeo.', empty: 'No se encontró nada que convertir en esta fuente.',
+        shorts: '📱 Shorts (9:16)', shortsTip: 'Graba un vídeo vertical: la fuente, la conversión y una vuelta alrededor del resultado.', shortsNo: 'Primero convierte algo.', shortsBusy: 'Grabando…', before: 'ANTES', after: 'DESPUÉS',
+      },
       TX: {
         tog2D: '◧ Panel 2D', drawMode: '🧱 Dibujar', delMode: '🔨 Borrar', recolorMode: '🎨 Color', tools: 'HERRAMIENTAS', brush: 'PINCEL', snap: 'AJUSTE', symmetry: 'SIMETRÍA',
         size: 'Tamaño', alpha: 'Opacidad', project: 'PROYECTO', canvasSize: 'TAMAÑO DEL LIENZO', color: 'COLOR', copyPaste: 'COPIAR / PEGAR VÓXELES',
@@ -91,6 +99,14 @@
       UI: { make: 'Crear', color: 'Color', anim: 'Movimiento', edit: 'Editar', file: 'Archivo', tools: 'Herramientas', menu: 'Ajustes', close: 'Cerrar', view: 'Vista' },
     },
     pt: {
+      CV: {
+        title: 'CONVERTER', image: '🖼 Imagem', video: '🎞 Vídeo', text: '🔤 Texto', textPh: 'Digite uma palavra ou um nome…', go: '✨ Converter', again: '↻ Converter de novo',
+        styles: { city: '🏙 Cidade', creature: '🐾 Criatura', tower: '🏯 Torre', terrain: '⛰ Terreno', relief: '🗿 Relevo', flat: '▦ Plano', time: '⏳ Escultura do tempo' },
+        tips: { city: 'A imagem vira o mapa de uma cidade: partes escuras ou vivas crescem em prédios altos, o verde vira parque e o azul, água. Vistos de cima, os telhados formam a imagem.', creature: 'O contorno é recortado e inflado em uma figura 3D arredondada, mais grossa onde a forma é mais larga.', tower: 'O contorno gira em torno de um eixo vertical, como num torno de oleiro: torres, vasos, pagodes.', terrain: 'O brilho vira altura: água, areia, grama, rocha e neve.', relief: 'Um painel entalhado: o tema se destaca do fundo.', flat: 'Um voxel por pixel, como pixel art.', time: 'Só vídeo: o que se move é empilhado quadro a quadro em um rastro sólido através do tempo.' },
+        detail: 'Detalhe', process: 'Guardar o processo de conversão como animação', note: 'Use imagens, vídeos e textos feitos por você ou sobre os quais você tenha direitos. Evite rostos e obras de outras pessoas.',
+        noSrc: 'Primeiro escolha uma imagem ou um vídeo, ou digite um texto.', busy: 'Convertendo…', done: (n, f) => `Pronto: ${n.toLocaleString()} voxels${f > 1 ? `, ${f} quadros` : ''}. Ctrl+Z para desfazer.`, timeOnlyVideo: 'A escultura do tempo precisa de um vídeo.', empty: 'Nada para converter foi encontrado nesta fonte.',
+        shorts: '📱 Shorts (9:16)', shortsTip: 'Grava um vídeo vertical: a fonte, a conversão e uma volta em torno do resultado.', shortsNo: 'Converta algo primeiro.', shortsBusy: 'Gravando…', before: 'ANTES', after: 'DEPOIS',
+      },
       TX: {
         tog2D: '◧ Painel 2D', drawMode: '🧱 Desenhar', delMode: '🔨 Apagar', recolorMode: '🎨 Cor', tools: 'FERRAMENTAS', brush: 'PINCEL', snap: 'ENCAIXE', symmetry: 'SIMETRIA',
         size: 'Tamanho', alpha: 'Opacidade', project: 'PROJETO', canvasSize: 'TAMANHO DA TELA', color: 'COR', copyPaste: 'COPIAR / COLAR VOXELS',
@@ -177,6 +193,14 @@
       UI: { make: 'Criar', color: 'Cor', anim: 'Movimento', edit: 'Editar', file: 'Arquivo', tools: 'Ferramentas', menu: 'Ajustes', close: 'Fechar', view: 'Visualizar' },
     },
     zh: {
+      CV: {
+        title: '转换', image: '🖼 图片', video: '🎞 视频', text: '🔤 文字', textPh: '输入一个词或名字…', go: '✨ 转换', again: '↻ 再次转换',
+        styles: { city: '🏙 城市', creature: '🐾 生物', tower: '🏯 塔', terrain: '⛰ 地形', relief: '🗿 浮雕', flat: '▦ 平面', time: '⏳ 时间雕塑' },
+        tips: { city: '把图片当作城市地图：深色或鲜艳的部分长成高楼，绿色变成公园，蓝色变成水面。从正上方看，屋顶会拼出原图。', creature: '抠出轮廓，越宽的地方鼓得越厚，变成圆润的立体造型。', tower: '像陶艺转盘一样，把轮廓绕竖轴旋转：塔、花瓶、五重塔。', terrain: '亮度变成高度，并分成水、沙、草、岩石和雪。', relief: '雕刻面板：主体从背景中凸出来。', flat: '一像素一体素，就像像素画。', time: '仅限视频：把运动的物体逐帧向深处堆叠，变成穿越时间的立体轨迹。' },
+        detail: '精细度', process: '把转换过程保存为动画', note: '请使用自己拍摄、绘制、书写的素材，或你有权使用的素材。避免使用他人的面孔和作品。',
+        noSrc: '请先选择图片或视频，或输入文字。', busy: '转换中…', done: (n, f) => `完成：${n.toLocaleString()} 个体素${f > 1 ? `，${f} 帧` : ''}。Ctrl+Z 可撤销。`, timeOnlyVideo: '时间雕塑需要视频。', empty: '在这个素材中没有找到可以转换的形状。',
+        shorts: '📱 短视频 (9:16)', shortsTip: '录制竖屏视频：原素材 → 转换过程 → 绕成品转一圈。', shortsNo: '请先转换点什么。', shortsBusy: '录制中…', before: 'BEFORE', after: 'AFTER',
+      },
       TX: {
         tog2D: '◧ 2D 面板', drawMode: '🧱 绘制', delMode: '🔨 删除', recolorMode: '🎨 上色', tools: '工具', brush: '画笔', snap: '吸附', symmetry: '对称',
         size: '大小', alpha: '透明度', project: '项目', canvasSize: '画布大小', color: '颜色', copyPaste: '体素复制 / 粘贴',

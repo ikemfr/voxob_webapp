@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="800" height="800">
+  <!-- An original illustration made for VoxoB's sample Shorts (CC0): brightness is height. -->
+  <defs>
+    <radialGradient id="a" cx="40%" cy="42%" r="45%"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#b8b8b8"/><stop offset=".75" stop-color="#5c5c5c"/><stop offset="1" stop-color="#1e1e1e"/></radialGradient>
+    <radialGradient id="b" cx="72%" cy="70%" r="22%"><stop offset="0" stop-color="#cfcfcf"/><stop offset="1" stop-color="#cfcfcf" stop-opacity="0"/></radialGradient>
+    <radialGradient id="c" cx="25%" cy="75%" r="16%"><stop offset="0" stop-color="#9a9a9a"/><stop offset="1" stop-color="#9a9a9a" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="400" height="400" fill="#141414"/>
+  <rect width="400" height="400" fill="url(#a)"/><rect width="400" height="400" fill="url(#b)"/><rect width="400" height="400" fill="url(#c)"/>
+</svg>
