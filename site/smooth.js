@@ -49,7 +49,8 @@
       // relax: pull each vertex a little toward its neighbours
       const nb = Array.from({ length: P.length / 3 }, () => new Set()); for (let i = 0; i < I.length; i += 3) { const [a, b, c] = [I[i], I[i + 1], I[i + 2]]; nb[a].add(b).add(c); nb[b].add(a).add(c); nb[c].add(a).add(b) }
       let pos = Float32Array.from(P);
-      for (let it = 0; it < 3; it++) { const o = new Float32Array(pos.length); for (let i = 0; i < nb.length; i++) { let sx = 0, sy = 0, sz = 0; for (const j of nb[i]) { sx += pos[j * 3]; sy += pos[j * 3 + 1]; sz += pos[j * 3 + 2] } const n = nb[i].size || 1; o[i * 3] = pos[i * 3] * .5 + sx / n * .5; o[i * 3 + 1] = pos[i * 3 + 1] * .5 + sy / n * .5; o[i * 3 + 2] = pos[i * 3 + 2] * .5 + sz / n * .5 } pos = o }
+      // one light pass: rounds the joins between voxels, keeps the shape
+      for (let it = 0; it < 1; it++) { const o = new Float32Array(pos.length); for (let i = 0; i < nb.length; i++) { let sx = 0, sy = 0, sz = 0; for (const j of nb[i]) { sx += pos[j * 3]; sy += pos[j * 3 + 1]; sz += pos[j * 3 + 2] } const n = nb[i].size || 1; o[i * 3] = pos[i * 3] * .5 + sx / n * .5; o[i * 3 + 1] = pos[i * 3 + 1] * .5 + sy / n * .5; o[i * 3 + 2] = pos[i * 3 + 2] * .5 + sz / n * .5 } pos = o }
       const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(I); g.computeVertexNormals();
       return { pos, nor: g.attributes.normal.array, col: Float32Array.from(C), idx: Uint32Array.from(I), geo: g };
     }
@@ -65,7 +66,8 @@
 
     // turntable: the view turns slowly until the next drag
     let spin = false; const spinBtn = document.createElement('button'), smBtn = document.createElement('button');
-    smBtn.className = 'wb'; smBtn.id = 'bSmooth'; smBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.8a6.2 6.2 0 0 1 0 12.4z" fill="currentColor"/></svg>';   // an icon, since ◐ is missing from some fonts smBtn.onclick = () => setSmooth(!on);
+    smBtn.className = 'wb'; smBtn.id = 'bSmooth'; smBtn.innerHTML = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.8a6.2 6.2 0 0 1 0 12.4z" fill="currentColor"/></svg>';   // an icon, since ◐ is missing from some fonts
+    smBtn.onclick = () => setSmooth(!on);
     spinBtn.className = 'wb'; spinBtn.id = 'bSpin'; spinBtn.textContent = '⟳'; spinBtn.onclick = () => { spin = !spin; spinBtn.classList.toggle('on', spin); spinBtn.setAttribute('aria-pressed', String(spin)); snd('click') };
     $('v3top').insertBefore(smBtn, $('bCamSv')); $('v3top').insertBefore(spinBtn, $('bCamSv'));
     let lt = performance.now(); (function tick(t) { requestAnimationFrame(tick); const dt = Math.min(.1, (t - lt) / 1000); lt = t; if (spin && !document.hidden) { cT += dt * .5; uCam() } })(lt);
